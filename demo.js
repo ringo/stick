@@ -1,7 +1,7 @@
 var {Server} = require("ringo/httpserver");
-var {Application} = require("stick");
+var {Application, Mount} = require("stick");
 
-var app = new Application();
+var app = new Application(Mount);
 app.mount("/foo", function(req) {
     return {
         status: 200, headers: {}, body: ["hello world!"]
