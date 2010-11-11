@@ -1,7 +1,9 @@
 # Stick
 
 Stick is a modular JSGI middleware composition layer and application framework.
-It is currently developed to work with [RingoJS](http://ringojs.org/).
+It is currently developed on top of [RingoJS](http://ringojs.org/), but it 
+could be adapted to other environments supporting JSGI, CommonJS modules, and
+ECMAScript 5.
 
 Stick provides an `Application` object that can be used to compose web
 applications out of JSGI middleware components. Middleware can in turn
