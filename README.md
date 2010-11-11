@@ -31,5 +31,4 @@ To use this middleware, your code would look something like this:
     app.enableLogging = true;
 
 Stick currently only provides the bare bones Application object, but the
-plan is to move middleware currently bundled with RingoJS over here and
-write some new one as well.
+plan is to bundle some middleware useful for building real web sites.
