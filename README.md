@@ -25,7 +25,8 @@ For example, consider the following simplistic request logger middleware:
         };
     }
 
-To use this middleware, your code would look something like this:
+To use this middleware in a Stick application, your code would look something
+like this:
 
     var app = new Application();
     // ... configure other middleware
@@ -33,4 +34,5 @@ To use this middleware, your code would look something like this:
     app.enableLogging = true;
 
 Stick currently only provides the bare bones Application object, but the
-plan is to bundle some middleware useful for building real web sites.
+plan is to eventually bundle some middleware useful for building real web
+sites.
