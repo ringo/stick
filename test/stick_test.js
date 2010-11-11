@@ -3,29 +3,39 @@ var assert = require("assert");
 
 
 exports.testMiddleware = function() {
-    function mw1(next, app) {
-        return function mw1(req) { return next(req) + next(req) }
+    function twice(next, app) {
+        return function(req) {
+            return next(req) + next(req)
+        }
     }
-    function mw2(next, app) {
-        return function mw2(req) { return next(req.toUpperCase()).toUpperCase() }
+    function uppercase(next, app) {
+        return function(req) {
+            return next(req.toUpperCase()).toUpperCase()
+        }
     }
-    function mw3(next, app) {
-        return function mw3(req) { return req === "FOO" ?
-                "bar" : "unexpected req: " + req }
+    function foobar(next, app) {
+        return function(req) {
+            return req === "FOO" ?
+                "bar" : "unexpected req: " + req
+        }
     }
-    function p1(next, app) {
-        return function p1(req) { return next(req) + "_" }
+    function append_(next, app) {
+        return function(req) {
+            return next(req) + "_"
+        }
     }
-    function p2(next, app) {
-        return function p2(req) { return "_" + next(req) }
+    function _prepend(next, app) {
+        return function(req) {
+            return "_" + next(req)
+        }
     }
-    var app = new Application(mw1, mw2, mw3);
+    var app = new Application(twice, uppercase, foobar);
     assert.equal(app("foo"), "BARBAR");
     app = new Application();
-    app.configure([mw1, mw2, mw3]);
+    app.configure([twice, uppercase, foobar]);
     assert.equal(app("foo"), "BARBAR");
-    app.configure("development", mw1);
-    app.configure("production", [p1, p2]);
+    app.configure("development", twice);
+    app.configure("production", [_prepend, append_]);
     assert.equal(app("foo"), "BARBAR");
     assert.equal(app("foo", "development"), "BARBARBARBAR");
     assert.equal(app("foo", "production"), "_BARBAR_");
