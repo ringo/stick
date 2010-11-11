@@ -39,7 +39,7 @@ exports.testMiddleware = function() {
     assert.equal(app("foo"), "BARBAR");
     assert.equal(app("foo", "development"), "BARBARBARBAR");
     assert.equal(app("foo", "production"), "_BARBAR_");
-}
+};
 
 exports.testMount = function() {
     function testMount(app) {
@@ -62,7 +62,7 @@ exports.testMount = function() {
     app = new Application();
     app.configure([Mount]);
     testMount(app);
-}
+};
 
 if (require.main == module) {
     require("test").run(exports);
