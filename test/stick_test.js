@@ -29,16 +29,19 @@ exports.testMiddleware = function() {
             return "_" + next(req)
         }
     }
-    var app = new Application(twice, uppercase, foobar);
+    var app = new Application(foobar());
+    app.configure(twice, uppercase);
     assert.equal(app("foo"), "BARBAR");
     app = new Application();
-    app.configure([twice, uppercase, foobar]);
+    app.configure(twice, uppercase, foobar);
     assert.equal(app("foo"), "BARBAR");
-    app.configure("development", twice);
-    app.configure("production", [_prepend, append_]);
+    var dev = app.env("development");
+    dev.configure(twice);
+    var prod = app.env("production");
+    prod.configure(_prepend, append_);
     assert.equal(app("foo"), "BARBAR");
-    assert.equal(app("foo", "development"), "BARBARBARBAR");
-    assert.equal(app("foo", "production"), "_BARBAR_");
+    assert.equal(dev("foo"), "BARBARBARBAR");
+    assert.equal(prod("foo"), "_BARBAR_");
 };
 
 exports.testMount = function() {
@@ -54,13 +57,8 @@ exports.testMount = function() {
             app({headers: {host: "bing.org"}, pathInfo: "/"});
         }, Error);
     }
-    var app = new Application(Mount);
-    testMount(app);
-    app = new Application();
+    var app = new Application();
     app.configure(Mount);
-    testMount(app);
-    app = new Application();
-    app.configure([Mount]);
     testMount(app);
 };
 
