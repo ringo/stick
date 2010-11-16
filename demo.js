@@ -1,5 +1,6 @@
 var {Server} = require("ringo/httpserver");
-var {Application, Mount} = require("stick");
+var {Application} = require("stick");
+var {Mount} = require("stick/middleware");
 
 var app = new Application();
 app.configure(Mount);
