@@ -1,9 +1,9 @@
 var {Server} = require("ringo/httpserver");
 var {Application} = require("stick");
-var {Mount} = require("stick/middleware");
+var {error, mount} = require("stick/middleware");
 
 var app = new Application();
-app.configure(Mount);
+app.configure(error, mount);
 app.mount("/foo", function(req) {
     return {
         status: 200, headers: {}, body: ["hello world!"]
