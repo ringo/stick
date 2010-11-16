@@ -61,6 +61,10 @@ exports.testMount = function() {
     var app = new Application();
     app.configure(Mount);
     testMount(app);
+    // configuration via module name
+    app = new Application();
+    app.configure("stick/middleware/mount");
+    testMount(app);
 };
 
 if (require.main == module) {
