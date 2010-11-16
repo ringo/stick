@@ -59,7 +59,7 @@ exports.testMount = function() {
         }, Error);
     }
     var app = new Application();
-    app.configure(Mount);
+    app.configure(mount);
     testMount(app);
     // configuration via module name
     app = new Application();
