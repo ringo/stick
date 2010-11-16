@@ -1,4 +1,5 @@
-var {Application, Mount} = require("../lib/stick");
+var {Application} = require("../lib/stick");
+var {Mount} = require("../lib/stick/middleware")
 var assert = require("assert");
 
 
