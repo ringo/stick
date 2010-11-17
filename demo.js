@@ -9,9 +9,11 @@ function dummyPage(text) {
     }
 }
 
-var app = new Application();
+// create a new blank Stick application
+var app = exports.app = new Application();
+// configure error, notfound, mount, and static middleware
 app.configure(error, notfound, mount, static);
-
+// middleware chain now is error > notfound > mount > anonymous > unhandled
 // mount hello world application at /hello
 app.mount("/hello", dummyPage("hello world!"));
 // throw notfound object to test notfound middleware
@@ -29,5 +31,6 @@ admin.basicauth("/", "admin", "e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4");
 // mount on /admin
 app.mount("/admin", admin);
 
-var server = new Server({app: app});
+// start server if we didn't already do so
+var server = server || new Server({app: app});
 server.start();
