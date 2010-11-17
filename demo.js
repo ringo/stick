@@ -25,7 +25,7 @@ app.static(module.resolve("lib"));
 var admin = new Application(dummyPage("admin zone"));
 admin.configure(basicauth);
 // add basic authentication, password is "secret"
-admin.basicauth("/admin", "admin", "e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4");
+admin.basicauth("/", "admin", "e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4");
 // mount on /admin
 app.mount("/admin", admin);
 
