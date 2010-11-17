@@ -13,7 +13,7 @@ function dummyPage(text) {
 var app = exports.app = new Application();
 // configure error, notfound, mount, and static middleware
 app.configure(error, notfound, mount, static);
-// middleware chain now is error > notfound > mount > anonymous > unhandled
+// middleware chain now is error > notfound > mount > static > unhandled
 // mount hello world application at /hello
 app.mount("/hello", dummyPage("hello world!"));
 // throw notfound object to test notfound middleware
