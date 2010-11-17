@@ -1,6 +1,6 @@
 var {Server} = require("ringo/httpserver");
 var {Application} = require("stick");
-var {error, notfound, mount, basicauth} = require("stick/middleware");
+var {error, notfound, mount, static, basicauth} = require("stick/middleware");
 
 // helper for creating simple dummy pages
 function dummyPage(text) {
@@ -10,12 +10,16 @@ function dummyPage(text) {
 }
 
 var app = new Application();
-app.configure(error, notfound, mount);
+app.configure(error, notfound, mount, static);
 
+// mount hello world application at /hello
 app.mount("/hello", dummyPage("hello world!"));
+// throw notfound object to test notfound middleware
 app.mount("/notfound", function(req) {
     throw { notfound: true };
 });
+// serve files in lib as static resources 
+app.static(module.resolve("lib"));
 
 // create a password protected admin application
 var admin = new Application(dummyPage("admin zone"));
