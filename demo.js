@@ -40,7 +40,7 @@ prod.error.location = false; // disable error location and stack traces
 var dev = app.env("development");
 dev.configure(responselog, error);
 
-// profile environment, run with RINGO_ENV=profiler ringo -o-1 demo.js
+// profiler environment, run with RINGO_ENV=profiler ringo -o-1 demo.js
 var prof = app.env("profiler");
 prof.configure(responselog, profiler, error);
 
