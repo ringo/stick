@@ -1,20 +1,21 @@
-var {Server} = require("ringo/httpserver");
 var {Application} = require("stick");
-var {gzip, error, notfound, mount, static, basicauth} = require("stick/middleware");
+var {Server} = require("ringo/httpserver");
+var {Buffer} = require("ringo/buffer");
+var {gzip, etag, error, notfound, mount, static, basicauth} = require("stick/middleware");
 
 // helper for creating simple dummy pages
 function dummyPage(text) {
     return function(req) {
         return { status: 200,
                  headers: {"Content-Type": "text/plain"},
-                 body: [text] };
+                 body: new Buffer(text) };
     }
 }
 
 // create a new blank Stick application
 var app = exports.app = new Application();
 // configure gzip, error, notfound, mount, and static middleware
-app.configure(gzip, error, notfound, mount, static);
+app.configure(gzip, etag, error, notfound, mount, static);
 // middleware chain now is gzip > error > notfound > mount > static > unhandled
 // mount hello world application at /hello
 app.mount("/hello", dummyPage("hello world!"));
