@@ -2,7 +2,7 @@ var {Application} = require("stick");
 var {Server} = require("ringo/httpserver");
 var {Buffer} = require("ringo/buffer");
 var log = require("ringo/logging").getLogger("demo");
-var {gzip, etag, error, notfound, mount, static, basicauth, responselog} =
+var {gzip, etag, error, notfound, mount, static, basicauth, responselog, profiler} =
         require("stick/middleware");
 
 /*
@@ -39,6 +39,10 @@ prod.error.location = false; // disable error location and stack traces
 // RINGO_ENV=development environment
 var dev = app.env("development");
 dev.configure(responselog, error);
+
+// RINGO_ENV=profile environment
+var profile = app.env("profile");
+profile.configure(responselog, profiler, error);
 
 // create a password protected admin application
 var admin = new Application(dummyPage("admin zone"));
