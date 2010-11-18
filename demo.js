@@ -5,18 +5,25 @@ var log = require("ringo/logging").getLogger("demo");
 var {gzip, etag, error, notfound, mount, static, basicauth, responselog} =
         require("stick/middleware");
 
-// helper for creating simple dummy pages
-function dummyPage(text) {
-    return function(req) {
-        log.info(text);
-        return { status: 200,
-                 headers: {"Content-Type": "text/html"},
-                 body: new Buffer("<html><body>", text, "</body></html>") };
-    }
-}
+/*
+ Example Stick application. The final application will look somewhat like this:
+
+ +- production ------------+      +- app ---------------------------------------+
+ |                         |      |                                             |
+ |  gzip -> etag -> error  |--+   |                       +-> lib/*             |
+ |                         |  |   |                       |                     |
+ +-------------------------+  |   | notfound -> mount -> static -> unhandled    |
+                              +-->|              |                              |
+ +- development -----------+  |   |              +-> "hello world"              |
+ |                         |  |   |              |                              |
+ |  responselog -> error   |--+   |              +-> basicauth -> "admin zone"  |
+ |                         |      |                                             |
+ +-------------------------+      +---------------------------------------------+
+ */
 
 // Our main application
 var app = exports.app = new Application();
+// configure notfound, mount, and static middleware
 app.configure(notfound, mount, static);
 app.mount("/hello", dummyPage("hello world!"));
 app.mount("/error", function(req) {
@@ -43,3 +50,13 @@ app.mount("/admin", admin);
 // start server if we didn't already do so
 var server = server || new Server({app: app});
 server.start();
+
+// helper for creating simple dummy pages
+function dummyPage(text) {
+    return function(req) {
+        log.info(text);
+        return { status: 200,
+                 headers: {"Content-Type": "text/html"},
+                 body: new Buffer("<html><body>", text, "</body></html>") };
+    }
+}
