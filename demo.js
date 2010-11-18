@@ -31,18 +31,18 @@ app.mount("/error", function(req) {
 });
 app.static(module.resolve("lib")); // serve files in lib as static resources
 
-// RINGO_ENV=production environment
+// production environment, run with RINGO_ENV=production ringo demo.js
 var prod = app.env("production");
 prod.configure(gzip, etag, error);
 prod.error.location = false; // disable error location and stack traces
 
-// RINGO_ENV=development environment
+// development environment, run with RINGO_ENV=development ringo demo.js
 var dev = app.env("development");
 dev.configure(responselog, error);
 
-// RINGO_ENV=profile environment
-var profile = app.env("profile");
-profile.configure(responselog, profiler, error);
+// profile environment, run with RINGO_ENV=profiler ringo -o-1 demo.js
+var prof = app.env("profiler");
+prof.configure(responselog, profiler, error);
 
 // create a password protected admin application
 var admin = new Application(dummyPage("admin zone"));
