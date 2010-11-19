@@ -1,8 +1,8 @@
-var {Application} = require("stick");
-var {Server} = require("ringo/httpserver");
-var {Buffer} = require("ringo/buffer");
-var log = require("ringo/logging").getLogger("demo");
-var {gzip, etag, error, notfound, mount, static, basicauth, responselog, profiler} =
+var {Application} = require("stick"),
+    {Server} = require("ringo/httpserver"),
+    {Buffer} = require("ringo/buffer"),
+    log = require("ringo/logging").getLogger("demo"),
+    {gzip, etag, error, notfound, mount, static, basicauth, responselog, profiler} =
         require("stick/middleware");
 
 /*
@@ -37,12 +37,10 @@ prod.configure(gzip, etag, error);
 prod.error.location = false; // disable error location and stack traces
 
 // development environment, run with RINGO_ENV=development ringo demo.js
-var dev = app.env("development");
-dev.configure(responselog, error);
+app.env("development").configure(responselog, error);
 
 // profiler environment, run with RINGO_ENV=profiler ringo -o-1 demo.js
-var prof = app.env("profiler");
-prof.configure(responselog, profiler, error);
+app.env("profiler").configure(responselog, profiler, error);
 
 // create a password protected admin application
 var admin = new Application(dummyPage("admin zone"));
