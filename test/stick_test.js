@@ -50,12 +50,12 @@ exports.testMount = function() {
         app.mount("/foo", function() { return "/foo" });
         app.mount({host: "foo.com"}, function() { return "foo.com" });
         app.mount({host: "bar.org", path: "/baz"}, function() { return "bar.org/baz" });
-        assert.equal(app({headers: {host: "bar.com"}, pathInfo: "/foo"}), "/foo");
-        assert.equal(app({headers: {host: "foo.com"}, pathInfo: "/foo"}), "/foo");
-        assert.equal(app({headers: {host: "foo.com"}, pathInfo: "/"}), "foo.com");
-        assert.equal(app({headers: {host: "bar.org"}, pathInfo: "/baz"}), "bar.org/baz");
+        assert.equal(app({headers: {host: "bar.com"}, env: {}, pathInfo: "/foo"}), "/foo");
+        assert.equal(app({headers: {host: "foo.com"}, env: {}, pathInfo: "/foo"}), "/foo");
+        assert.equal(app({headers: {host: "foo.com"}, env: {}, pathInfo: "/"}), "foo.com");
+        assert.equal(app({headers: {host: "bar.org"}, env: {}, pathInfo: "/baz"}), "bar.org/baz");
         assert.throws(function() {
-            app({headers: {host: "bing.org"}, pathInfo: "/"});
+            app({headers: {host: "bing.org"}, env: {}, pathInfo: "/"});
         }, Error);
     }
     var app = new Application();
