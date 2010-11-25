@@ -1,9 +1,7 @@
 var {Application} = require("stick"),
     {Server} = require("ringo/httpserver"),
     {Buffer} = require("ringo/buffer"),
-    log = require("ringo/logging").getLogger("demo"),
-    {gzip, etag, error, notfound, mount, static, basicauth, responselog, profiler} =
-        require("stick/middleware");
+    log = require("ringo/logging").getLogger("demo");
 
 /*
  Example Stick application. The final application will look somewhat like this:
@@ -22,9 +20,9 @@ var {Application} = require("stick"),
  */
 
 // Our main application
-var app = exports.app = new Application();
+var app = exports.app = Application();
 // configure notfound, mount, and static middleware
-app.configure(notfound, mount, static);
+app.configure("notfound", "mount", "static");
 app.mount("/hello", dummyPage("hello world!"));
 app.mount("/error", function(req) {
     throw new Error("Something went wrong");
@@ -33,18 +31,18 @@ app.static(module.resolve("lib")); // serve files in lib as static resources
 
 // production environment, run with RINGO_ENV=production ringo demo.js
 var prod = app.env("production");
-prod.configure(gzip, etag, error);
+prod.configure("gzip", "etag", "error");
 prod.error.location = false; // disable error location and stack traces
 
 // development environment, run with RINGO_ENV=development ringo demo.js
-app.env("development").configure(responselog, error);
+app.env("development").configure("responselog", "error");
 
 // profiler environment, run with RINGO_ENV=profiler ringo -o-1 demo.js
-app.env("profiler").configure(responselog, profiler, error);
+app.env("profiler").configure("responselog", "profiler", "error");
 
 // create a password protected admin application
 var admin = new Application(dummyPage("admin zone"));
-admin.configure(basicauth);
+admin.configure("basicauth");
 // add basic authentication, password is "secret"
 admin.basicauth("/", "admin", "e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4");
 app.mount("/admin", admin);

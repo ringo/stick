@@ -4,10 +4,9 @@ var {Response} = require('ringo/webapp/response');
 var {Page} = require('./model');
 var helpers = require('./helpers');
 var {Application} = require("stick");
-var {params, router, skin} = require("stick/middleware");
 
 var app = exports.app = Application();
-app.configure(params, skin, router);
+app.configure("params", "skin", "router");
 app.route("get", "post");
 app.skin.base(module.resolve("skins"));
 app.skin.helpers(helpers, "ringo/skin/macros", "ringo/skin/filters");
