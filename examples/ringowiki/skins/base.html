@@ -1,0 +1,18 @@
+<!DOCTYPE html >
+<html lang="en" dir="ltr">
+<head>
+<title>stiki<% page.name | prefix " - " %></title>
+<link rel="stylesheet" href="/static/style.css" />
+<% render 'head' %>
+</head>
+
+<body>
+
+<% headline | wrap <h1> </h1> %>
+
+<% render content %>
+</body>
+</html>
+
+<% subskin 'content' %>
+Overwrite this subskin to add content.
