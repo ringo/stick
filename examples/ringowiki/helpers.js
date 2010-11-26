@@ -1,11 +1,14 @@
-var {Markdown} = require('ringo/markdown');
+var {app} = require('./actions');
 var {Page} = require('./model');
+var {Markdown} = require('ringo/markdown');
+var {linkTo, urlFor} = require('stick/helpers');
 var strings = require('ringo/utils/strings');
-var render = require('ringo/skin').render;
 
 export(
     'markdown_filter',
-    'navigation_macro'
+    'navigation_macro',
+    'linkTo_macro',
+    'urlFor_macro'
 );
 
 function markdown_filter(content) {
@@ -36,4 +39,12 @@ function navigation_macro(tag) {
         });
     }
     return '';
+}
+
+function linkTo_macro(tag) {
+    return linkTo(app, tag.namedParameters, tag.parameters[0]);
+}
+
+function urlFor_macro(tag) {
+    return urlFor(app, tag.namedParameters);
 }

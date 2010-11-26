@@ -2,13 +2,12 @@ var dates = require('ringo/utils/dates');
 var strings = require('ringo/utils/strings');
 var {Response} = require('ringo/webapp/response');
 var {Page} = require('./model');
-var helpers = require('./helpers');
 var {Application} = require("stick");
 
 var app = exports.app = Application();
 app.configure("params", "render", "route");
 app.render.base(module.resolve("skins"));
-app.render.helpers(helpers, "ringo/skin/macros", "ringo/skin/filters");
+app.render.helpers(module.resolve("helpers"), "ringo/skin/macros", "ringo/skin/filters");
 
 app.get("/list", function(req) {
     return app.render('list.html', {
