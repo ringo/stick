@@ -1,7 +1,6 @@
-This is a minimal demo wiki for Stick
-Run it with ringo-web:
+This is a minimal demo wiki for Stick. Run it with:
 
-  ringo-web [appdir]
+  ringo main.js
 
 Then point your browser to this URL:
 
