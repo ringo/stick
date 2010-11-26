@@ -29,6 +29,9 @@ app.mount("/error", function(req) {
 });
 app.static(module.resolve("lib")); // serve files in lib as static resources
 
+// mount examples/ringowiki app on /wiki
+app.mount("/wiki", module.resolve("examples/ringowiki/config"));
+
 // production environment, run with RINGO_ENV=production ringo demo.js
 var prod = app.env("production");
 prod.configure("gzip", "etag", "error");
