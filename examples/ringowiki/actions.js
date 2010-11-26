@@ -7,7 +7,6 @@ var {Application} = require("stick");
 
 var app = exports.app = Application();
 app.configure("params", "skin", "route");
-app.route("get", "post");
 app.skin.base(module.resolve("skins"));
 app.skin.helpers(helpers, "ringo/skin/macros", "ringo/skin/filters");
 
