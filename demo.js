@@ -48,7 +48,7 @@ admin.basicauth("/", "admin", "e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4");
 app.mount("/admin", admin);
 
 // start server if we didn't already do so
-var server = server || new Server({app: app});
+var server = server || new Server({config: module.id, app: "app"});
 server.start();
 
 // helper for creating simple dummy pages
