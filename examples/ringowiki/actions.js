@@ -15,39 +15,6 @@ app.get("/list", function(req) {
     });
 });
 
-app.get("/recent", function(req) {
-    var limit = req.params.limit || 50;
-    var changes = [];
-
-    // Retrieve all changes.
-    for each (var page in Page.all()) {
-        for (var version in page.revisions) {
-            changes.push({
-                page: page,
-                version: version,
-                created: new Date(page.revisions[version].created)});
-        }
-    }
-
-    // Sort them reverse chronologically.
-    changes.sort(function (a, b) a.created > b.created ? -1 : 1);
-
-    // Group changes by day.
-    // @@ We probably should not manually do the grouping here, but rather use
-    // a nice grouping function in some library somewhere.
-    var days = [];
-    var oldDay;
-    for each (var change in changes.slice(0, limit)) {
-        var curDay = dates.format(change.created, 'yyyy-MM-dd');
-        if (curDay != oldDay) {
-            days.push({title: curDay, changes: []});
-            oldDay = curDay;
-        }
-        days[days.length - 1].changes.push(change);
-    }
-    return app.render('recent.html', { days: days });
-});
-
 app.get("/:name?", function(req, name) {
     name = name || 'home';
     var page = Page.byName(name);
