@@ -8,24 +8,18 @@ export(
     'markdown_filter',
     'navigation_macro',
     'linkTo_macro',
-    'urlFor_macro'
+    'urlFor_macro',
+    'url_macro'
 );
 
 function markdown_filter(content) {
     var markdown = new Markdown({
         lookupLink: function(id) {
             if (!strings.startsWith(id, "/") && !strings.isUrl(id.isUrl)) {
-                return ["/" + encodeURIComponent(id),
+                return [urlFor(app, {name: id, action: "index"}),
                         "link to wiki page"];
             }
             return null;
-        },
-        openTag: function(tag, buffer) {
-            buffer.append('<').append(tag);
-            if (tag == "pre") {
-                buffer.append(' class="sh_javascript"');
-            }
-            buffer.append('>');
         }
     });
     return markdown.process(content);
@@ -47,4 +41,8 @@ function linkTo_macro(tag) {
 
 function urlFor_macro(tag) {
     return urlFor(app, tag.namedParameters);
+}
+
+function url_macro(tag) {
+    return app.base + tag.parameters[0];
 }
