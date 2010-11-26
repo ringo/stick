@@ -6,12 +6,12 @@ var helpers = require('./helpers');
 var {Application} = require("stick");
 
 var app = exports.app = Application();
-app.configure("params", "skin", "route");
-app.skin.base(module.resolve("skins"));
-app.skin.helpers(helpers, "ringo/skin/macros", "ringo/skin/filters");
+app.configure("params", "render", "route");
+app.render.base(module.resolve("skins"));
+app.render.helpers(helpers, "ringo/skin/macros", "ringo/skin/filters");
 
 app.get("/list", function(req) {
-    return app.skin('list.html', {
+    return app.render('list.html', {
             pages: Page.all().sort(strings.Sorter('name'))
     });
 });
@@ -46,7 +46,7 @@ app.get("/recent", function(req) {
         }
         days[days.length - 1].changes.push(change);
     }
-    return app.skin('recent.html', { days: days });
+    return app.render('recent.html', { days: days });
 });
 
 app.get("/:name?", function(req, name) {
@@ -61,7 +61,7 @@ app.get("/:name?", function(req, name) {
             title = page.name;
         }
         page.body = page.getRevision(req.params.version).body;
-        return app.skin(skin, {
+        return app.render(skin, {
             page: page,
             title: title,
             headline: title,
@@ -69,7 +69,7 @@ app.get("/:name?", function(req, name) {
             basePath: req.scriptName
         });
     } else {
-        return app.skin('new.html', {
+        return app.render('new.html', {
             name: name.replace(/_/g, ' ')
         });
     }
@@ -87,7 +87,7 @@ app.get("/:name/edit", function(req, name) {
     var page = Page.byName(name);
     page.body = page.getRevision(req.params.version).body;
     req.session.data.honeyPotName = "phonenumber_" + parseInt(Math.random() * 1000);
-    return app.skin('edit.html', {
+    return app.render('edit.html', {
         page: page,
         honeyPotName: req.session.data.honeyPotName,
     });
