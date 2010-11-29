@@ -3,6 +3,7 @@ var {Page} = require('./model');
 var {Markdown} = require('ringo/markdown');
 var {linkTo, urlFor} = require('stick/helpers');
 var strings = require('ringo/utils/strings');
+var objects = require('ringo/utils/objects');
 
 export(
     'markdown_filter',
@@ -16,7 +17,7 @@ function markdown_filter(content) {
     var markdown = new Markdown({
         lookupLink: function(id) {
             if (!strings.startsWith(id, "/") && !strings.isUrl(id.isUrl)) {
-                return [urlFor(app, {name: id, action: "index"}),
+                return [urlFor({app: app, name: id, action: "index"}),
                         "link to wiki page"];
             }
             return null;
@@ -36,11 +37,13 @@ function navigation_macro(tag) {
 }
 
 function linkTo_macro(tag) {
-    return linkTo(app, tag.namedParameters, tag.parameters[0]);
+    var bindings = objects.merge(tag.namedParameters, {app: app});
+    return linkTo(bindings, tag.parameters[0]);
 }
 
 function urlFor_macro(tag) {
-    return urlFor(app, tag.namedParameters);
+    var bindings = objects.merge(tag.namedParameters, {app: app});
+    return urlFor(bindings);
 }
 
 function url_macro(tag) {
