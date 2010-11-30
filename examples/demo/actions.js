@@ -40,7 +40,7 @@ app.get("/testing", function(req) {
         var tests = require(test.path);
         var formatter = new (require("./helpers").HtmlTestFormatter)();
         require("test").run(tests, formatter);
-        return htmlResponse(formatter.toString());
+        return htmlResponse(formatter);
     }
     return app.render('testing.txt', {
         title: "Unit Testing"
