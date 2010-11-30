@@ -1,14 +1,17 @@
+// Stick demo app. Run with `ringo demo.js`, or see below for running with
+// various environments
+
 var {Application} = require("stick"),
     {Server} = require("ringo/httpserver"),
     {Buffer} = require("ringo/buffer"),
     log = require("ringo/logging").getLogger("demo");
 
 /*
- Example Stick application. The final application will look somewhat like this:
+ Example Stick application. This is a partial scheme of what the app looks like:
 
  +- production ------------+      +- app ---------------------------------------+
  |                         |      |                                             |
- |  gzip -> etag -> error  |--+   |                       +-> lib/*             |
+ |  gzip -> etag -> error  |--+   |                       +-> docs/*             |
  |                         |  |   |                       |                     |
  +-------------------------+  |   | notfound -> mount -> static -> unhandled    |
                               +-->|              |                              |
@@ -27,10 +30,12 @@ app.mount("/hello", dummyPage("hello world!"));
 app.mount("/error", function(req) {
     throw new Error("Something went wrong");
 });
-app.static(module.resolve("lib")); // serve files in lib as static resources
+app.static(module.resolve("docs"), "index.html"); // serve files in docs as static resources
 
-// mount examples/ringowiki app on /wiki
+// mount example apps
 app.mount("/wiki", module.resolve("examples/ringowiki/config"));
+app.mount("/mount", module.resolve("examples/mount-route/app"));
+app.mount("/demo", module.resolve("examples/demo/config"));
 
 // production environment, run with RINGO_ENV=production ringo demo.js
 var prod = app.env("production");
