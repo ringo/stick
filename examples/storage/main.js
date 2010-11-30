@@ -1,5 +1,5 @@
 var {Book, Author} = require('./model');
-var {Response} = require("ringo/webapp/response");
+var {redirectTo, jsonResponse, xmlResponse} = require("stick/helpers");
 var app = exports.app = require('stick').Application();
 
 app.configure("params", "method", "render", "route");
@@ -23,7 +23,7 @@ app.post("/", function(req) {
     // author is saved transitively
     // author.save();
     book.save();
-    return Response.redirect(req.scriptName + req.pathInfo);
+    return redirectTo(req.scriptName + req.pathInfo);
 });
 
 app.get("/edit/:id", function(req, id) {
@@ -42,7 +42,7 @@ app.put("/:id", function(req, id) {
     book.title = req.params.title;
     author.save();
     book.save();
-    return Response.redirect(app.base);
+    return redirectTo(app.base);
 });
 
 app.get("/remove/:id", function(req, id) {
@@ -59,18 +59,21 @@ app.del("/:id", function(req, id) {
     // no cascading delete
     book.author.remove();
     book.remove();
-    return Response.redirect(app.base);
+    return redirectTo(app.base);
 });
 
 // Simple RESTful API example.
 app.get("/books/:id.:format", function (req, id, format) {
     if (!/^[0-9a-z]+$/.test(id) || !/^(json|xml)$/.test(format)) { // Validate URI.
-        return Response.error('Invalid request; check URI.');
+        throw new Error('Invalid request; check URI.');
     }
     var book = Book.get(id); // Figure out response.
-    return !book ? Response.notFound(req.path) : format == 'json' ?
-            Response.json({author: book.author.name, title: book.title}) :
-            Response.xml(<book>
+    if (!book) {
+        throw {notfound: true};
+    }
+    return format == 'json' ?
+            jsonResponse({author: book.author.name, title: book.title}) :
+            xmlResponse(<book>
                             <author>{book.author.name}</author>
                             <title>{book.title}</title>
                         </book>);

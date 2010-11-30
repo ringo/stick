@@ -1,5 +1,5 @@
 var {Application} = require("stick");
-var {Response} = require('ringo/webapp/response');
+var {htmlResponse} = require("stick/helpers");
 
 var log = require('ringo/logging').getLogger(module.id);
 var app = exports.app = Application();
@@ -15,7 +15,7 @@ app.get("/", function(req) {
 // additional path elements are passed to the action as arguments,
 // e.g. /extra.path/2008/09
 app.get("/extra_path/:year?/:month?", function(req, year, month) {
-    return new Response("Extra arguments:", year, month);
+    return htmlResponse("Extra arguments:", year, month);
 });
 
 app.get("/upload", function(req) {
@@ -40,7 +40,7 @@ app.get("/testing", function(req) {
         var tests = require(test.path);
         var formatter = new (require("./helpers").HtmlTestFormatter)();
         require("test").run(tests, formatter);
-        return new Response(formatter);
+        return htmlResponse(formatter.toString());
     }
     return app.render('testing.txt', {
         title: "Unit Testing"
@@ -48,7 +48,6 @@ app.get("/testing", function(req) {
 });
 
 app.get("/params", function(req) {
-    // return new Response(JSON.stringify(req.params));
     return app.render('form.html');
 });
 
