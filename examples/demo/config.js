@@ -1,6 +1,4 @@
 
-var {Application} = require("stick");
-
 var app = exports.app = require("./actions").app;
 
 app.configure("gzip", "etag", "static", "responselog", "mount", "error", "notfound");

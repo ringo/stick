@@ -1,7 +1,7 @@
 var {Book, Author} = require('./model');
 var {redirectTo, jsonResponse, xmlResponse} = require("stick/helpers");
-var app = exports.app = require('stick').Application();
 
+var app = exports.app = require('stick').Application();
 app.configure("params", "method", "render", "route");
 app.render.base(module.resolve("skins"));
 app.render.helpers("ringo/skin/macros", "ringo/skin/filters");
