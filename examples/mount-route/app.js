@@ -1,5 +1,5 @@
 var {Application} = require("stick");
-var {linkTo} = require("stick/helpers");
+var {linkTo, htmlResponse} = require("stick/helpers");
 
 var app = exports.app = Application(),
     foo = module.resolve("foo"),
@@ -10,19 +10,14 @@ app.mount("/foo", foo);
 app.mount("/bar", bar);
 
 app.get("/", function(req) {
-    return {
-        status: 200,
-        headers: {"Content-Type": "text/html"},
-        body: ["<html><body><h1>Mount/Route middleware demo</h1>" +
-              "<p>This app demos the composition and linking capabilities of the mount and route middleware. " +
-                 "Some links: </p>" +
-                 "<ul>" +
-                     "<li>" + linkTo({app: foo}) + "</li>" +
-                     "<li>" + linkTo({app: bar, name: "hello"}) + "</li>" +
-                     "<li>" + linkTo({app: foo, name: "hello", ext: "world"}) + "</li>" +
-                 "</ul>" +
-              "</body></html>"]
-    }
+    return htmlResponse("<html><body><h1>Mount/Route middleware demo</h1>",
+        "<p>This app demos the composition and linking capabilities of the mount and route middleware. ",
+        "Some links: </p>",
+        "<ul>",
+            "<li>", linkTo({app: foo}), "</li>",
+            "<li>", linkTo({app: bar, name: "hello"}), "</li>",
+            "<li>", linkTo({app: foo, name: "hello", ext: "world"}), "</li>",
+        "</ul></body></html>");
 });
 
 if (require.main === module) {
