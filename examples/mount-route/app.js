@@ -1,5 +1,5 @@
 var {Application} = require("stick");
-var {linkTo, urlFor} = require("stick/helpers");
+var {linkTo} = require("stick/helpers");
 
 var app = exports.app = Application(),
     foo = module.resolve("foo"),
