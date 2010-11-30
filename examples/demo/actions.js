@@ -14,7 +14,7 @@ app.get("/", function(req) {
 
 // additional path elements are passed to the action as arguments,
 // e.g. /extra.path/2008/09
-app.get("/extra_path/:year?/:month?", function(req, year, month) {
+app.get("/extrapath/:year?/:month?", function(req, year, month) {
     return htmlResponse("Extra arguments:", year, month);
 });
 
@@ -45,10 +45,6 @@ app.get("/testing", function(req) {
     return app.render('testing.txt', {
         title: "Unit Testing"
     });
-});
-
-app.get("/params", function(req) {
-    return app.render('form.html');
 });
 
 // demo for skins, macros, filters
