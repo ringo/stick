@@ -1,0 +1,571 @@
+<!DOCTYPE html >
+
+<html lang="de" dir="ltr">
+<head>
+<title></title>
+<link rel="shortcut icon" href="http://ringojs.org/favicon.ico" type="image/x-icon" />
+<link rel="icon" href="http://ringojs.org/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" href="../../static/style.css" />
+<script type="text/javascript" src="../../static/jquery.js"></script>
+
+
+<link rel="stylesheet" href="../../static/jsdoc.css" />
+<script type="text/javascript" src="../../static/jquery.js"></script>
+<script type="text/javascript" src="../../static/jsdoc.js"></script>
+<script>
+$(document).ready(jsdocSetup);
+</script>
+
+
+
+</head>
+
+<body>
+<div id="wrap">
+    <div id="main">
+    
+    <div >
+        <div class="moduleheader">
+            <h1 class="modulename"> Module stick/helpers </h1>
+            <div class="fileoverview">
+                <p>A collection of helper functions that makes
+working with Stick middleware easier.</p>
+
+
+            </div>
+
+            
+            
+
+            <div class="moduleoverview">
+                
+<div class="classoverview">
+    
+<div>
+    <h3>Functions</h3>
+    <ul class="propertyoverview">
+        
+<li>
+    <a href="#htmlResponse" class="jsdoc-title"> htmlResponse</a>
+(string...)
+
+
+    </a>
+</li>
+
+
+<li>
+    <a href="#jsonResponse" class="jsdoc-title"> jsonResponse</a>
+(object)
+
+
+    </a>
+</li>
+
+
+<li>
+    <a href="#linkTo" class="jsdoc-title"> linkTo</a>
+(bindings, text)
+
+
+    </a>
+</li>
+
+
+<li>
+    <a href="#redirectTo" class="jsdoc-title"> redirectTo</a>
+(either)
+
+
+    </a>
+</li>
+
+
+<li>
+    <a href="#resolveApp" class="jsdoc-title"> resolveApp</a>
+(app)
+
+
+    </a>
+</li>
+
+
+<li>
+    <a href="#urlFor" class="jsdoc-title"> urlFor</a>
+(bindings)
+
+
+    </a>
+</li>
+
+
+<li>
+    <a href="#xmlResponse" class="jsdoc-title"> xmlResponse</a>
+(xml)
+
+
+    </a>
+</li>
+
+
+    </ul>
+</div>
+
+
+    
+</div>
+
+
+
+
+                <div class="classes">
+                    
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="details">
+            
+<!-- tpl-docitem -->
+<div>
+    <div class="docitem" docitem="htmlResponse">
+        <h3>
+           
+<span class="itemtitle"></span><a id="htmlResponse" href="#htmlResponse" class="itemtitle">htmlResponse
+
+            </a>
+            
+(string...)
+
+
+        </h3>
+        <div>
+            <p>Create a JSGI response with content-type 'text/html' with the string
+or binary arguments as response body.</p>
+
+
+        </div>
+        
+        
+        
+<div>
+    <h4>Parameters</h4>
+    <table>
+        
+<tr>
+    <td>string</td>
+    <td class="paramname">string...</td>
+    <td>a variable number of strings to send as response body</td>
+</tr>
+
+
+    </table>
+</div>
+
+
+
+        
+
+        
+
+        
+    </div>
+    <hr/>
+</div>
+
+
+<!-- tpl-docitem -->
+<div>
+    <div class="docitem" docitem="jsonResponse">
+        <h3>
+           
+<span class="itemtitle"></span><a id="jsonResponse" href="#jsonResponse" class="itemtitle">jsonResponse
+
+            </a>
+            
+(object)
+
+
+        </h3>
+        <div>
+            <p>Create a JSGI response with content-type 'application/json' with the JSON
+representation of the given object as response body.</p>
+
+
+        </div>
+        
+        
+        
+<div>
+    <h4>Parameters</h4>
+    <table>
+        
+<tr>
+    <td>object</td>
+    <td class="paramname">object</td>
+    <td>the object whose JSON representation to return</td>
+</tr>
+
+
+    </table>
+</div>
+
+
+
+        
+
+        
+
+        
+    </div>
+    <hr/>
+</div>
+
+
+<!-- tpl-docitem -->
+<div>
+    <div class="docitem" docitem="linkTo">
+        <h3>
+           
+<span class="itemtitle"></span><a id="linkTo" href="#linkTo" class="itemtitle">linkTo
+
+            </a>
+            
+(bindings, text)
+
+
+        </h3>
+        <div>
+            <p>Return a link to an action configured using the <code>route</code> middleware.</p>
+
+<p>The link's URL is generated from the bindings argument as described for
+the <a href="#urlFor">urlFor helper</a>.</p>
+
+
+        </div>
+        
+        
+        
+<div>
+    <h4>Parameters</h4>
+    <table>
+        
+<tr>
+    <td>object</td>
+    <td class="paramname">bindings</td>
+    <td>an object containing the bindings for the target URL.</td>
+</tr>
+
+
+<tr>
+    <td>string</td>
+    <td class="paramname">text</td>
+    <td>the link text.</td>
+</tr>
+
+
+    </table>
+</div>
+
+
+
+        
+
+        
+
+        
+    </div>
+    <hr/>
+</div>
+
+
+<!-- tpl-docitem -->
+<div>
+    <div class="docitem" docitem="redirectTo">
+        <h3>
+           
+<span class="itemtitle"></span><a id="redirectTo" href="#redirectTo" class="itemtitle">redirectTo
+
+            </a>
+            
+(either)
+
+
+        </h3>
+        <div>
+            <p>Create a response that redirects the client to a different URL.</p>
+
+
+        </div>
+        
+        
+        
+<div>
+    <h4>Parameters</h4>
+    <table>
+        
+<tr>
+    <td>string|object</td>
+    <td class="paramname">either</td>
+    <td>the URL as string or a binding object
+       to be passed to `urlFor`</td>
+</tr>
+
+
+    </table>
+</div>
+
+
+
+        
+
+        
+
+        
+    </div>
+    <hr/>
+</div>
+
+
+<!-- tpl-docitem -->
+<div>
+    <div class="docitem" docitem="resolveApp">
+        <h3>
+           
+<span class="itemtitle"></span><a id="resolveApp" href="#resolveApp" class="itemtitle">resolveApp
+
+            </a>
+            
+(app)
+
+
+        </h3>
+        <div>
+            <p>Resolve a module name or module object to a JSGI application.</p>
+
+
+        </div>
+        
+        
+        
+<div>
+    <h4>Parameters</h4>
+    <table>
+        
+<tr>
+    <td></td>
+    <td class="paramname">app</td>
+    <td></td>
+</tr>
+
+
+    </table>
+</div>
+
+
+
+        
+
+        
+
+        
+    </div>
+    <hr/>
+</div>
+
+
+<!-- tpl-docitem -->
+<div>
+    <div class="docitem" docitem="urlFor">
+        <h3>
+           
+<span class="itemtitle"></span><a id="urlFor" href="#urlFor" class="itemtitle">urlFor
+
+            </a>
+            
+(bindings)
+
+
+        </h3>
+        <div>
+            <p>Return a URL to an action configured using the <code>route</code> middleware.</p>
+
+<p>The <code>bindings</code> argument contains informations needed to determine the target
+application and action.</p>
+
+<ul><li><p><code>app</code> - the Stick application to link to. If this is a module or module id,
+the app is expected to be exported as <code>app</code>. If an app is composed out of
+multiple applications internally, they must use the <code>mount</code> middleware for
+this helper to return the correct URL.</p></li>
+
+<li><p><code>action</code> - the name of the action to link to. Action names are determined from
+the path arguments provided to the <code>route</code> middleware. For example, the name for
+an action routed with <code>/edit/:id</code> is "edit".</p></li>
+
+<li><p><code>request</code> - the current request. If this is defined, or a request is currently
+associated with the app object, any bindings used by the route middleware to
+route the request are used as default values when generating the URL.</p></li></ul>
+
+<p>All other bindings are used to provide values for named placeholders in action routes.
+For example, to URI path to an action in application <code>app</code> routed with "/edit/:id" with
+id <code>5</code> can be generated as follows:</p>
+
+<pre><code>urlFor({app: app, action: "edit", id: 5})</code></pre>
+
+
+        </div>
+        
+        
+        
+<div>
+    <h4>Parameters</h4>
+    <table>
+        
+<tr>
+    <td>object</td>
+    <td class="paramname">bindings</td>
+    <td>an object containing the bindings for the target URL.</td>
+</tr>
+
+
+    </table>
+</div>
+
+
+
+        
+
+        
+
+        
+    </div>
+    <hr/>
+</div>
+
+
+<!-- tpl-docitem -->
+<div>
+    <div class="docitem" docitem="xmlResponse">
+        <h3>
+           
+<span class="itemtitle"></span><a id="xmlResponse" href="#xmlResponse" class="itemtitle">xmlResponse
+
+            </a>
+            
+(xml)
+
+
+        </h3>
+        <div>
+            <p>Create a JSGI response with content-type 'application/xml' with the given
+XML document as response body.</p>
+
+
+        </div>
+        
+        
+        
+<div>
+    <h4>Parameters</h4>
+    <table>
+        
+<tr>
+    <td>xml|string</td>
+    <td class="paramname">xml</td>
+    <td>an XML document</td>
+</tr>
+
+
+    </table>
+</div>
+
+
+
+        
+
+        
+
+        
+    </div>
+    <hr/>
+</div>
+
+
+        </div>
+    </div>
+
+
+    </div>
+
+    <div id="menu">
+
+    
+<div>
+    <a class="repositoryname" href="../../index.html">Stick API </a>
+</div>
+<input id="jsdoc-leftnavsearch" type="text">
+<ul class="jsdoc-leftnav leftnav">
+    
+    <li><a href="../../stick/index.html">stick</a> </li>
+
+
+    <li><a href="../../stick/helpers/index.html">stick/helpers</a> </li>
+
+
+    <li><a href="../../stick/middleware/index.html">stick/middleware</a> </li>
+
+
+    <li><a href="../../stick/middleware/basicauth/index.html">stick/middleware/basicauth</a> </li>
+
+
+    <li><a href="../../stick/middleware/error/index.html">stick/middleware/error</a> </li>
+
+
+    <li><a href="../../stick/middleware/etag/index.html">stick/middleware/etag</a> </li>
+
+
+    <li><a href="../../stick/middleware/gzip/index.html">stick/middleware/gzip</a> </li>
+
+
+    <li><a href="../../stick/middleware/method/index.html">stick/middleware/method</a> </li>
+
+
+    <li><a href="../../stick/middleware/mount/index.html">stick/middleware/mount</a> </li>
+
+
+    <li><a href="../../stick/middleware/notfound/index.html">stick/middleware/notfound</a> </li>
+
+
+    <li><a href="../../stick/middleware/params/index.html">stick/middleware/params</a> </li>
+
+
+    <li><a href="../../stick/middleware/profiler/index.html">stick/middleware/profiler</a> </li>
+
+
+    <li><a href="../../stick/middleware/render/index.html">stick/middleware/render</a> </li>
+
+
+    <li><a href="../../stick/middleware/responselog/index.html">stick/middleware/responselog</a> </li>
+
+
+    <li><a href="../../stick/middleware/route/index.html">stick/middleware/route</a> </li>
+
+
+    <li><a href="../../stick/middleware/session/index.html">stick/middleware/session</a> </li>
+
+
+    <li><a href="../../stick/middleware/static/index.html">stick/middleware/static</a> </li>
+
+
+    <li><a href="../../stick/middleware/upload/index.html">stick/middleware/upload</a> </li>
+
+
+</ul>
+
+
+
+    </div>
+</div>
+</body>
+</html>
+
