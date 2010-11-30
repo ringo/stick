@@ -10,7 +10,7 @@
             </li>
             <li>
                 <a href="<% href /skins %>"
-                   class="<% matchPath /skin highlight %>">Skins</a>
+                   class="<% matchPath /skins highlight %>">Skins</a>
             </li>
             <li>
                 <a href="<% href /upload %>"

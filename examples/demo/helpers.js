@@ -36,7 +36,7 @@ exports.href_macro = function(tag) {
 exports.matchPath_macro = function(tag) {
     var path = tag.parameters[0];
     var req = app.request;
-    if (req && (req.scriptName + req.pathInfo).match(app.base + path)) {
+    if (req && (req.scriptName + req.pathInfo).match("^" + app.base + path)) {
         return tag.parameters[1] || "match";
     }
 };
