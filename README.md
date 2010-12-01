@@ -32,9 +32,17 @@ Currently Stick comes with the following middleware modules:
 
 ## Running
 
-To start the stick demo application run the `demo.js` script with ringo:
+Use the `ringo-admin` command to to install Stick:
 
-    ringo demo.js
+    $ ringo-admin install hns/stick
+
+Alternatively, you can manually copy or symlink the stick directory into
+the `packages` directory of your ringojs installation.
+
+To start the stick demo application run the `ringo` command with the 
+`demo.js` script in the stick directory:
+
+    $ ringo demo.js
 
 Then point your browser to <http://localhost:8080/>.
 
