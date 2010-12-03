@@ -48,11 +48,11 @@ To be able to yield more than one response from the same generator, the generato
 has to be associated with a continuation id and stored in the user's session.
 This is done by calling <code>continuation.activate()</code> before yielding the first
 response. This method tells the middleware to store the generator in the user's
-session and returns a contination id. For subsequent invocations of the generator,
-the continuation id has to be set as query string parameter with name <code>_c</code>.</p>
+session and returns a contination id.</p>
 
-<p>When suspended generator is resumed, the new request object is passed in as value for
-the last yield statement.</p>
+<p>For subsequent invocations of the generator, the continuation id has to be set as
+query string parameter with name <code>_c</code>. When suspended generator is resumed,
+the new request object is passed in as value for the last yield statement.</p>
 
 <pre><code>function continuation(request) {
     var c = app.continuation.activate();
