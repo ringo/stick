@@ -17,7 +17,7 @@ function markdown_filter(content) {
     var markdown = new Markdown({
         lookupLink: function(id) {
             if (!strings.startsWith(id, "/") && !strings.isUrl(id.isUrl)) {
-                return [urlFor({app: app, name: id, action: "index"}),
+                return [urlFor(app, {name: id, action: "index"}),
                         "link to wiki page"];
             }
             return null;
@@ -37,13 +37,13 @@ function navigation_macro(tag) {
 }
 
 function linkTo_macro(tag) {
-    var bindings = objects.merge(tag.namedParameters, {app: app});
-    return linkTo(bindings, tag.parameters[0]);
+    var bindings = tag.namedParameters;
+    return linkTo(app, bindings, tag.parameters[0]);
 }
 
 function urlFor_macro(tag) {
-    var bindings = objects.merge(tag.namedParameters, {app: app});
-    return urlFor(bindings);
+    var bindings = tag.namedParameters;
+    return urlFor(app, bindings);
 }
 
 function url_macro(tag) {

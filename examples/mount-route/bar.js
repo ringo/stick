@@ -13,7 +13,7 @@ app.get("/:name?.:ext?", function(req, name, ext) {
     return htmlResponse(
         "<html><body><h1>Bar</h1>",
         "<p>This is module <b>'bar'</b> called with <b>", name, "</b>, <b>", ext, "</b>. ",
-        "Go to ", linkTo({app: foo, name: name, ext: ext}),
-        " or back ", linkTo({app: home}, "home"), ".</p></body></html>"
+        "Go to ", linkTo(foo, {name: name, ext: ext}),
+        " or back ", linkTo(app, {}, "home"), ".</p></body></html>"
     );
 });

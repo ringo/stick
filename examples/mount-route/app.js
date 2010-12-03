@@ -14,9 +14,9 @@ app.get("/", function(req) {
         "<p>This app demos the composition and linking capabilities of the mount and route middleware. ",
         "Some links: </p>",
         "<ul>",
-            "<li>", linkTo({app: foo}), "</li>",
-            "<li>", linkTo({app: bar, name: "hello"}), "</li>",
-            "<li>", linkTo({app: foo, name: "hello", ext: "world"}), "</li>",
+            "<li>", linkTo(foo), "</li>",
+            "<li>", linkTo(bar, {name: "hello"}), "</li>",
+            "<li>", linkTo(foo, {name: "hello", ext: "world"}), "</li>",
         "</ul></body></html>");
 });
 
