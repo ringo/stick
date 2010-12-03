@@ -74,7 +74,7 @@ working with Stick middleware easier.</p>
 
 <li>
     <a href="#redirectTo" class="jsdoc-title"> redirectTo</a>
-(either)
+(app, bindings)
 
 
     </a>
@@ -288,7 +288,7 @@ the <a href="#urlFor">urlFor helper</a>.</p>
 
             </a>
             
-(either)
+(app, bindings)
 
 
         </h3>
@@ -306,9 +306,16 @@ the <a href="#urlFor">urlFor helper</a>.</p>
         
 <tr>
     <td>string|object</td>
-    <td class="paramname">either</td>
-    <td>the URL as string or a binding object
+    <td class="paramname">app</td>
+    <td>either the URL as string or an app
        to be passed to `urlFor`</td>
+</tr>
+
+
+<tr>
+    <td>bindings</td>
+    <td class="paramname">bindings</td>
+    <td>to pass to `urlFor` if first argument is an app.</td>
 </tr>
 
 
@@ -318,6 +325,18 @@ the <a href="#urlFor">urlFor helper</a>.</p>
 
 
         
+<div>
+    <h4>Returns Type</h4>
+    <table>
+        <tr>
+            <td>object</td>
+            <td> a JSGI response that will redirect the client to the
+       specified target</td>
+        </tr>
+    </table>
+</div>
+
+
 
         
 
@@ -516,6 +535,9 @@ XML document as response body.</p>
 
 
     <li><a href="../../stick/middleware/basicauth/index.html">stick/middleware/basicauth</a> </li>
+
+
+    <li><a href="../../stick/middleware/continuation/index.html">stick/middleware/continuation</a> </li>
 
 
     <li><a href="../../stick/middleware/error/index.html">stick/middleware/error</a> </li>

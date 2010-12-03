@@ -91,6 +91,51 @@ each path you want to protect:</p>
 
 <li >
 
+<h2><a href="./stick/middleware/continuation/index.html"> stick/middleware/continuation </a></h2>
+<div class="jsdoc-fileoverview">
+    <p>Provide support for JavaScript 1.7 generator actions. </p>
+
+<p>This middleware supports two types of yield values from generators: 
+Promises and JSGI response objects.</p>
+
+<p>If a generator action yields a promise, this middleware adds a listener to that
+promise that will feed the value back to the generator once the promise is resolved.
+If the promise resolves to an error, the error is thrown in the generator.</p>
+
+<p>For example, if <code>promise</code> is a promise, the <code>yield</code> statement will interrupt execution
+of the action until the promise is resolved, at which point the generator is resumed
+with the value of the promise being assigned to the <code>resolved</code> variable.</p>
+
+<pre><code>var resolved = yield promise;</code></pre>
+
+<p>If a generator action yields a JSGI response, the response is sent to the client.
+To be able to yield more than one response from the same generator, the generator
+has to be associated with a continuation id and stored in the user's session.
+This is done my calling the <code>continuation.activate()</code> before yielding the first
+response, and adding a query parameter with name <code>_c</code> and the continuation id as value
+to every subsequent request to be handled by this generator. When a subsequent request
+for a generator arrives it is resumed with the new request object as value of the last 
+yield statement.</p>
+
+<pre><code>function continuation(request) {
+    var c = app.continuation.activate();
+    while(true) {
+        request = yield htmlResponse(linkTo(app, {_c: c}));
+    }
+}</code></pre>
+
+
+<p>See <a href="http://blog.ometer.com/2010/11/28/a-sequential-actor-like-api-for-server-side-javascript/">http://blog.ometer.com/2010/11/28/a-sequential-actor-like-api-for-server-side-javascript/</a>
+for background.</p>
+
+
+</div>
+
+</li>
+
+
+<li >
+
 <h2><a href="./stick/middleware/error/index.html"> stick/middleware/error </a></h2>
 <div class="jsdoc-fileoverview">
     <p>Middleware to catch errors and generate simple error pages.</p>
@@ -420,6 +465,9 @@ used for file uploads.</p>
 
 
     <li><a href="./stick/middleware/basicauth/index.html">stick/middleware/basicauth</a> </li>
+
+
+    <li><a href="./stick/middleware/continuation/index.html">stick/middleware/continuation</a> </li>
 
 
     <li><a href="./stick/middleware/error/index.html">stick/middleware/error</a> </li>
