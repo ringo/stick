@@ -431,14 +431,17 @@ the target route are used to provide the value for this placeholder.
 For example, to URI path to an action in application <code>app</code> routed with "/edit/:id" with
 id <code>5</code> can be generated as follows:</p>
 
-<p>urlFor(app, {action: "edit", id: 5})</p></li>
+<pre><code>urlFor(app, {action: "edit", id: 5})</code></pre></li>
 
-<li>All other properties in the bindings object are set as query parameters in the
+<li><p>All other properties in the bindings object are set as query parameters in the
 generated URL. For example, if "index" is a route with no placeholders then calling
-<code>urlFor("index", {do: "search"}) will generate the URL "/?do=search".
+<code>urlFor("index", {do: "search"})</code> will generate the URL "/?do=search".</p></li></ul>
 
-Note that the values for the current request are used as default values for</code>action<code>and route placehoders, so if you want to use to a different action or placeholder value
-you need to make that explicit.</code></li></ul>
+<p>Note that the values for the current request are used as default values for <code>action</code>
+and route placehoders, so if you want to use to a different action or placeholder value
+you need to make that explicit.</p>
+
+
         </div>
         
         
