@@ -416,7 +416,8 @@ the <a href="#urlFor">urlFor helper</a>.</p>
         <div>
             <p>Return a URL for an action configured using the <code>mount</code> and <code>route</code> middlewares.</p>
 
-<p>The <code>app</code> argument specifies the Stick application to link to.
+<p>The <code>app</code> argument specifies the Stick application to link to, either as reference
+to the app itself or as module id of a module exporting the app as <code>app</code>.
 The <code>bindings</code> argument contains information needed to determine the target
 action within that application. Properties in the bindings argument are interpreted
 as follows:</p>
