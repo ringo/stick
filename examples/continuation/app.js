@@ -14,9 +14,8 @@ app.configure("error", "notfound", "session", "params", "continuation", "route")
 // is resolved, yielding a JSGI response
 app.get("/", function (req) {
     var deferred = defer();
-    setTimeout(function() {
-        deferred.resolve("hello world");
-    }, 2000);
+    // resolve promise 2 seconds from now to "hello world"
+    setTimeout(deferred.resolve, 2000, "hello world");
     // yield a promise
     var body = yield deferred.promise;
     // yield the actual response
@@ -40,9 +39,8 @@ app.get("/http", function(req) {
 // same as index action above, but resolve to error
 app.get("/error", function(req) {
     var deferred = defer();
-    setTimeout(function() {
-        deferred.resolve("something went wrong", true) ;
-    }, 2000);
+    // resolve promise 2 seconds from now to an error
+    setTimeout(deferred.resolve, 2000, "something went wrong", true);
     // yield a promise
     var body = yield deferred.promise;
     // yield the actual response
@@ -69,9 +67,7 @@ app.get("/counter", function(req) {
 // continuation middleware, just here for reference and comparison.
 app.get("/async", function(req) {
     var deferred = defer();
-    setTimeout(function() {
-        deferred.resolve(htmlResponse("delayed")) ;
-    }, 2000);
+    setTimeout(deferred.resolve, 2000, htmlResponse("delayed"));
     // return a promise
     return deferred.promise;    
 });
