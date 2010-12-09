@@ -3,7 +3,7 @@ var {Application} = require("stick");
 var {Server} = require("ringo/httpserver");
 var server, app;
 
-export("app");
+export("app", "init", "start", "stop", "destroy");
 
 app = Application();
 app.configure("notfound", "error", "static", "params", "mount");
