@@ -41,7 +41,7 @@ function parseOptions() {
     var parser = new Parser()
         .addOption("j", "jetty-config", "PATH", "Jetty configuration file (default: 'config/jetty.xml')")
         .addOption("H", "host", "ADDRESS", "IP address to bind to (default: 0.0.0.0)")
-        .addOption("p", "port", "PORT", "TCP port to listen on (default: 80)")
+        .addOption("p", "port", "PORT", "TCP port to listen on (default: 8080)")
         .addOption("v", "virtual-host", "VHOST", "Virtual host name (default: undefined)")
         .addOption("h", "help", null, "Print this message and exit");
     var options = parser.parse(system.args);
