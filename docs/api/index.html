@@ -111,11 +111,13 @@ with the value of the promise being assigned to the <code>resolved</code> variab
 <p>If a generator action yields a JSGI response, the response is sent to the client.
 To be able to yield more than one response from the same generator, the generator
 has to be associated with a continuation id and stored in the user's session.
-This is done my calling the <code>continuation.activate()</code> before yielding the first
-response, and adding a query parameter with name <code>_c</code> and the continuation id as value
-to every subsequent request to be handled by this generator. When a subsequent request
-for a generator arrives it is resumed with the new request object as value of the last 
-yield statement.</p>
+This is done by calling <code>continuation.activate()</code> before yielding the first
+response. The <code>activate()</code> method tells the middleware to store the generator
+in the user's session and returns a contination id.</p>
+
+<p>For subsequent invocations of the generator, the continuation id has to be set as
+query string parameter with name <code>_c</code>. When suspended generator is resumed,
+the new request object is passed in as value for the last yield statement.</p>
 
 <pre><code>function continuation(request) {
     var c = app.continuation.activate();
