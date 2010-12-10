@@ -79,6 +79,7 @@ app.get("/books/:id.:format", function (req, id, format) {
                         </book>);
 });
 
-if (require.main == module) {
-    require('ringo/webapp').main(module.directory);
+// start server if run as main script
+if (require.main === module) {
+    require("stick/server").main(module.id);
 }

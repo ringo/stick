@@ -73,10 +73,8 @@ app.get("/async", function(req) {
 });
 
 
-// start server
+// start server if run as main script
 if (require.main === module) {
-    var Server = require("ringo/httpserver").Server;
-    var server = server || new Server({config: module.id, app: "app"});
-    server.start();
+    require("stick/server").main(module.id);
 }
 

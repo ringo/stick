@@ -1,6 +1,6 @@
 #!/usr/bin/env ringo
-// main script to start application
 
+// start server if run as main script
 if (require.main === module) {
-    require('ringo/webapp').main(module.directory);
+    require("stick/server").main(module.id);
 }
