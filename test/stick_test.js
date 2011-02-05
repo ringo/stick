@@ -67,6 +67,19 @@ exports.testMount = function() {
     testMount(app);
 };
 
+exports.testMountSort = function() {
+    function testMount(app) {
+        app.mount("/", function() { return "/foo" });
+        app.mount("/bar", function() { return "/bar" });
+        assert.equal(app({headers: {host: "foo.com"}, env: {}, pathInfo: "/"}), "/foo");
+        assert.equal(app({headers: {host: "foo.com"}, env: {}, pathInfo: "/bar"}), "/bar");
+    }
+
+    var app = new Application();
+    app.configure(mount);
+    testMount(app);
+};
+
 if (require.main == module) {
     require("test").run(exports);
 }
