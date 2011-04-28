@@ -21,7 +21,6 @@ Currently Stick comes with the following middleware modules:
  * notfound
  * params
  * profiler
- * render
  * responselog
  * route
  * session
