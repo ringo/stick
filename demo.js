@@ -33,9 +33,9 @@ app.mount("/error", function(req) {
 app.static(module.resolve("docs"), "index.html"); // serve files in docs as static resources
 
 // mount example apps
-app.mount("/wiki", module.resolve("examples/ringowiki/config"));
-app.mount("/mount", module.resolve("examples/mount-route/app"));
-app.mount("/demo", module.resolve("examples/demo/config"));
+// app.mount("/wiki", module.resolve("examples/ringowiki/config"));
+// app.mount("/mount", module.resolve("examples/mount-route/app"));
+// app.mount("/demo", module.resolve("examples/demo/config"));
 
 // production environment, run with RINGO_ENV=production ringo demo.js
 var prod = app.env("production");
@@ -67,6 +67,6 @@ function dummyPage(text) {
 
 // start server if run as main script
 if (require.main === module) {
-    require("stick/server").main(module.id);
+    require("ringo/httpserver").main(module.id);
 }
 

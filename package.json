@@ -3,5 +3,6 @@
     "version": "0.0.0",
     "description": "JSGI based webapp framework",
     "keywords": ["commonjs", "jsgi"],
-    "author": "Hannes Wallnöfer (http://hns.github.com/) <hannes@helma.at>"
+    "author": "Hannes Wallnöfer (http://hns.github.com/) <hannes@helma.at>",
+    "main": "./lib/stick.js"
 }
