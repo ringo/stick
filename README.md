@@ -38,10 +38,10 @@ Use the `ringo-admin` command to to install Stick:
 Alternatively, you can manually copy or symlink the stick directory into
 the `packages` directory of your ringojs installation.
 
-To start the stick demo application run the `ringo` command with the 
-`demo.js` script in the stick directory:
+To start the stick demo application, run `stick/demo.js` with the `ringo` command
+in the ringo directory (where build.xml is), add `packages` to module search path:
 
-    $ ringo demo.js
+    $ ringo -m packages stick/demo.js
 
 Then point your browser to <http://localhost:8080/>.
 
