@@ -1,5 +1,5 @@
-var {Application} = require("stick");
-var {linkTo, htmlResponse} = require("stick/helpers");
+var {Application, helpers} = require("stick");
+var response = require("ringo/jsgi/response");
 
 var app = exports.app = Application(),
     foo = module.resolve("foo"),
@@ -10,18 +10,18 @@ app.mount("/foo", foo);
 app.mount("/bar", bar);
 
 app.get("/", function(req) {
-    return htmlResponse("<html><body><h1>Mount/Route middleware demo</h1>",
+    return response.html("<html><body><h1>Mount/Route middleware demo</h1>",
         "<p>This app demos the composition and linking capabilities of the mount and route middleware. ",
         "Some links: </p>",
         "<ul>",
-            "<li>", linkTo(foo), "</li>",
-            "<li>", linkTo(bar, {name: "hello"}), "</li>",
-            "<li>", linkTo(foo, {name: "hello", ext: "world"}), "</li>",
+            "<li>", helpers.linkTo(foo), "</li>",
+            "<li>", helpers.linkTo(bar, {name: "hello"}), "</li>",
+            "<li>", helpers.linkTo(foo, {name: "hello", ext: "world"}), "</li>",
         "</ul></body></html>");
 });
 
 // start server if run as main script
 if (require.main === module) {
-    require("stick/server").main(module.id);
+    require("ringo/httpserver").main(module.id);
 }
 

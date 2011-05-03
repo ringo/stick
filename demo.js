@@ -34,8 +34,8 @@ app.static(module.resolve("docs"), "index.html"); // serve files in docs as stat
 
 // mount example apps
 // app.mount("/wiki", module.resolve("examples/ringowiki/config"));
-// app.mount("/mount", module.resolve("examples/mount-route/app"));
-// app.mount("/demo", module.resolve("examples/demo/config"));
+app.mount("/mount", module.resolve("examples/mount-route/app"));
+app.mount("/demo", module.resolve("examples/demo/config"));
 
 // production environment, run with RINGO_ENV=production ringo demo.js
 var prod = app.env("production");

@@ -1,8 +1,9 @@
 
 // see http://blog.ometer.com/2010/11/28/a-sequential-actor-like-api-for-server-side-javascript/
 
-var {Application} = require("stick");
-var {htmlResponse, linkTo, redirectTo} = require("stick/helpers");
+var {Application, helpers} = require("stick");
+var {linkTo, redirectTo} = helpers;
+var {html} = require("ringo/jsgi/response");
 var {defer, promises} = require("ringo/promise");
 var {setTimeout} = require("ringo/scheduler");
 var {request} = require("ringo/httpclient");
@@ -19,7 +20,7 @@ app.get("/", function (req) {
     // yield a promise
     var body = yield deferred.promise;
     // yield the actual response
-    yield htmlResponse(body);
+    yield html(body);
 });
 
 // generator action that fetches 3 URLs in parallel, yields a promise for the
@@ -30,7 +31,7 @@ app.get("/http", function(req) {
         request({url: "http://www.orf.at", promise: true}),
         request({url: "http://localhost:8080/foo", promise: true}),
         request({url: "http://www.google.at/", promise: true}));
-    yield htmlResponse(results.map(function(res) {
+    yield html(results.map(function(res) {
         return res.error ? "Error: " + res.error.status :
                            "Success: " + res.value.status;
     }).join("<br/>"));
@@ -44,7 +45,7 @@ app.get("/error", function(req) {
     // yield a promise
     var body = yield deferred.promise;
     // yield the actual response
-    yield htmlResponse(body);
+    yield html(body);
 });
 
 // an example for a user/jsgi continuation. The generator is stored
@@ -55,7 +56,7 @@ app.get("/counter", function(req) {
     var c = app.continuation.activate();
     request = yield redirectTo(app, {_c: c});
     while (true) {
-        req = yield htmlResponse(
+        req = yield html(
                 "<h1>", counter, "</h1><p>",
                 linkTo(app, {_c: c, inc: 1}, "++"), " ",
                 linkTo(app, {_c: c, inc: -1}, "--"), "</p>");
@@ -67,7 +68,7 @@ app.get("/counter", function(req) {
 // continuation middleware, just here for reference and comparison.
 app.get("/async", function(req) {
     var deferred = defer();
-    setTimeout(deferred.resolve, 2000, htmlResponse("delayed"));
+    setTimeout(deferred.resolve, 2000, html("delayed"));
     // return a promise
     return deferred.promise;    
 });
@@ -75,6 +76,6 @@ app.get("/async", function(req) {
 
 // start server if run as main script
 if (require.main === module) {
-    require("stick/server").main(module.id);
+    require("ringo/httpserver").main(module.id);
 }
 

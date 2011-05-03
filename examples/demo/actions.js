@@ -1,25 +1,28 @@
-var {Application} = require("stick");
-var {htmlResponse} = require("stick/helpers");
+var {Application, middleware} = require("stick");
+var response = require("ringo/jsgi/response");
+var {render} = require("./helpers");
 
 var log = require('ringo/logging').getLogger(module.id);
 var app = exports.app = Application();
-app.configure("params", "upload", "render", "route");
-app.render.base(module.resolve("skins"));
-app.render.helpers(module.resolve("helpers"), "ringo/skin/macros");
+app.configure("params", "upload", "route");
+
+app.get("*.xyz", function(req, path) {
+    return response.html(path);
+});
 
 // the main action is invoked for http://localhost:8080/
 app.get("/", function(req) {
-    return app.render('welcome.txt', {title: 'Demo'});
+    return render('templates/welcome.txt', {title: 'Demo'});
 });
 
 // additional path elements are passed to the action as arguments,
 // e.g. /extra.path/2008/09
 app.get("/extrapath/:year?/:month?", function(req, year, month) {
-    return htmlResponse("Extra arguments:", year, month);
+    return response.html("Extra arguments:", year, month);
 });
 
 app.get("/upload", function(req) {
-    return app.render('upload.txt', {
+    return render('templates/upload.txt', {
         title: "File Upload"
     });
 });
@@ -40,16 +43,16 @@ app.get("/testing", function(req) {
         var tests = require(test.path);
         var formatter = new (require("./helpers").HtmlTestFormatter)();
         require("test").run(tests, formatter);
-        return htmlResponse(formatter);
+        return response.html(formatter);
     }
-    return app.render('testing.txt', {
+    return render('templates/testing.txt', {
         title: "Unit Testing"
     });
 });
 
 // demo for skins, macros, filters
 app.get("/skins", function(req) {
-    return app.render('skins.txt', {
+    return render('templates/skins.txt', {
         title: 'Skins',
         name: 'Luisa',
         names: ['Benni', 'Emma', 'Luca', 'Selma']
@@ -68,14 +71,14 @@ app.get("/logging", function(req) {
         }
     } else if (req.params.profile) {
         // build and run a small profiler middleware stack
-        var profiler = require('stick/middleware/profiler').middleware;
+        var profiler = middleware.profiler.middleware;
         return profiler(function() {
-            return app.render('logging.txt', {
+            return render('templates/logging.txt', {
                 title: "Logging &amp; Profiling"
             });
         }, {})(req);
     }
-    return app.render('logging.txt', {
+    return render('templates/logging.txt', {
         title: "Logging &amp; Profiling"
     });
 });

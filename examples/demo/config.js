@@ -5,4 +5,3 @@ app.configure("gzip", "etag", "static", "responselog", "mount", "error", "notfou
 
 app.static(module.resolve("public"));
 app.mount("/mount/point", module.resolve("webmodule"));
-app.mount("/storage", module.resolve("../storage/config"));

@@ -1,10 +1,19 @@
 var {Markdown} = require('ringo/markdown');
 var {Buffer} = require('ringo/buffer');
-var {render} = require('ringo/skin');
-var {app} = require('./actions');
+var mustache = require('./mustache-commonjs');
+var response = require('ringo/jsgi/response');
 var files = require('ringo/utils/files');
 
-exports.markdown_filter = function(content) {
+exports.render = function(template, context) {
+    var base = getResource('./templates/base.html').content;
+    var content = getResource(module.resolve(template)).content;
+    context.markdown = markdown;
+    context.base = require('./actions').app.base;
+    context.content = mustache.to_html(content, context);
+    return response.html(mustache.to_html(base, context));
+};
+
+function markdown(text) {
     var markdown = new Markdown({
         openTag: function(tag, buffer) {
             if (tag === "pre") {
@@ -14,38 +23,8 @@ exports.markdown_filter = function(content) {
             }
         }
     });
-    return markdown.process(content);
-};
-
-exports.navigation_macro = function(tag, context) {
-    return render('./skins/navigation.txt', context);
-};
-
-// We override href and matchPath macros to operate relative to this demo app
-// by using the rootPath property from our config module rather than the one
-// from the request object.
-// The rootPath property on the request object used by default implementations
-// in ringo/skin/macros contains the root path of the  innermost app,
-// which in our case may be the storage or jsdoc app.
-
-exports.href_macro = function(tag) {
-    var path = tag.parameters[0] || '';
-    return app.base + path;
-};
-
-exports.matchPath_macro = function(tag) {
-    var path = tag.parameters[0];
-    var req = app.request;
-    if (req && (req.scriptName + req.pathInfo).match("^" + app.base + path)) {
-        return tag.parameters[1] || "match";
-    }
-};
-
-// ringojs.org uses `headline` for in page <h1> element
-exports.headline_macro = function(tag, cx) {
-    return cx.title;
-};
-
+    return markdown.process(text);
+}
 
 /**
  * A test output formatter for displaying ringo/unittest results in a web page
