@@ -1,5 +1,5 @@
-// Stick demo app. Run with `ringo demo.js`, or see below for running with
-// various environments
+// Stick demo app. Run with `ringo -m .. examples/demo.js` with the -m option
+// pointing to the Stick parent directory.
 
 var {Application} = require("stick"),
     {Server} = require("ringo/httpserver"),
@@ -33,9 +33,8 @@ app.mount("/error", function(req) {
 app.static(module.resolve("../docs"), "index.html"); // serve files in docs as static resources
 
 // mount example apps
-// app.mount("/wiki", module.resolve("examples/ringowiki/config"));
 app.mount("/mount", module.resolve("mount-route/app"));
-app.mount("/demo", module.resolve("demo/config"));
+app.mount("/continuation", module.resolve("continuation/app"));
 
 // production environment, run with RINGO_ENV=production ringo demo.js
 var prod = app.env("production");
