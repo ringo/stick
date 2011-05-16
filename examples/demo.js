@@ -30,12 +30,12 @@ app.mount("/hello", dummyPage("hello world!"));
 app.mount("/error", function(req) {
     throw new Error("Something went wrong");
 });
-app.static(module.resolve("docs"), "index.html"); // serve files in docs as static resources
+app.static(module.resolve("../docs"), "index.html"); // serve files in docs as static resources
 
 // mount example apps
 // app.mount("/wiki", module.resolve("examples/ringowiki/config"));
-app.mount("/mount", module.resolve("examples/mount-route/app"));
-app.mount("/demo", module.resolve("examples/demo/config"));
+app.mount("/mount", module.resolve("mount-route/app"));
+app.mount("/demo", module.resolve("demo/config"));
 
 // production environment, run with RINGO_ENV=production ringo demo.js
 var prod = app.env("production");

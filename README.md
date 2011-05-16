@@ -41,7 +41,7 @@ the `packages` directory of your ringojs installation.
 To start the stick demo application run the `ringo` command with the 
 `demo.js` script in the stick directory:
 
-    $ ringo demo.js
+    $ ringo --modules=.. examples/demo.js
 
 Then point your browser to <http://localhost:8080/>.
 
