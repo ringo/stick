@@ -3,11 +3,12 @@ var {Application} = require("stick");
 export("app");
 
 var app = Application();
-app.configure("params", "render", "route");
+app.configure("params", "route", "render");
+app.render.base = module.resolve("templates");
+app.render.master = "page.html";
 
 
 app.get("/", function(request) {
-    return app.render(module.resolve("skins/index.html"), {
-        title: "It's working!"
-    });
+    var context = {title: "It's working!"};
+    return app.render("index.html", context);
 });
