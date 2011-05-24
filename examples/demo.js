@@ -51,7 +51,7 @@ app.env("profiler").configure("responselog", "profiler", "error");
 var admin = new Application(dummyPage("admin zone"));
 admin.configure("basicauth");
 // add basic authentication, password is "secret"
-admin.basicauth("/", "admin", "e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4");
+admin.basicauth("/", "admin", "E5E9FA1BA31ECD1AE84F75CAAA474F3A663F05F4");
 app.mount("/admin", admin);
 
 // helper for creating simple dummy pages
