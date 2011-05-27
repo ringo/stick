@@ -42,7 +42,8 @@ prod.configure("gzip", "etag", "error");
 prod.error.location = false; // disable error location and stack traces
 
 // development environment, run with RINGO_ENV=development ringo demo.js
-app.env("development").configure("responselog", "error");
+var dev = app.env("development").configure("responselog", "error");
+dev.responselog.append = true;
 
 // profiler environment, run with RINGO_ENV=profiler ringo -o-1 demo.js
 app.env("profiler").configure("responselog", "profiler", "error");
