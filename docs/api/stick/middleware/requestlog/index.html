@@ -1,7 +1,7 @@
 <!DOCTYPE html >
 <html lang="de" dir="ltr">
 <head>
-    <title>stick/middleware/profiler - Stick API</title>
+    <title>stick/middleware/requestlog - Stick API</title>
     <link rel="shortcut icon" href="http://ringojs.org/favicon.ico" type="image/x-icon" />
     <link rel="icon" href="http://ringojs.org/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="../../../static/style.css" />
@@ -16,13 +16,19 @@ $(document).ready(jsdocSetup);
 <div class="wrap">
     <div class="main">
         <div class="content">
-                    <h1 class="modulename">Module stick/middleware/profiler</h1>
+                    <h1 class="modulename">Module stick/middleware/requestlog</h1>
             <div class="fileoverview">
-                <p>This module provides profiling middleware to measure
-the application's runtime behaviour.</p>
-<p>Profiler data is written to the module's logger. You have to run the
-application in interpreted mode (passing <code>-o -1</code> on the command line)
-to get meaningful results.</p>
+                <p>Middleware for collecting log messages issued during execution
+of the current request.</p>
+<p>This adds a <code>requestlog</code> property to the application object with an <code>items</code>
+property. During execution of a request <code>items</code> contains an array containing
+all the log messages issued for the request. Log messages are represented
+as arrays in the format <code>[time, level, name, message]</code>.</p>
+<p>During request execution, the <code>requestlog</code> property also defines a
+property called <code>start</code> containing the time the execution started.</p>
+<p>By default, messages are appended to the response if its Content-Type is
+<code>text/html</code>. This can be controlled using the <code>app.requestlog.append</code>
+boolean flag.</p>
             </div>
             <div class="classoverview">
                                 <div>
@@ -45,7 +51,8 @@ to get meaningful results.</p>
                                 <span class="itemtitle"><a id="middleware" href="#middleware" class="itemtitle itemname">middleware</a></span>
                                 <span class="itemtitle light">(next, app)</span></h3>
                             <div>
-                                <p>A middleware factory that runs the nested app with a runtime profiler.</p>
+                                <p>Middleware for collecting log messages issued during execution of the current
+request.</p>
                             </div>
                                                         <div>
                                 <h4>Parameters</h4>
