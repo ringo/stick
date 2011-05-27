@@ -12,21 +12,22 @@ configurable to the outside world.
 
 Currently Stick comes with the following middleware modules:
 
- * basicauth  - basic HTTP authentication
- * error      - generating error pages
- * etag       - ETag based conditional GET
- * gzip       - GZip content encoding
- * method     - HTTP method overriding
- * mount      - mounting other applications
- * notfound   - generating 404 pages
- * params     - form data parsing
- * profiler   - JavaScript profiling
- * render     - mustache.js templates
- * requestlog - collecting per-request log messages
- * route      - Sinatra-like request routing
- * session    - session support
- * static     - serving static files
- * upload     - handling file uploads
+ * basicauth    - basic HTTP authentication
+ * continuation - generator-based async requests
+ * error        - generating error pages
+ * etag         - ETag based conditional GET
+ * gzip         - GZip content encoding
+ * method       - HTTP method overriding
+ * mount        - mounting other applications
+ * notfound     - generating 404 pages
+ * params       - form data parsing
+ * profiler     - JavaScript profiling
+ * render       - mustache.js templates
+ * requestlog   - collecting per-request log messages
+ * route        - Sinatra-like request routing
+ * session      - session support
+ * static       - serving static files
+ * upload       - handling file uploads
 
  Check out the demo applications and documentation to learn more.
 
