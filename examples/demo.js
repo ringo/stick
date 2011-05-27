@@ -42,11 +42,12 @@ prod.configure("gzip", "etag", "error");
 prod.error.location = false; // disable error location and stack traces
 
 // development environment, run with RINGO_ENV=development ringo demo.js
-var dev = app.env("development").configure("responselog", "error");
-dev.responselog.append = true;
+var dev = app.env("development").configure("requestlog", "error");
+dev.requestlog.append = true;
 
 // profiler environment, run with RINGO_ENV=profiler ringo -o-1 demo.js
-app.env("profiler").configure("responselog", "profiler", "error");
+var prof = app.env("profiler").configure("requestlog", "profiler", "error");
+prof.requestlog.append = true;
 
 // create a password protected admin application
 var admin = new Application(dummyPage("admin zone"));
