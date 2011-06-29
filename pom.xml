@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.ringojs</groupId>
+    <artifactId>stick</artifactId>
+    <version>0.2.0-SNAPSHOT</version>
+
+    <packaging>jar</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>org.ringojs</groupId>
+            <artifactId>ringojs</artifactId>
+            <version>0.8.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <targetPath>${project.build.outputDirectory}/stick</targetPath>
+                <directory>${project.basedir}</directory>
+                <includes>
+                    <include>lib/**</include>
+                    <include>LICENSE</include>
+                    <include>package.json</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <configuration>
+                            <target unless="maven.test.skip">
+                                <java classname="org.ringojs.tools.launcher.Main" fork="true"
+                                      failonerror="yes">
+                                    <jvmarg value="-Dringo.home=src/main/webapp/WEB-INF" />
+                                    <jvmarg value="-Dringo.module-path=app" />
+                                    <jvmarg value="-Dringo.classpath=" />
+                                    <jvmarg value="-Dringo.verbose=true" />
+                                    <arg value="test/stick_test.js"/>
+                                    <classpath refid="maven.test.classpath"/>
+                                </java>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
