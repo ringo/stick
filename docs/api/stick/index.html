@@ -1,4 +1,5 @@
 <!DOCTYPE html >
+
 <html lang="de" dir="ltr">
 <head>
     <title>stick - Stick API</title>
@@ -11,31 +12,28 @@
 <script>
 $(document).ready(jsdocSetup);
 </script>
+
 </head>
+
 <body>
 <div class="wrap">
+
     <div class="main">
         <div class="content">
                     <h1 class="modulename">Module stick</h1>
             <div class="fileoverview">
                 <p>The <code>stick</code> module provides the <code>Application</code> class
 which is the centerpiece of the Stick framework.</p>
+
 <p>A Stick Application
 is a JSGI application which provides means to compose complex
 applications out of modular middleware components.</p>
+
+
             </div>
+
             <div class="classoverview">
-                                <div>
-                    <h3>Properties</h3>
-                    <ul class="propertyoverview">
-                                                <li>
-                            <a href="#helpers" class="jsdoc-title"> helpers</a>
-                        </li>
-                                                <li>
-                            <a href="#middleware" class="jsdoc-title"> middleware</a>
-                        </li>
-                        </ul>
-                </div>
+
                 <div class="classes">
                                         <h2>Class <a href="#Application" class="jsdoc-title">Application</a></h2>
                                         <div>
@@ -72,11 +70,16 @@ applications out of modular middleware components.</p>
                                 <span class="itemtitle light">(nested)</span></h3>
                             <div>
                                 <p>The application object is a JSGI application that wraps a middleware chain.</p>
+
 <p>When invoked without arguments, the <code>Application</code> constructor returns
 an application that wraps an <code>unhandled</code> middleware that throws an Error
-when called. Use <code>[configure](#Application.prototype.configure)</code>.</p>
+when called. Use <a href="#Application.prototype.configure" title="Application.prototype.configure">configure</a> to add
+middleware modules to the application.</p>
+
 <p>When invoked with an argument, it is used as initial value for the
 application's middleware chain.</p>
+
+
                             </div>
                                                         <div>
                                 <h4>Parameters</h4>
@@ -91,6 +94,7 @@ application's middleware chain.</p>
                             </div>
                         <hr/>
                     </div>
+
                                         <!-- tpl-docitem -->
                     <div>
                         <div class="docitem" docitem="Application.prototype.base">
@@ -100,10 +104,13 @@ application's middleware chain.</p>
                             <div>
                                 <p>This application's base URI path as used by the current request,
 or null if unknown.</p>
+
+
                             </div>
                             </div>
                         <hr/>
                     </div>
+
                                         <!-- tpl-docitem -->
                     <div>
                         <div class="docitem" docitem="Application.prototype.configure">
@@ -115,8 +122,12 @@ or null if unknown.</p>
 be wrapped around the existing middleware chain, starting with the rightmost
 argument. For example, the following invocation of configure on a newly
 created Application object:</p>
+
 <pre><code>app.configure("error", "route");</code></pre>
+
 <p>will result in <code>error(route(unhandled()))</code> as middleware chain.</p>
+
+
                             </div>
                                                         <div>
                                 <h4>Parameters</h4>
@@ -134,6 +145,7 @@ use the last part of the module id. e.g. "error" or "route".</td>
                             </div>
                         <hr/>
                     </div>
+
                                         <!-- tpl-docitem -->
                     <div>
                         <div class="docitem" docitem="Application.prototype.env">
@@ -143,7 +155,10 @@ use the last part of the module id. e.g. "error" or "route".</td>
                             <div>
                                 <p>Returns an Application object that shares the middleware chain of the original application,
 but can be configured to contain additional middleware that is not shared with the parent application.</p>
+
 <p>Repeated calls of the env method with the same argument return the same application object.</p>
+
+
                             </div>
                                                         <div>
                                 <h4>Parameters</h4>
@@ -158,6 +173,7 @@ but can be configured to contain additional middleware that is not shared with t
                             </div>
                         <hr/>
                     </div>
+
                                         <!-- tpl-docitem -->
                     <div>
                         <div class="docitem" docitem="Application.prototype.request">
@@ -166,64 +182,47 @@ but can be configured to contain additional middleware that is not shared with t
                                 </h3>
                             <div>
                                 <p>The request object associated with the current thread, or null.</p>
+
+
                             </div>
                             </div>
                         <hr/>
                     </div>
-                                        <!-- tpl-docitem -->
-                    <div>
-                        <div class="docitem" docitem="helpers">
-                            <h3>
-                                <span class="itemtitle"><a id="helpers" href="#helpers" class="itemtitle itemname">helpers</a></span>
-                                </h3>
-                            <div>
-                                <p>Shortcut to the <code>stick/helpers</code> module.</p>
-                            </div>
-                            </div>
-                        <hr/>
-                    </div>
-                                        <!-- tpl-docitem -->
-                    <div>
-                        <div class="docitem" docitem="middleware">
-                            <h3>
-                                <span class="itemtitle"><a id="middleware" href="#middleware" class="itemtitle itemname">middleware</a></span>
-                                </h3>
-                            <div>
-                                <p>Shortcut to the <code>stick/middleware</code> module.</p>
-                            </div>
-                            </div>
-                        <hr/>
-                    </div>
+
                     </div>
             </div>
         </div>
+
+
+
     <div class="menu" style="margin-top: 1em; font-size: 13px;">
-    <p>
-        <a class="repositoryname" href="../index.html">Stick API </a>
-    </p>
-        Filter:<br />
-    <input id="jsdoc-leftnavsearch" type="search" size="14">
+    Stick API<br/>
+        <a href="../index.html">Module list</a>
+    <a href="../index_all.html">Full index</a><br/>
+    <input id="jsdoc-leftnavsearch" type="search" placeholder="Filter module list" size="14">
     <ul class="jsdoc-leftnav leftnav">
                 <li><a href="../stick/index.html"> stick </a></li>
-                <li><a href="../stick/helpers/index.html"> stick/helpers </a></li>
-                <li><a href="../stick/middleware/index.html"> stick/middleware </a></li>
-                <li><a href="../stick/middleware/basicauth/index.html"> stick/middleware/basicauth </a></li>
-                <li><a href="../stick/middleware/continuation/index.html"> stick/middleware/continuation </a></li>
-                <li><a href="../stick/middleware/error/index.html"> stick/middleware/error </a></li>
-                <li><a href="../stick/middleware/etag/index.html"> stick/middleware/etag </a></li>
-                <li><a href="../stick/middleware/gzip/index.html"> stick/middleware/gzip </a></li>
-                <li><a href="../stick/middleware/method/index.html"> stick/middleware/method </a></li>
-                <li><a href="../stick/middleware/mount/index.html"> stick/middleware/mount </a></li>
-                <li><a href="../stick/middleware/notfound/index.html"> stick/middleware/notfound </a></li>
-                <li><a href="../stick/middleware/params/index.html"> stick/middleware/params </a></li>
-                <li><a href="../stick/middleware/profiler/index.html"> stick/middleware/profiler </a></li>
-                <li><a href="../stick/middleware/render/index.html"> stick/middleware/render </a></li>
-                <li><a href="../stick/middleware/requestlog/index.html"> stick/middleware/requestlog </a></li>
-                <li><a href="../stick/middleware/route/index.html"> stick/middleware/route </a></li>
-                <li><a href="../stick/middleware/session/index.html"> stick/middleware/session </a></li>
-                <li><a href="../stick/middleware/static/index.html"> stick/middleware/static </a></li>
-                <li><a href="../stick/middleware/upload/index.html"> stick/middleware/upload </a></li>
+                <li><a href="../helpers/index.html"> stick/helpers </a></li>
+                <li><a href="../middleware/index.html"> stick/middleware </a></li>
+                <li><a href="../middleware/basicauth/index.html"> stick/middleware/basicauth </a></li>
+                <li><a href="../middleware/continuation/index.html"> stick/middleware/continuation </a></li>
+                <li><a href="../middleware/cookies/index.html"> stick/middleware/cookies </a></li>
+                <li><a href="../middleware/error/index.html"> stick/middleware/error </a></li>
+                <li><a href="../middleware/etag/index.html"> stick/middleware/etag </a></li>
+                <li><a href="../middleware/gzip/index.html"> stick/middleware/gzip </a></li>
+                <li><a href="../middleware/method/index.html"> stick/middleware/method </a></li>
+                <li><a href="../middleware/mount/index.html"> stick/middleware/mount </a></li>
+                <li><a href="../middleware/notfound/index.html"> stick/middleware/notfound </a></li>
+                <li><a href="../middleware/params/index.html"> stick/middleware/params </a></li>
+                <li><a href="../middleware/profiler/index.html"> stick/middleware/profiler </a></li>
+                <li><a href="../middleware/render/index.html"> stick/middleware/render </a></li>
+                <li><a href="../middleware/requestlog/index.html"> stick/middleware/requestlog </a></li>
+                <li><a href="../middleware/route/index.html"> stick/middleware/route </a></li>
+                <li><a href="../middleware/session/index.html"> stick/middleware/session </a></li>
+                <li><a href="../middleware/static/index.html"> stick/middleware/static </a></li>
+                <li><a href="../middleware/upload/index.html"> stick/middleware/upload </a></li>
         </ul>
+
 </div>
 </div>
 </body>
