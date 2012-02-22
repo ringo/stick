@@ -214,9 +214,9 @@ receives the same pathInfo as if it was the main application. This means
 that forward and reverse request routing will usually work as expected.</p>
 
 <p>This middleware maintains an index mapping applications to mount points which
-can be accessed using the <a href="#lookup">lookup</a> function. The [stick/helpers] module
-provides higher level functions for this which include support for the route
-middleware.</p>
+can be accessed using the <a href="#lookup">lookup</a> function. The [stick/helpers][helpers]
+module provides higher level functions for this which include support for the
+route middleware.</p>
 
 
                 </div>
@@ -354,8 +354,8 @@ method will return the URI path for the corresponding action. For example,
 with a route spec <code>/post/:id.html</code>, calling <code>app.route.reverse({action: "post.html", id: 5})</code>
 will return the string "/post/5.html".</p>
 
-<p>The [stick/helpers] module provides higher level helpers for reverse routing including
-support for mounted applications.</p>
+<p>The [stick/helpers][helpers] module provides higher level helpers for reverse
+routing including support for mounted applications.</p>
 
 
                 </div>
