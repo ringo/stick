@@ -1,4 +1,5 @@
-var {Application, helpers} = require("stick");
+var {Application} = require("stick");
+var helpers = require("stick/helpers");
 var response = require("ringo/jsgi/response");
 
 var app = exports.app = Application(),
