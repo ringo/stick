@@ -1,8 +1,8 @@
 
 // see http://blog.ometer.com/2010/11/28/a-sequential-actor-like-api-for-server-side-javascript/
 
-var {Application, helpers} = require("stick");
-var {linkTo, redirectTo} = helpers;
+var {Application} = require("stick");
+var {linkTo, redirectTo} = require("stick/helpers");
 var {html} = require("ringo/jsgi/response");
 var {defer, promises} = require("ringo/promise");
 var {setTimeout} = require("ringo/scheduler");
