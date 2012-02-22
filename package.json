@@ -1,9 +1,10 @@
 {
-    "name":        "stick",
-    "version":     "0.1.0",
-    "description": "A modular JSGI middleware composition toolkit",
-    "keywords":    ["commonjs", "jsgi"],
-    "author":      "Hannes Wallnöfer <hannes@helma.at>",
-    "repository":  {"type": "git", "url": "git://github.com/hns/stick.git"},
-    "main":        "lib/stick.js"
+    "name":         "stick",
+    "version":      "0.1.0",
+    "description":  "A modular JSGI middleware composition toolkit",
+    "keywords":     ["commonjs", "jsgi"],
+    "author":       "Hannes Wallnöfer <hannes@helma.at>",
+    "repositories": [{"type": "git", "url": "git://github.com/hns/stick.git"}],
+    "licenses":     [{"type": "MIT", "url": "https://github.com/hns/stick/blob/master/LICENSE"}],
+    "main":         "lib/stick.js"
 }
