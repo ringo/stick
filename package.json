@@ -1,6 +1,6 @@
 {
     "name": "stick",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "A modular JSGI middleware composition toolkit",
     "homepage": "http://hns.github.com/stick/",
     "keywords": [
@@ -23,11 +23,15 @@
             "url": "git://github.com/hns/stick.git"
         }
     ],
+    "bugs": "http://github.com/hns/stick/issues",
     "licenses": [
         {
             "type": "MIT",
             "url": "https://github.com/hns/stick/blob/master/LICENSE"
         }
     ],
+    "engines": {
+        "ringojs": ">= 0.9"
+    },
     "main": "lib/stick.js"
 }
