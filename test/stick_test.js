@@ -191,6 +191,155 @@ exports.testMountAndRouteResolution = function() {
     testPath("/test/baz/123/qux", "baz/123/qux");
 };
 
+exports.testSimpleCors = function() {
+   var {text} = require('ringo/jsgi/response');
+   var app = new Application();
+   app.configure('cors', 'route');
+   app.cors({
+      allowOrigin: ['http://example.com'],
+      exposeHeaders: ['X-FooBar'],
+   })
+   app.get('/', function() { return text('ok')});
+
+   // no origin
+   var response = app({
+      method: 'GET',
+      headers: {},
+      env: {},
+      pathInfo: '/'
+   });
+   assert.isUndefined(response.headers['Access-Control-Allow-Origin'])
+
+   // invalid origin
+   var response = app({
+      method: 'GET',
+      headers: {origin: 'http://example2.com'},
+      env: {},
+      pathInfo: '/'
+   });
+   assert.isUndefined(response.headers['Access-Control-Allow-Origin'])
+
+   // valid origin
+   var response = app({
+      method: 'GET',
+      headers: {origin: 'http://example.com'},
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
+
+   // case sensitive (!)
+   var response = app({
+      method: 'GET',
+      headers: {origin: 'http://exAmpLe.Com'},
+      env: {},
+      pathInfo: '/'
+   });
+   assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
+
+   // invalid configuration - can not have allowOrigin=* and allowCredentials
+   assert.throws(function() {
+      app.cors({
+      allowOrigin: ['*'],
+      allowCredentials: true
+      })
+   });
+
+   // allow all
+   app.cors({
+      allowOrigin: ['*'],
+      allowCredentials: false
+   });
+   var response = app({
+      method: 'GET',
+      headers: {origin: 'http://example.com'},
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
+   assert.equal(response.headers['Access-Control-Expose-Headers'], 'X-FooBar');
+};
+
+exports.testPreflightCors = function() {
+   var {text} = require('ringo/jsgi/response');
+   var app = new Application();
+   app.configure('cors', 'route');
+   app.cors({
+     allowOrigin: ['http://example.com'],
+     allowMethods: ['POST'],
+     allowHeaders: ['X-FooBar'],
+     maxAge: 1728000,
+     allowCredentials: true
+   });
+   app.options('/', function() {return text('ok')});
+
+   // no origin
+   var response = app({
+      method: 'OPTIONS',
+      headers: {'Access-Control-Request-Method': 'POST'},
+      env: {},
+      pathInfo: '/'
+   });
+   assert.isUndefined(response.headers['Access-Control-Allow-Origin'])
+
+   // invalid origin
+   var response = app({
+      method: 'OPTIONS',
+      headers: {origin: 'http://example2.com', 'Access-Control-Request-Method': 'POST'},
+      env: {},
+      pathInfo: '/'
+   });
+   assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
+
+   // invalid method
+   var response = app({
+      method: 'OPTIONS',
+      headers: {origin: 'http://example.com', 'Access-Control-Request-Method': 'DELETE'},
+      env: {},
+      pathInfo: '/'
+   });
+   assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
+
+   // valid preflight
+   var response = app({
+      method: 'OPTIONS',
+      headers: {origin: 'http://example.com', 'Access-Control-Request-Method': 'POST'},
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
+   assert.equal(response.headers['Access-Control-Allow-Methods'], 'POST');
+
+   // invalid custom header
+   var response = app({
+      method: 'OPTIONS',
+      headers: {
+         origin: 'http://example.com',
+         'Access-Control-Request-Method': 'POST',
+         'Access-Control-Request-Headers': 'X-NotFooBar',
+      },
+      env: {},
+      pathInfo: '/'
+   });
+   assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
+   assert.isUndefined(response.headers['Access-Control-Allow-Headers']);
+
+   // valid custom header
+   var response = app({
+      method: 'OPTIONS',
+      headers: {
+         origin: 'http://example.com',
+         'Access-Control-Request-Method': 'POST',
+         'Access-Control-Request-Headers': 'X-FooBar',
+      },
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
+   assert.equal(response.headers['Access-Control-Allow-Headers'], 'X-FooBar');
+   assert.equal(response.headers['Access-Control-Max-Age'], '1728000');
+}
+
 if (require.main == module) {
     require("test").run(exports);
 }
