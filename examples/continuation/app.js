@@ -6,7 +6,6 @@ var {linkTo, redirectTo} = require("stick/helpers");
 var {html} = require("ringo/jsgi/response");
 var {Deferred, PromiseList} = require("ringo/promise");
 var {WorkerPromise} = require("ringo/worker");
-var {setTimeout} = require("ringo/scheduler");
 var {request} = require("ringo/httpclient");
 
 var app = exports.app = Application();
