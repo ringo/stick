@@ -1,14 +1,17 @@
 # Stick
 
-Stick is a modular JSGI middleware composition layer and application framework
-based on [RingoJS](http://ringojs.org/).
+Sick is an extensible HTTP server framework for [RingoJS](http://ringojs.org/) to create modular web applications composed out of "plugins" (also known as "JSGI middleware functions").
 
 ## Overview
 
-Stick provides an `Application` object that can be used to compose web
-applications out of JSGI middleware components. Middleware can in turn
-define methods or properties on the application object to make itself
-configurable to the outside world.
+Compose web applications out of plugins:
+
+    var {Application} = require("stick");
+
+    var app = exports.app = Application();
+    app.configure("notfound", "error", "static", "params", "mount");
+    app.static(module.resolve("htdocs"));
+    app.mount("/", require("./views"));
 
 Currently Stick comes with the following middleware modules:
 
@@ -29,16 +32,18 @@ Currently Stick comes with the following middleware modules:
  * static       - serving static files
  * upload       - handling file uploads
 
- Check out the demo applications and documentation to learn more.
+Stick provides an `Application` object that can be used to compose web
+applications out of JSGI middleware components. Middleware can in turn
+define methods or properties on the application object to make itself
+configurable to the outside world.
+
+Check out the demo applications and documentation to learn more.
 
 ## Running
 
-Use the `ringo-admin` command to to install Stick:
+Use the ringo package manager to install Stick:
 
-    $ ringo-admin install hns/stick
-
-Alternatively, you can manually copy or symlink the stick directory into
-the `packages` directory of your ringojs installation.
+    $ rp install stick
 
 To start the stick demo application run the `ringo` command with the 
 `demo.js` script in the stick directory:
