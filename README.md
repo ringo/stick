@@ -1,6 +1,6 @@
 # Stick
 
-Sick is an extensible HTTP server framework for [RingoJS](http://ringojs.org/) to create modular web applications composed out of "plugins" (also known as "JSGI middleware functions").
+Stick is an extensible HTTP server framework for [RingoJS](http://ringojs.org/) to create modular web applications composed out of "plugins" (also known as "JSGI middleware functions").
 
 ## Overview
 
