@@ -198,8 +198,9 @@ exports.testSimpleCors = function() {
    app.cors({
       allowOrigin: ['http://example.com'],
       exposeHeaders: ['X-FooBar'],
-   })
-   app.get('/', function() { return text('ok')});
+   });
+   var responseBody = 'ok';
+   app.get('/', function() { return text(responseBody)});
 
    // no origin
    var response = app({
@@ -209,6 +210,7 @@ exports.testSimpleCors = function() {
       pathInfo: '/'
    });
    assert.isUndefined(response.headers['Access-Control-Allow-Origin'])
+   assert.notEqual(response.body[0], responseBody);
 
    // invalid origin
    var response = app({
@@ -218,6 +220,7 @@ exports.testSimpleCors = function() {
       pathInfo: '/'
    });
    assert.isUndefined(response.headers['Access-Control-Allow-Origin'])
+   assert.notEqual(response.body[0], responseBody);
 
    // valid origin
    var response = app({
@@ -227,6 +230,7 @@ exports.testSimpleCors = function() {
       pathInfo: '/'
    });
    assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
+   assert.equal(response.body, responseBody);
 
    // case sensitive (!)
    var response = app({
@@ -236,12 +240,13 @@ exports.testSimpleCors = function() {
       pathInfo: '/'
    });
    assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
+   assert.notEqual(response.body, responseBody);
 
    // invalid configuration - can not have allowOrigin=* and allowCredentials
    assert.throws(function() {
       app.cors({
-      allowOrigin: ['*'],
-      allowCredentials: true
+        allowOrigin: ['*'],
+        allowCredentials: true
       })
    });
 
@@ -258,6 +263,7 @@ exports.testSimpleCors = function() {
    });
    assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
    assert.equal(response.headers['Access-Control-Expose-Headers'], 'X-FooBar');
+   assert.equal(response.body, responseBody);
 };
 
 exports.testPreflightCors = function() {
@@ -271,7 +277,10 @@ exports.testPreflightCors = function() {
      maxAge: 1728000,
      allowCredentials: true
    });
-   app.options('/', function() {return text('ok')});
+   var responseBody = 'ok';
+   app.options('/', function() {
+    return text(responseBody)}
+   );
 
    // no origin
    var response = app({
@@ -281,6 +290,9 @@ exports.testPreflightCors = function() {
       pathInfo: '/'
    });
    assert.isUndefined(response.headers['Access-Control-Allow-Origin'])
+   // the route itself was not executed so we should not be
+   // able to see the body it returns
+   assert.notEqual(response.body[0], responseBody);
 
    // invalid origin
    var response = app({
@@ -290,6 +302,7 @@ exports.testPreflightCors = function() {
       pathInfo: '/'
    });
    assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
+   assert.notEqual(response.body[0], responseBody);
 
    // invalid method
    var response = app({
@@ -299,6 +312,7 @@ exports.testPreflightCors = function() {
       pathInfo: '/'
    });
    assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
+   assert.notEqual(response.body[0], responseBody);
 
    // valid preflight
    var response = app({
@@ -309,6 +323,7 @@ exports.testPreflightCors = function() {
    });
    assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
    assert.equal(response.headers['Access-Control-Allow-Methods'], 'POST');
+   assert.notEqual(response.body[0], responseBody);
 
    // invalid custom header
    var response = app({
@@ -323,6 +338,7 @@ exports.testPreflightCors = function() {
    });
    assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
    assert.isUndefined(response.headers['Access-Control-Allow-Headers']);
+   assert.notEqual(response.body[0], responseBody);
 
    // valid custom header
    var response = app({
@@ -338,6 +354,7 @@ exports.testPreflightCors = function() {
    assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
    assert.equal(response.headers['Access-Control-Allow-Headers'], 'X-FooBar');
    assert.equal(response.headers['Access-Control-Max-Age'], '1728000');
+   assert.notEqual(response.body[0], responseBody);
 }
 
 if (require.main == module) {
