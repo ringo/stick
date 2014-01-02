@@ -357,6 +357,183 @@ exports.testPreflightCors = function() {
    assert.notEqual(response.body[0], responseBody);
 }
 
+exports.testAccept = function() {
+   var {text} = require('ringo/jsgi/response');
+   var app = new Application();
+
+   app.configure('accept', 'route');
+
+   var responseBody = 'ok';
+   app.get('/', function() { return text(responseBody)} );
+   
+   // Content characteristic not available - app wide
+   app.accept(['text/html', 'application/xhtml+xml']);
+   var response = app({
+      method: 'GET',
+      headers: {
+         'accept': 'application/json'
+      },
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.status, 406);
+   assert.equal(response.body, 'Not Acceptable. Available entity content characteristics: text/html; application/xhtml+xml');
+
+   // No matching characteristic
+   app.accept([]);
+   var response = app({
+      method: 'GET',
+      headers: {
+         'accept': 'application/json'
+      },
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.status, 406);
+   assert.equal(response.body, 'Not Acceptable. Available entity content characteristics: ');
+
+   // Matching characteristic
+   app.accept(['text/html', 'application/json']);
+   var response = app({
+      method: 'GET',
+      headers: {
+         'accept': 'application/json'
+      },
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.status, 200);
+   assert.equal(response.body, 'ok');
+
+   // Wildcard
+   app.accept('*/*');
+   var response = app({
+      method: 'GET',
+      headers: {
+         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8,application/json'
+      },
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.status, 200);
+   assert.equal(response.body, 'ok');
+
+   // Wildcard
+   app.accept('*/*');
+   var response = app({
+      method: 'GET',
+      headers: {},
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.status, 200);
+   assert.equal(response.body, 'ok');
+
+   // Wildcard
+   app.accept('*/html');
+   var response = app({
+      method: 'GET',
+      headers: {
+         'accept': 'text/html'
+      },
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.status, 200);
+   assert.equal(response.body, 'ok');
+
+
+   // Wildcard
+   app.accept('*/html');
+   var response = app({
+      method: 'GET',
+      headers: {
+         'accept': 'text/plain'
+      },
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.status, 406);
+   assert.equal(response.body, 'Not Acceptable. Available entity content characteristics: */html');
+
+   // Wildcard
+   app.accept('text/html');
+   var response = app({
+      method: 'GET',
+      headers: {
+         'accept': '*/*'
+      },
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.status, 200);
+   assert.equal(response.body, 'ok');
+
+   // With level
+   app.accept('text/html');
+   var response = app({
+      method: 'GET',
+      headers: {
+         'accept': 'text/plain, application/foo, text/html, text/html;level=1'
+      },
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.status, 200);
+   assert.equal(response.body, 'ok');
+
+   // With level and preference
+   app.accept('foo/bar');
+   var response = app({
+      method: 'GET',
+      headers: {
+         'accept': 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4'
+      },
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.status, 406);
+   assert.equal(response.body, 'Not Acceptable. Available entity content characteristics: foo/bar');
+
+   // With level and preference and wildcard
+   app.accept('foo/bar');
+   var response = app({
+      method: 'GET',
+      headers: {
+         'accept': 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5'
+      },
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.status, 200);
+   assert.equal(response.body, 'ok');
+
+
+   // Bad request
+   app.accept('*/html');
+   var response = app({
+      method: 'GET',
+      headers: {
+         'accept': 'asdfasdfasdfasdf,,,,jkio/asdfasdf'
+      },
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.status, 400);
+   
+   // Bad request
+   app.accept('*/html');
+   var response = app({
+      method: 'GET',
+      headers: {
+         'accept': ' a/b , / , / '
+      },
+      env: {},
+      pathInfo: '/'
+   });
+   assert.equal(response.status, 400);
+};
+
 if (require.main == module) {
     require("test").run(exports);
 }
