@@ -358,69 +358,124 @@ exports.testPreflightCors = function() {
 }
 
 exports.testAccept = function() {
-   var {text} = require('ringo/jsgi/response');
+   var {text, html} = require('ringo/jsgi/response');
    var app = new Application();
 
    app.configure('accept', 'route');
 
    var responseBody = 'ok';
    app.get('/', function() { return text(responseBody)} );
+
+   // helper function to build a request object
+   var buildRequest = function(acceptHeader) {
+      return {
+         method: 'GET',
+         headers: {
+            'accept': acceptHeader
+         },
+         env: {},
+         pathInfo: '/'
+      };
+   };
    
    // Content characteristic not available - app wide
    app.accept(['text/html', 'application/xhtml+xml']);
-   var response = app({
-      method: 'GET',
-      headers: {
-         'accept': 'application/json'
-      },
-      env: {},
-      pathInfo: '/'
-   });
+   var response = app(buildRequest('application/json'));
    assert.equal(response.status, 406);
-   assert.equal(response.body, 'Not Acceptable. Available entity content characteristics: text/html; application/xhtml+xml');
+   assert.equal(response.body, 'Not Acceptable. Available entity content characteristics: text/html, application/xhtml+xml');
 
    // No matching characteristic
    app.accept([]);
-   var response = app({
-      method: 'GET',
-      headers: {
-         'accept': 'application/json'
-      },
-      env: {},
-      pathInfo: '/'
-   });
+   response = app(buildRequest('application/json'));
    assert.equal(response.status, 406);
    assert.equal(response.body, 'Not Acceptable. Available entity content characteristics: ');
 
-   // Matching characteristic
+   // Matching characteristic, including quality
    app.accept(['text/html', 'application/json']);
-   var response = app({
-      method: 'GET',
-      headers: {
-         'accept': 'application/json'
-      },
-      env: {},
-      pathInfo: '/'
-   });
+   var req = buildRequest('application/json');
+   response = app(req);
+
+   assert.deepEqual(req.accepted, [{
+      "mimeType": "application/json",
+      "type": "application",
+      "subtype": "json",
+      "q": 1
+   }])
    assert.equal(response.status, 200);
    assert.equal(response.body, 'ok');
 
+   // Matching characteristic, including multiple qualities
+   app.accept(['text/html', 'application/json']);
+   var req = buildRequest('text/plain; q=0.5, text/html, text/csv, text/x-dvi; q=0.8');
+   response = app(req);
+
+   assert.deepEqual(req.accepted, [{
+      "mimeType": "text/html",
+      "type": "text",
+      "subtype": "html",
+      "q": 1
+   },{
+      "mimeType": "text/csv",
+      "type": "text",
+      "subtype": "csv",
+      "q": 1
+   },{
+      "mimeType": "text/x-dvi",
+      "type": "text",
+      "subtype": "x-dvi",
+      "q": 0.8
+   },{
+      "mimeType": "text/plain",
+      "type": "text",
+      "subtype": "plain",
+      "q": 0.5
+   }]);
+   assert.equal(response.status, 200);
+   assert.equal(response.body, 'ok');
+   
    // Wildcard
    app.accept('*/*');
-   var response = app({
-      method: 'GET',
-      headers: {
-         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8,application/json'
-      },
-      env: {},
-      pathInfo: '/'
-   });
+   req = buildRequest('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8,application/json');
+   response = app(req);
+
+   assert.deepEqual(req.accepted, [{
+      "mimeType": "text/html",
+      "type": "text",
+      "subtype": "html",
+      "q": 1
+   },{
+      "mimeType": "application/xhtml+xml",
+      "type": "application",
+      "subtype": "xhtml+xml",
+      "q": 1
+   },{
+      "mimeType": "application/json",
+      "type": "application",
+      "subtype": "json",
+      "q": 1
+   },{
+      "mimeType": "application/xml",
+      "type": "application",
+      "subtype": "xml",
+      "q": 0.9
+   },{
+      "mimeType": "*/*",
+      "type": "*",
+      "subtype": "*",
+      "q": 0.8
+   }]);
    assert.equal(response.status, 200);
    assert.equal(response.body, 'ok');
 
-   // Wildcard
+   // Wildcard in the request and the middleare + whitespaces
+   app.accept('audio/*');
+   response = app(buildRequest('audio/*; q=0.2, audio/basic'));
+   assert.equal(response.status, 200);
+   assert.equal(response.body, 'ok');
+
+   // Wildcard in the middleware, no accept header
    app.accept('*/*');
-   var response = app({
+   response = app({
       method: 'GET',
       headers: {},
       env: {},
@@ -429,109 +484,105 @@ exports.testAccept = function() {
    assert.equal(response.status, 200);
    assert.equal(response.body, 'ok');
 
-   // Wildcard
+   // Wildcard in the middleware, concrete media type in the request
    app.accept('*/html');
-   var response = app({
-      method: 'GET',
-      headers: {
-         'accept': 'text/html'
-      },
-      env: {},
-      pathInfo: '/'
-   });
+   response = app(buildRequest('text/html'));
    assert.equal(response.status, 200);
    assert.equal(response.body, 'ok');
 
-
-   // Wildcard
+   // Wildcard in the middleware, non-matching with the request
    app.accept('*/html');
-   var response = app({
-      method: 'GET',
-      headers: {
-         'accept': 'text/plain'
-      },
-      env: {},
-      pathInfo: '/'
-   });
+   response = app(buildRequest('text/plain'));
    assert.equal(response.status, 406);
    assert.equal(response.body, 'Not Acceptable. Available entity content characteristics: */html');
 
-   // Wildcard
+   // Wildcard in the request, conrete in the middleware
    app.accept('text/html');
-   var response = app({
-      method: 'GET',
-      headers: {
-         'accept': '*/*'
-      },
-      env: {},
-      pathInfo: '/'
-   });
+   response = app(buildRequest('*/*'));
    assert.equal(response.status, 200);
    assert.equal(response.body, 'ok');
 
    // With level
    app.accept('text/html');
-   var response = app({
-      method: 'GET',
-      headers: {
-         'accept': 'text/plain, application/foo, text/html, text/html;level=1'
-      },
-      env: {},
-      pathInfo: '/'
-   });
+   response = app(buildRequest('text/plain, application/foo, text/html, text/html;level=1'));
    assert.equal(response.status, 200);
    assert.equal(response.body, 'ok');
 
    // With level and preference
    app.accept('foo/bar');
-   var response = app({
-      method: 'GET',
-      headers: {
-         'accept': 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4'
-      },
-      env: {},
-      pathInfo: '/'
-   });
+   response = app(buildRequest('text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4'));
    assert.equal(response.status, 406);
    assert.equal(response.body, 'Not Acceptable. Available entity content characteristics: foo/bar');
 
    // With level and preference and wildcard
    app.accept('foo/bar');
-   var response = app({
-      method: 'GET',
-      headers: {
-         'accept': 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5'
-      },
-      env: {},
-      pathInfo: '/'
-   });
+   req = buildRequest('text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5');
+   response = app(req);
+
+   assert.deepEqual(req.accepted, [{
+      "mimeType": "text/html",
+      "type": "text",
+      "subtype": "html",
+      "q": 1,
+      "level": "1"
+   },{
+      "mimeType": "text/html",
+      "type": "text",
+      "subtype": "html",
+      "q": 0.7
+   },{
+      "mimeType": "*/*",
+      "type": "*",
+      "subtype": "*",
+      "q": 0.5
+   },{
+      "mimeType": "text/html",
+      "type": "text",
+      "subtype": "html",
+      "q": 0.4,
+      "level": "2"
+   },{
+      "mimeType": "text/*",
+      "type": "text",
+      "subtype": "*",
+      "q": 0.3
+   }]);
    assert.equal(response.status, 200);
    assert.equal(response.body, 'ok');
 
-
    // Bad request
    app.accept('*/html');
-   var response = app({
-      method: 'GET',
-      headers: {
-         'accept': 'asdfasdfasdfasdf,,,,jkio/asdfasdf'
-      },
-      env: {},
-      pathInfo: '/'
-   });
+   response = app(buildRequest('asdfasdfasdfasdf,,,,jkio/asdfasdf'));
    assert.equal(response.status, 400);
    
    // Bad request
    app.accept('*/html');
-   var response = app({
-      method: 'GET',
-      headers: {
-         'accept': ' a/b , / , / '
-      },
-      env: {},
-      pathInfo: '/'
-   });
+   response = app(buildRequest(' a/b , / , / '));
    assert.equal(response.status, 400);
+
+   // Example from the documentation
+   app = new Application();
+   app.configure('accept', 'route');
+   app.accept(['text/plain', 'text/html']);
+   app.get('/', function(req) {
+      if (req.accepted[0].subtype === 'html') {
+         return html('<!doctype html>');
+      } else {
+         return text('foo');    
+      }
+   });
+
+   response = app(buildRequest('text/html'));
+   assert.equal(response.status, 200);
+   assert.equal(response.body, '<!doctype html>');
+
+   response = app(buildRequest('text/plain'));
+   assert.equal(response.status, 200);
+   assert.equal(response.body, 'foo');
+
+   response = app(buildRequest('text/csv'));
+   assert.equal(response.status, 406);
+   assert.equal(response.body, 'Not Acceptable. Available entity content characteristics: text/plain, text/html');
 };
 
 if (require.main == module) {
