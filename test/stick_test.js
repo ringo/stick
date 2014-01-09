@@ -398,7 +398,7 @@ exports.testAccept = function() {
    assert.deepEqual(req.accepted, [{
       "mimeType": "application/json",
       "type": "application",
-      "subtype": "json",
+      "subType": "json",
       "q": 1
    }])
    assert.equal(response.status, 200);
@@ -412,22 +412,22 @@ exports.testAccept = function() {
    assert.deepEqual(req.accepted, [{
       "mimeType": "text/html",
       "type": "text",
-      "subtype": "html",
+      "subType": "html",
       "q": 1
    },{
       "mimeType": "text/csv",
       "type": "text",
-      "subtype": "csv",
+      "subType": "csv",
       "q": 1
    },{
       "mimeType": "text/x-dvi",
       "type": "text",
-      "subtype": "x-dvi",
+      "subType": "x-dvi",
       "q": 0.8
    },{
       "mimeType": "text/plain",
       "type": "text",
-      "subtype": "plain",
+      "subType": "plain",
       "q": 0.5
    }]);
    assert.equal(response.status, 200);
@@ -441,27 +441,27 @@ exports.testAccept = function() {
    assert.deepEqual(req.accepted, [{
       "mimeType": "text/html",
       "type": "text",
-      "subtype": "html",
+      "subType": "html",
       "q": 1
    },{
       "mimeType": "application/xhtml+xml",
       "type": "application",
-      "subtype": "xhtml+xml",
+      "subType": "xhtml+xml",
       "q": 1
    },{
       "mimeType": "application/json",
       "type": "application",
-      "subtype": "json",
+      "subType": "json",
       "q": 1
    },{
       "mimeType": "application/xml",
       "type": "application",
-      "subtype": "xml",
+      "subType": "xml",
       "q": 0.9
    },{
       "mimeType": "*/*",
       "type": "*",
-      "subtype": "*",
+      "subType": "*",
       "q": 0.8
    }]);
    assert.equal(response.status, 200);
@@ -522,29 +522,29 @@ exports.testAccept = function() {
    assert.deepEqual(req.accepted, [{
       "mimeType": "text/html",
       "type": "text",
-      "subtype": "html",
+      "subType": "html",
       "q": 1,
       "level": "1"
    },{
       "mimeType": "text/html",
       "type": "text",
-      "subtype": "html",
+      "subType": "html",
       "q": 0.7
    },{
       "mimeType": "*/*",
       "type": "*",
-      "subtype": "*",
+      "subType": "*",
       "q": 0.5
    },{
       "mimeType": "text/html",
       "type": "text",
-      "subtype": "html",
+      "subType": "html",
       "q": 0.4,
       "level": "2"
    },{
       "mimeType": "text/*",
       "type": "text",
-      "subtype": "*",
+      "subType": "*",
       "q": 0.3
    }]);
    assert.equal(response.status, 200);
@@ -565,7 +565,7 @@ exports.testAccept = function() {
    app.configure('accept', 'route');
    app.accept(['text/plain', 'text/html']);
    app.get('/', function(req) {
-      if (req.accepted[0].subtype === 'html') {
+      if (req.accepted[0].subType === 'html') {
          return html('<!doctype html>');
       } else {
          return text('foo');    
