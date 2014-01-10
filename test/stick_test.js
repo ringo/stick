@@ -357,6 +357,130 @@ exports.testPreflightCors = function() {
    assert.notEqual(response.body[0], responseBody);
 }
 
+exports.testJsonP = function() {
+    var response, callbackArg;
+    var foo = function(arg) {
+        return arg;
+    };
+    var buildRequest = function(method, path, callbackName, callback) {
+        var req = {
+            method: method || 'GET',
+            env: {},
+            pathInfo: path || '/'
+        };
+        if (callbackName != undefined) {
+            req.queryParams = {};
+            req.queryParams[callback || 'callback'] = callbackName;
+        }
+        return req;
+    };
+
+    var app = new Application();
+    app.configure('jsonp', 'route');
+    app.get('/text', function() {
+        return {
+            headers: {
+                'content-type': 'text/plain'
+            },
+            status: 200,
+            body: ['FOO']
+        }
+    });
+    app.get('/', function() {
+        return {
+            headers: {
+                'content-type': 'application/json'
+            },
+            status: 200,
+            body: [JSON.stringify({name: 'FOO'})]
+        }
+    });
+
+    // responses of type other than 'application/json' are ignored
+    response = app(buildRequest('GET', '/text', 'foo'));
+    assert.strictEqual(response.status, 200);
+    assert.strictEqual(response.headers['content-type'], 'text/plain');
+
+    // only GET allowed if callback is set
+    response = app(buildRequest('POST', '/', 'foo'));
+    assert.strictEqual(response.status, 400);
+    assert.strictEqual(response.headers['content-type'].indexOf('application/json'), 0);
+
+    // invalid callback name
+    response = app(buildRequest('GET', '/', '1234'));
+    assert.strictEqual(response.status, 400);
+    assert.strictEqual(response.headers['content-type'].indexOf('application/json'), 0);
+
+    // no callback query parameter - response is returned untouched
+    response = app(buildRequest('GET', '/'));
+    assert.strictEqual(response.status, 200);
+    assert.strictEqual(response.headers['content-type'].indexOf('application/json'), 0);
+
+    // query parameter doesn't match callback name
+    response = app(buildRequest('GET', '/', 'foo', 'bar'));
+    assert.strictEqual(response.headers['content-type'].indexOf('application/json'), 0);
+
+    // valid jsonp request
+    response = app(buildRequest('GET', '/', 'foo'));
+    assert.strictEqual(response.status, 200);
+    assert.strictEqual(response.headers['content-type'].indexOf('application/javascript'), 0);
+    callbackArg = eval(response.body.join(''));
+    assert.deepEqual(Object.keys(callbackArg), ['meta', 'data']);
+    assert.strictEqual(callbackArg.meta.status, 200);
+    // content-type header field is not part of meta object
+    assert.isUndefined(callbackArg.meta['content-type']);
+    assert.strictEqual(callbackArg.data.name, 'FOO');
+
+    // custom header fields in json-response are part of meta object
+    app.get('/customheaders', function() {
+        return {
+            headers: {
+                'content-type': 'application/json',
+                'X-FooBar': 'true'
+            },
+            status: 200,
+            body: [JSON.stringify({name: 'FOO'})]
+        }
+    });
+    response = app(buildRequest('GET', '/customheaders', 'foo'));
+    assert.strictEqual(response.status, 200);
+    callbackArg = eval(response.body.join(''));
+    assert.isTrue(callbackArg.meta.hasOwnProperty('X-FooBar'));
+
+    // all application responses are returned as 200 OK, the original
+    // status is part of the meta object
+    app.get('/notfound', function() {
+        return {
+            headers: {
+                'content-type': 'application/json'
+            },
+            status: 404,
+            body: ['"FOO"']
+        }
+    });
+    response = app(buildRequest('GET', '/notfound', 'foo'));
+    assert.strictEqual(response.status, 200);
+    callbackArg = eval(response.body.join(''));
+    assert.strictEqual(callbackArg.meta.status, 404);
+
+    // custom callback parameter name
+    app.jsonp({
+        callbackName: 'bar'
+    });
+    response = app(buildRequest('GET', '/', 'foo', 'bar'));
+    assert.strictEqual(response.status, 200);
+    assert.strictEqual(response.headers['content-type'].indexOf('application/javascript'), 0);
+
+    // custom meta and payload object names
+    app.jsonp({
+        metaName: 'metadata',
+        payloadName: 'payload'
+    });
+    response = app(buildRequest('GET', '/', 'foo', 'bar'));
+    callbackArg = eval(response.body.join(''));
+    assert.deepEqual(Object.keys(callbackArg), ['metadata', 'payload']);
+};
+
 if (require.main == module) {
     require("test").run(exports);
 }
