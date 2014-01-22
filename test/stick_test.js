@@ -210,7 +210,7 @@ exports.testSimpleCors = function() {
       pathInfo: '/'
    });
    assert.isUndefined(response.headers['Access-Control-Allow-Origin'])
-   assert.notEqual(response.body[0], responseBody);
+   assert.equal(response.body[0], responseBody);
 
    // invalid origin
    var response = app({
@@ -285,29 +285,29 @@ exports.testPreflightCors = function() {
    // no origin
    var response = app({
       method: 'OPTIONS',
-      headers: {'Access-Control-Request-Method': 'POST'},
+      headers: {'access-control-request-method': 'POST'},
       env: {},
       pathInfo: '/'
    });
    assert.isUndefined(response.headers['Access-Control-Allow-Origin'])
-   // the route itself was not executed so we should not be
-   // able to see the body it returns
-   assert.notEqual(response.body[0], responseBody);
+   assert.equal(response.body[0], responseBody);
 
    // invalid origin
    var response = app({
       method: 'OPTIONS',
-      headers: {origin: 'http://example2.com', 'Access-Control-Request-Method': 'POST'},
+      headers: {origin: 'http://example2.com', 'access-control-request-method': 'POST'},
       env: {},
       pathInfo: '/'
    });
    assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
+   // the route itself was not executed so we should not be
+   // able to see the body it returns
    assert.notEqual(response.body[0], responseBody);
 
    // invalid method
    var response = app({
       method: 'OPTIONS',
-      headers: {origin: 'http://example.com', 'Access-Control-Request-Method': 'DELETE'},
+      headers: {origin: 'http://example.com', 'access-control-request-method': 'DELETE'},
       env: {},
       pathInfo: '/'
    });
@@ -317,7 +317,7 @@ exports.testPreflightCors = function() {
    // valid preflight
    var response = app({
       method: 'OPTIONS',
-      headers: {origin: 'http://example.com', 'Access-Control-Request-Method': 'POST'},
+      headers: {origin: 'http://example.com', 'access-control-request-method': 'POST'},
       env: {},
       pathInfo: '/'
    });
@@ -330,8 +330,8 @@ exports.testPreflightCors = function() {
       method: 'OPTIONS',
       headers: {
          origin: 'http://example.com',
-         'Access-Control-Request-Method': 'POST',
-         'Access-Control-Request-Headers': 'X-NotFooBar',
+         'access-control-request-method': 'POST',
+         'access-control-request-headers': 'X-NotFooBar',
       },
       env: {},
       pathInfo: '/'
@@ -345,8 +345,8 @@ exports.testPreflightCors = function() {
       method: 'OPTIONS',
       headers: {
          origin: 'http://example.com',
-         'Access-Control-Request-Method': 'POST',
-         'Access-Control-Request-Headers': 'X-FooBar',
+         'access-control-request-method': 'POST',
+         'access-control-request-headers': 'X-FooBar',
       },
       env: {},
       pathInfo: '/'
