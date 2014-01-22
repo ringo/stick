@@ -220,7 +220,7 @@ exports.testSimpleCors = function() {
       pathInfo: '/'
    });
    assert.isUndefined(response.headers['Access-Control-Allow-Origin'])
-   assert.notEqual(response.body[0], responseBody);
+   assert.equal(response.body[0], responseBody);
 
    // valid origin
    var response = app({
@@ -240,7 +240,9 @@ exports.testSimpleCors = function() {
       pathInfo: '/'
    });
    assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
-   assert.notEqual(response.body, responseBody);
+   // the actual response *is* sent. The client decides whether to
+   // hand the data to the request depending on the Allow-Origin header.
+   assert.equal(response.body, responseBody);
 
    // invalid configuration - can not have allowOrigin=* and allowCredentials
    assert.throws(function() {
@@ -277,9 +279,9 @@ exports.testPreflightCors = function() {
      maxAge: 1728000,
      allowCredentials: true
    });
-   var responseBody = 'ok';
+   var preflightResponseBody = 'preflight okay'
    app.options('/', function() {
-    return text(responseBody)}
+    return text(preflightResponseBody)}
    );
 
    // no origin
@@ -290,7 +292,7 @@ exports.testPreflightCors = function() {
       pathInfo: '/'
    });
    assert.isUndefined(response.headers['Access-Control-Allow-Origin'])
-   assert.equal(response.body[0], responseBody);
+   assert.equal(response.body[0], preflightResponseBody);
 
    // invalid origin
    var response = app({
@@ -300,9 +302,10 @@ exports.testPreflightCors = function() {
       pathInfo: '/'
    });
    assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
-   // the route itself was not executed so we should not be
-   // able to see the body it returns
-   assert.notEqual(response.body[0], responseBody);
+   // note again how the resource was indeed executed. a compliant
+   // client would not have sent this request but stopped the CORS procedure
+   // after the failed preflight request.
+   assert.equal(response.body[0], preflightResponseBody);
 
    // invalid method
    var response = app({
@@ -311,8 +314,8 @@ exports.testPreflightCors = function() {
       env: {},
       pathInfo: '/'
    });
-   assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
-   assert.notEqual(response.body[0], responseBody);
+   assert.notEqual(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
+   assert.equal(response.body[0], preflightResponseBody);
 
    // valid preflight
    var response = app({
@@ -323,7 +326,7 @@ exports.testPreflightCors = function() {
    });
    assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
    assert.equal(response.headers['Access-Control-Allow-Methods'], 'POST');
-   assert.notEqual(response.body[0], responseBody);
+   assert.equal(response.body[0], preflightResponseBody);
 
    // invalid custom header
    var response = app({
@@ -336,9 +339,9 @@ exports.testPreflightCors = function() {
       env: {},
       pathInfo: '/'
    });
-   assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
-   assert.isUndefined(response.headers['Access-Control-Allow-Headers']);
-   assert.notEqual(response.body[0], responseBody);
+   assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
+   assert.equal(response.headers['Access-Control-Allow-Headers'], 'X-FooBar');
+   assert.equal(response.body[0], preflightResponseBody);
 
    // valid custom header
    var response = app({
@@ -354,7 +357,7 @@ exports.testPreflightCors = function() {
    assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
    assert.equal(response.headers['Access-Control-Allow-Headers'], 'X-FooBar');
    assert.equal(response.headers['Access-Control-Max-Age'], '1728000');
-   assert.notEqual(response.body[0], responseBody);
+   assert.equal(response.body[0], preflightResponseBody);
 }
 
 if (require.main == module) {
