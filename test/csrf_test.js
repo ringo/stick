@@ -7,16 +7,20 @@ var mockRequest = function(method, path, opts) {
     opts || (opts = {});
     return {
         "method": method || "GET",
+        "host": opts.host || "localhost",
+        "port": opts.port || 80,
+        "scheme": opts.scheme || "http",
         "pathInfo": path || "/",
         "env": opts.env || {},
         "headers": opts.headers || {},
         "cookies": opts.cookies || {},
         "postParams": opts.postParams || {},
-        "queryParams": opts.queryParams || {}
+        "queryParams": opts.queryParams || {},
+        "remoteAddress": opts.remoteAddress || ""
     };
 };
 
-var mockSession = function(data) {
+var mockEnv = function(data, isSecure) {
     return {
         "servletRequest": {
             "getSession": function() {
@@ -31,6 +35,9 @@ var mockSession = function(data) {
                         data[name] = value;
                     }
                 };
+            },
+            "isSecure": function() {
+                return isSecure === true;
             }
         }
     };
@@ -53,7 +60,7 @@ exports.testSession = function() {
 
     // validate that CSRF token is created and stored in session
     var response = app(mockRequest("GET", "/", {
-        "env": mockSession(sessionData)
+        "env": mockEnv(sessionData)
     }));
     assert.strictEqual(response.body[0], sessionData.csrfToken);
     assert.strictEqual(sessionData.csrfToken.length, 32);
@@ -63,33 +70,33 @@ exports.testSession = function() {
     // manually rotate token
     var prevToken = response.body[0];
     response = app(mockRequest("GET", "/rotate", {
-        "env": mockSession(sessionData)
+        "env": mockEnv(sessionData)
     }));
     assert.isFalse(response.body[0] === prevToken);
     assert.strictEqual(response.body[0], sessionData.csrfToken);
 
     // failed CSRF validation (post parameter doesn't match the session csrf token)
     assert.strictEqual(app(mockRequest("POST", "/", {
-        "env": mockSession(sessionData)
+        "env": mockEnv(sessionData)
     })).status, 403);
     assert.strictEqual(app(mockRequest("POST", "/", {
-        "env": mockSession(sessionData),
+        "env": mockEnv(sessionData),
         "postParams": {"csrftoken": "invalid"}
     })).status, 403);
 
     // successful POST request
     assert.strictEqual(app(mockRequest("POST", "/", {
-        "env": mockSession(sessionData),
+        "env": mockEnv(sessionData),
         "postParams": {"csrftoken": sessionData.csrfToken}
     })).status, 200);
     // with token submitted as query parameter
     assert.strictEqual(app(mockRequest("POST", "/", {
-        "env": mockSession(sessionData),
+        "env": mockEnv(sessionData),
         "queryParams": {"csrftoken": sessionData.csrfToken}
     })).status, 200);
     // with token submitted as custom header field
     assert.strictEqual(app(mockRequest("POST", "/", {
-        "env": mockSession(sessionData),
+        "env": mockEnv(sessionData),
         "headers": {"x-csrf-token": sessionData.csrfToken}
     })).status, 200);
 
@@ -98,7 +105,7 @@ exports.testSession = function() {
         "rotate": true
     });
     response = app(mockRequest("POST", "/", {
-        "env": mockSession(sessionData),
+        "env": mockEnv(sessionData),
         "postParams": {"csrftoken": sessionData.csrfToken}
     }));
     assert.strictEqual(response.status, 200);
@@ -112,7 +119,7 @@ exports.testSession = function() {
         }
     });
     response = app(mockRequest("POST", "/", {
-        "env": mockSession(sessionData),
+        "env": mockEnv(sessionData),
         "headers": {"x-xcrf-token": sessionData.csrfToken}
     }));
     assert.strictEqual(response.status, 200);
@@ -123,7 +130,7 @@ exports.testSession = function() {
         "tokenLength": 64
     });
     app(mockRequest("GET", "/", {
-        "env": mockSession(sessionData = {})
+        "env": mockEnv(sessionData = {})
     }));
     assert.strictEqual(sessionData.csrfToken.length, 64);
 };
@@ -145,7 +152,9 @@ exports.testCookie = function() {
     });
 
     // validate that cookie containing the CSRF token is set
-    var response = app(mockRequest("GET"));
+    var response = app(mockRequest("GET"), "/", {
+        "env": mockEnv()
+    });
     var token = response.body[0];
     var cookieHeader = response.headers["Set-Cookie"];
     assert.isNotUndefined(cookieHeader);
@@ -155,6 +164,7 @@ exports.testCookie = function() {
 
     // cookie is not set if it's sent with the request
     response = app(mockRequest("GET", "/", {
+        "env": mockEnv(),
         "cookies": {"csrftoken": token}
     }));
     assert.isUndefined(response.headers["Set-Cookie"]);
@@ -162,6 +172,7 @@ exports.testCookie = function() {
 
     // but it is if the request handler calls rotateCsrfToken
     response = app(mockRequest("GET", "/rotate", {
+        "env": mockEnv(),
         "cookies": {"csrftoken": token}
     }));
     assert.isFalse(response.body[0] === token);
@@ -171,30 +182,38 @@ exports.testCookie = function() {
     assert.strictEqual(cookieHeader.indexOf("csrftoken=" + token), 0);
 
     // failed CSRF validation (cookie value and post parameter must be equal)
-    assert.strictEqual(app(mockRequest("POST")).status, 403);
     assert.strictEqual(app(mockRequest("POST", "/", {
+        "env": mockEnv()
+    })).status, 403);
+    assert.strictEqual(app(mockRequest("POST", "/", {
+        "env": mockEnv(),
         "cookies": {"csrftoken": token}
     })).status, 403);
     assert.strictEqual(app(mockRequest("POST", "/", {
+        "env": mockEnv(),
         "postParams": {"csrftoken": token}
     })).status, 403);
     assert.strictEqual(app(mockRequest("POST", "/", {
+        "env": mockEnv(),
         "cookies": {"csrftoken": "invalid"},
         "postParams": {"csrftoken": token}
     })).status, 403);
 
     // successful POST request
     assert.strictEqual(app(mockRequest("POST", "/", {
+        "env": mockEnv(),
         "cookies": {"csrftoken": token},
         "postParams": {"csrftoken": token}
     })).status, 200);
     // with token submitted as query parameter
     assert.strictEqual(app(mockRequest("POST", "/", {
+        "env": mockEnv(),
         "cookies": {"csrftoken": token},
         "queryParams": {"csrftoken": token}
     })).status, 200);
     // with token submitted as custom header field
     assert.strictEqual(app(mockRequest("POST", "/", {
+        "env": mockEnv(),
         "cookies": {"csrftoken": token},
         "headers": {"x-csrf-token": token}
     })).status, 200);
@@ -204,6 +223,7 @@ exports.testCookie = function() {
         "rotate": true
     });
     response = app(mockRequest("POST", "/", {
+        "env": mockEnv(),
         "cookies": {"csrftoken": token},
         "postParams": {"csrftoken": token}
     }));
@@ -220,12 +240,72 @@ exports.testCookie = function() {
         "cookieHttpOnly": false,
         "cookieSecure": true
     });
-    response = app(mockRequest("GET", "/"));
+    response = app(mockRequest("GET", "/", {
+        "env": mockEnv()
+    }));
     token = response.body[0];
     cookieHeader = response.headers["Set-Cookie"];
     assert.strictEqual(cookieHeader.indexOf("token=" + token), 0);
     assert.isFalse(/httpOnly/i.test(cookieHeader));
     assert.isTrue(/secure/i.test(cookieHeader));
+};
+
+exports.testIsSameOrigin = function() {
+    var app = new Application();
+    app.configure("session", "csrf", "route");
+    app.get("/", function(req) {
+        return text(req.getCsrfToken());
+    });
+    app.post("/", function(req) {
+        return text(req.getCsrfToken());
+    });
+    var token = "testTokenStr"
+    // no referrer checking if not https
+    var response = app(mockRequest("POST", "/", {
+        "env": mockEnv({"csrfToken": token}),
+        "postParams": {"csrftoken": token}
+    }));
+    assert.strictEqual(response.status, 200);
+    // reject if https request with missing referrer
+    response = app(mockRequest("POST", "/", {
+        "env": mockEnv({"csrfToken": token}, true),
+        "postParams": {"csrftoken": token}
+    }));
+    assert.strictEqual(response.status, 403);
+    response = app(mockRequest("POST", "/", {
+        "scheme": "https",
+        "env": mockEnv({"csrfToken": token}, true),
+        "postParams": {"csrftoken": token},
+        "remoteAddress": "http://localhost/test"
+    }));
+    assert.strictEqual(response.status, 403);
+    response = app(mockRequest("POST", "/", {
+        "scheme": "https",
+        "host": "localhost",
+        "env": mockEnv({"csrfToken": token}, true),
+        "postParams": {"csrftoken": token},
+        "remoteAddress": "https://ringojs.org/test"
+    }));
+    assert.strictEqual(response.status, 403);
+    response = app(mockRequest("POST", "/", {
+        "scheme": "https",
+        "host": "localhost",
+        "port": 443,
+        "env": mockEnv({"csrfToken": token}, true),
+        "postParams": {"csrftoken": token},
+        "remoteAddress": "https://localhost:8080/test"
+    }));
+    assert.strictEqual(response.status, 403);
+    // passes the referrer check
+    response = app(mockRequest("POST", "/", {
+        "scheme": "https",
+        "host": "localhost",
+        "port": 443,
+        "env": mockEnv({"csrfToken": token}, true),
+        "postParams": {"csrftoken": token},
+        "remoteAddress": "https://localhost/test"
+    }));
+    assert.strictEqual(response.status, 200);
 };
 
 if (require.main == module.id) {
