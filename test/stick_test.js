@@ -1,9 +1,11 @@
-var {Application} = require("../lib/stick");
-var {mount,route} = require("../lib/middleware")
+var system = require("system");
 var assert = require("assert");
 
+var {Application} = require("../lib/stick");
+var {mount,route} = require("../lib/middleware")
 
-exports.xtestMiddleware = function() {
+
+exports.testMiddleware = function() {
     function twice(next, app) {
         return function(req) {
             return next(req) + next(req)
@@ -45,7 +47,7 @@ exports.xtestMiddleware = function() {
     assert.equal(prod("foo"), "_BARBAR_");
 };
 
-exports.xtestMount = function() {
+exports.testMount = function() {
     function testMount(app) {
         app.mount("/foo", function() { return "/foo" });
         app.mount({host: "foo.com"}, function() { return "foo.com" });
@@ -73,7 +75,7 @@ exports.xtestMount = function() {
 * The redirect returns the browser to the same path, but with a trailing slash.
 * Not very nice for performance or style when using REST urls.
 */
-exports.xtestMountRedirect = function() {
+exports.testMountRedirect = function() {
     var response;
 
     var app = new Application();
@@ -99,7 +101,7 @@ exports.xtestMountRedirect = function() {
 * When using the mount command, the developer can choose to use REST-style URLs
 * without a redirect and without a trailing slash on the end of the URL.
 */
-exports.xtestMountNoRedirect = function() {
+exports.testMountNoRedirect = function() {
     var response;
 
     var app = new Application();
@@ -115,7 +117,7 @@ exports.xtestMountNoRedirect = function() {
     assert.equal(app({headers: {}, env: {}, method: "GET", pathInfo: "/foo/bar"}), "foo/bar");
 };
 
-exports.xtestMountSort = function() {
+exports.testMountSort = function() {
     var app = new Application();
     app.configure(mount);
 
@@ -137,7 +139,7 @@ exports.xtestMountSort = function() {
  * Test that makes sure the most 'literal' version of the URL is resolved instead of parameterized
  * version. ie /foo wins over /:param when url is /foo.
  */
-exports.xtestRouteResolution = function() {
+exports.testRouteResolution = function() {
     function testPath(path, expected) {
         assert.equal(app({method: 'GET', headers: {host: "foo.com"}, env: {}, pathInfo: path}), expected);
     }
@@ -164,7 +166,7 @@ exports.xtestRouteResolution = function() {
  * Test that makes sure the most 'literal' version of the URL is resolved instead of parameterized
  * version. ie /foo wins over /:param when url is /foo.
  */
-exports.xtestMountAndRouteResolution = function() {
+exports.testMountAndRouteResolution = function() {
     function testPath(path, expected) {
         assert.equal(mountApp({method: 'GET', headers: {host: "foo.com"}, env: {}, pathInfo: path}), expected);
     }
@@ -191,7 +193,7 @@ exports.xtestMountAndRouteResolution = function() {
     testPath("/test/baz/123/qux", "baz/123/qux");
 };
 
-exports.xtestSimpleCors = function() {
+exports.testSimpleCors = function() {
    var {text} = require('ringo/jsgi/response');
    var app = new Application();
    app.configure('cors', 'route');
@@ -268,7 +270,7 @@ exports.xtestSimpleCors = function() {
    assert.equal(response.body, responseBody);
 };
 
-exports.xtestPreflightCors = function() {
+exports.testPreflightCors = function() {
    var {text} = require('ringo/jsgi/response');
    var app = new Application();
    app.configure('cors', 'route');
@@ -360,95 +362,9 @@ exports.xtestPreflightCors = function() {
    assert.equal(response.body[0], preflightResponseBody);
 }
 
-exports.testCsrf = function() {
-    var {text} = require('ringo/jsgi/response');
-    var app = new Application();
-    app.configure('session', 'csrf', 'route');
-    app.get("/", function(req) {
-        return text(req.getCsrfToken());
-    });
-    app.get("/rotate", function(req) {
-        return text(req.rotateCsrfToken())
-    });
-    app.post("/", function(req) {
-        return text(req.getCsrfToken());
-    });
+exports.testCsrf = require("./csrf_test");
 
-    var mockSessionData = {};
-    var mockSession = {
-        "getAttribute": function(name) {
-            if (mockSessionData.hasOwnProperty(name)) {
-                return mockSessionData[name];
-            }
-            return null;
-        },
-        "setAttribute": function(name, value) {
-            mockSessionData[name] = value;
-        }
-    };
-
-    var createRequest = function(method, path, opts) {
-        opts || (opts = {});
-        return {
-            "method": method || "GET",
-            "pathInfo": path || "/",
-            "env": {
-                servletRequest: {
-                    getSession: function() { return mockSession; }
-                }
-            },
-            "headers": opts.headers || {},
-            "postParams": opts.postParams || {},
-            "queryParams": opts.queryParams || {}
-        };
-    };
-
-    // validate that CSRF token is created and stored in session
-    var response = app(createRequest("GET"));
-    var token = response.body[0];
-    assert.strictEqual(token, mockSessionData.csrfToken);
-
-    // manually rotate token
-    response = app(createRequest("GET", "/rotate"));
-    assert.isFalse(response.body[0] === token);
-    token = response.body[0];
-    assert.strictEqual(token, mockSessionData.csrfToken);
-
-    // failed CSRF validation (post parameter doesn't match the session csrf token)
-    assert.strictEqual(app(createRequest("POST")).status, 403);
-    assert.strictEqual(app(createRequest("POST", "/", {
-        postParams: {"csrftoken": "invalid"}
-    })).status, 403);
-
-    // successful POST request
-    assert.strictEqual(app(createRequest("POST", "/", {
-        postParams: {"csrftoken": token}
-    })).status, 200);
-    // with token submitted as query parameter
-    assert.strictEqual(app(createRequest("POST", "/", {
-        queryParams: {"csrftoken": token}
-    })).status, 200);
-    // with token submitted as custom header field
-    assert.strictEqual(app(createRequest("POST", "/", {
-        headers: {"x-csrf-token": token}
-    })).status, 200);
-
-    // switch on token rotation
-    app.csrf({
-        "rotate": true
-    });
-    response = app(createRequest("POST", "/", {
-        postParams: {"csrftoken": token}
-    }));
-    assert.strictEqual(response.status, 200);
-    assert.isTrue(response.body[0] !== token);
-    token = response.body[0];
-    response = app(createRequest("POST", "/", {
-        postParams: {"csrftoken": "invalid"}
-    }));
-    assert.isTrue(response.body[0] !== token);
-};
-
-if (require.main == module) {
-    require("test").run(exports);
+if (require.main == module.id) {
+    system.exit(require("test").run.apply(null,
+            [exports].concat(system.args.slice(1))));
 }
