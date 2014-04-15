@@ -360,6 +360,89 @@ exports.testPreflightCors = function() {
    assert.equal(response.body[0], preflightResponseBody);
 }
 
+exports.testCsrf = function() {
+    var {text} = require('ringo/jsgi/response');
+    var app = new Application();
+    app.configure('csrf', 'route');
+    app.get("/", function(req) {
+        return text(req.getCsrfToken());
+    });
+    app.get("/rotate", function(req) {
+        return text(req.rotateCsrfToken())
+    });
+    app.post("/", function(req) {
+        return text(req.getCsrfToken());
+    });
+
+    var createRequest = function(method, path, opts) {
+        opts || (opts = {});
+        return {
+            "method": method || "GET",
+            "pathInfo": path || "/",
+            "env": {},
+            "headers": opts.headers || {},
+            "cookies": opts.cookies || {},
+            "postParams": opts.postParams || {},
+            "queryParams": opts.queryParams || {}
+        };
+    };
+
+    // validate that cookie containing the CSRF token is set
+    var response = app(createRequest("GET"));
+    var token = response.body[0];
+    var cookieHeader = response.headers["Set-Cookie"];
+    assert.isNotUndefined(cookieHeader);
+    assert.strictEqual(cookieHeader.indexOf("csrftoken=" + token), 0);
+    assert.isTrue(/httpOnly/i.test(cookieHeader));
+    assert.strictEqual(response.headers["Vary"], "Cookie");
+
+    // cookie is not set if it's sent with the request
+    response = app(createRequest("GET", "/", {
+        cookies: {"csrftoken": token}
+    }));
+    assert.isUndefined(response.headers["Set-Cookie"]);
+    assert.strictEqual(response.body[0], token);
+
+    // but it is if the request handler calls rotateCsrfToken
+    response = app(createRequest("GET", "/rotate", {
+        cookies: {"csrftoken": token}
+    }));
+    assert.isFalse(response.body[0] === token);
+    token = response.body[0];
+    cookieHeader = response.headers["Set-Cookie"];
+    assert.isNotUndefined(cookieHeader);
+    assert.strictEqual(cookieHeader.indexOf("csrftoken=" + token), 0);
+
+    // failed CSRF validation (cookie value and post parameter must be equal)
+    assert.strictEqual(app(createRequest("POST")).status, 403);
+    assert.strictEqual(app(createRequest("POST", "/", {
+        cookies: {"csrftoken": token}
+    })).status, 403);
+    assert.strictEqual(app(createRequest("POST", "/", {
+        postParams: {"csrftoken": token}
+    })).status, 403);
+    assert.strictEqual(app(createRequest("POST", "/", {
+        cookies: {"csrftoken": "invalid"},
+        postParams: {"csrftoken": token}
+    })).status, 403);
+
+    // successful POST request
+    assert.strictEqual(app(createRequest("POST", "/", {
+        cookies: {"csrftoken": token},
+        postParams: {"csrftoken": token}
+    })).status, 200);
+    // with token submitted as query parameter
+    assert.strictEqual(app(createRequest("POST", "/", {
+        cookies: {"csrftoken": token},
+        queryParams: {"csrftoken": token}
+    })).status, 200);
+    // with token submitted as custom header field
+    assert.strictEqual(app(createRequest("POST", "/", {
+        cookies: {"csrftoken": token},
+        headers: {"x-csrf-token": token}
+    })).status, 200);
+};
+
 if (require.main == module) {
     require("test").run(exports);
 }
