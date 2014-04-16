@@ -322,6 +322,25 @@ exports.testIsSameOrigin = function() {
     assert.strictEqual(response.status, 200);
 };
 
+exports.testGetResponse = function() {
+    var app = new Application();
+    app.configure("session", "csrf", "route");
+    app.post("/", function(req) {
+        return text(req.getCsrfToken());
+    });
+    assert.strictEqual(app(mockRequest("POST", "/", {
+        "env": mockEnv({})
+    })).status, 403);
+    app.csrf({
+        "getResponse": function() {
+            return false;
+        }
+    });
+    assert.isFalse(app(mockRequest("POST", "/", {
+        "env": mockEnv({})
+    })));
+};
+
 if (require.main == module.id) {
     system.exit(require("test").run.apply(null,
             [exports].concat(system.args.slice(1))));
