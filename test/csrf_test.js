@@ -322,7 +322,7 @@ exports.testIsSameOrigin = function() {
     assert.strictEqual(response.status, 200);
 };
 
-exports.testGetResponse = function() {
+exports.testGetFailureResponse = function() {
     var app = new Application();
     app.configure("session", "csrf", "route");
     app.post("/", function(req) {
@@ -332,7 +332,7 @@ exports.testGetResponse = function() {
         "env": mockEnv({})
     })).status, 403);
     app.csrf({
-        "getResponse": function() {
+        "getFailureResponse": function() {
             return false;
         }
     });
