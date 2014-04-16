@@ -306,6 +306,20 @@ exports.testIsSameOrigin = function() {
         "remoteAddress": "https://localhost/test"
     }));
     assert.strictEqual(response.status, 200);
+
+    // disable referrer checking
+    app.csrf({
+        "checkReferrer": false
+    });
+    response = app(mockRequest("POST", "/", {
+        "scheme": "https",
+        "host": "localhost",
+        "port": 443,
+        "env": mockEnv({"csrfToken": token}, true),
+        "postParams": {"csrftoken": token},
+        "remoteAddress": "http://localhost/test"
+    }));
+    assert.strictEqual(response.status, 200);
 };
 
 if (require.main == module.id) {
