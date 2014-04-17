@@ -1,6 +1,8 @@
+var system = require("system");
+var assert = require("assert");
+
 var {Application} = require("../lib/stick");
 var {mount,route} = require("../lib/middleware")
-var assert = require("assert");
 
 
 exports.testMiddleware = function() {
@@ -360,6 +362,9 @@ exports.testPreflightCors = function() {
    assert.equal(response.body[0], preflightResponseBody);
 }
 
-if (require.main == module) {
-    require("test").run(exports);
+exports.testCsrf = require("./csrf_test");
+
+if (require.main == module.id) {
+    system.exit(require("test").run.apply(null,
+            [exports].concat(system.args.slice(1))));
 }
