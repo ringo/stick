@@ -298,14 +298,6 @@ exports.testSimpleCors = function() {
    // hand the data to the request depending on the Allow-Origin header.
    assert.equal(response.body, responseBody);
 
-   // invalid configuration - can not have allowOrigin=* and allowCredentials
-   assert.throws(function() {
-      app.cors({
-        allowOrigin: ['*'],
-        allowCredentials: true
-      })
-   });
-
    // allow all
    app.cors({
       allowOrigin: ['*'],
