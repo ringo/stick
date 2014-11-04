@@ -1,30 +1,29 @@
-<!DOCTYPE html >
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>stick/middleware/route - Stick API</title>
 
-<html lang="de" dir="ltr">
-<head>
-    <title>stick/middleware/route - Stick API</title>
-    <link rel="shortcut icon" href="http://ringojs.org/favicon.ico" type="image/x-icon" />
-    <link rel="icon" href="http://ringojs.org/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="../../static/style.css" />
-    <link rel="stylesheet" href="../../static/jsdoc.css" />
-<script type="text/javascript" src="../../static/jquery.js"></script>
+        <link rel="shortcut icon" href="http://ringojs.org/favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="http://ringojs.org/favicon.ico" type="image/x-icon" />
+        <link href='http://fonts.googleapis.com/css?family=Fira+Mono:400,700|Open+Sans:400italic,700italic,700,400,600' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="../../static/jsdoc.css" />
+<link rel="stylesheet" href="../../static/style.css" />
+<script type="text/javascript" src="../../static/jquery.min.js"></script>
 <script type="text/javascript" src="../../static/jsdoc.js"></script>
-<script>
-$(document).ready(jsdocSetup);
-</script>
 
-</head>
 
-<body>
-<div class="wrap">
+  </head>
 
+  <body class="jsdoc standalone">
     <div class="main">
-        <div class="content">
-                    <h1 class="modulename">Module stick/middleware/route</h1>
-            <div class="fileoverview">
-                <p>Middleware for HTTP method based local request routing.</p>
+        <div class="content jsdoc">
+        
+            <h1 class="modulename">Module stick/middleware/route</h1>
+        <div class="fileoverview">
+            <p>Middleware for HTTP method based local request routing.</p>
 
-<p>This installs <code>get</code>, <code>post</code>, <code>put</code>, and <code>del</code> methods in the application
+<p>This installs <code>get</code>, <code>post</code>, <code>put</code>, <code>del</code> and <code>options</code> methods in the application
 object for routing requests with the corresponding HTTP methods. These
 methods take a path spec as first argument and a function as second argument.</p>
 
@@ -52,7 +51,8 @@ Unmatched optional placeholders will be <code>undefined</code>.</p>
 <p>The route middleware supports generating URLs from route names and parameters
 required by the route.</p>
 
-<p>Routes names are derived from the route's path spec by stripping
+<p>Routes names can either be defined explicitly by passing the route name
+as third argument, or are derived from the route's path spec by stripping
 out all placeholders and removing a leading slash. For example, a path
 spec <code>/post/:id.html</code> results in route name "post.html". If a path spec
 does not contain any static part, its route name is "index".</p>
@@ -66,106 +66,108 @@ will return the string "/post/5.html".</p>
 routing including support for mounted applications.</p>
 
 
-            </div>
+        </div>
 
-                        <div>
-                <h4> Example </h4>
-                <pre class="sh_javascript sh_sourceCode">app.configure("route")
+                <div>
+            <h4> Example </h4>
+            <pre class="sh_javascript sh_sourceCode">app.configure("route")
 app.get("/", function() {...})
+app.get("/", function() {...}, "index")
 app.post("/", function(req) {...})
 app.get("/:id.:format?", function(req, id, format) {...})
 app.del("/:id", function(req, id) {...})
 app.put("/:id", function(req, id) {...})</pre>
-            </div>
-            <div class="classoverview">
+        </div>
+        <div class="classoverview">
 
-                                <div>
-                    <h3>Functions</h3>
-                    <ul class="propertyoverview">
-                                                <li>
-                            <a href="#middleware" class="jsdoc-title"> middleware</a>(next, app)
-                        </li>
-                        </ul>
+                        <h2 class="functions">Functions</h2>
+            <ul class="functions propertyoverview">
+                                <li>
+                    <a href="#middleware" class="jsdoc-title"> middleware</a>(next, app)
+                </li>
+                </ul>
+            <div class="classes">
                 </div>
-                <div class="classes">
-                    </div>
+        </div>
+        <div class="details">
+                        <hr />
+            <!-- tpl-docitem -->
+            <div class="docitem" data-docitem="middleware">
+                <h3 >
+                    <span class="itemtitle"><a id="middleware" href="#middleware" class="itemtitle itemname">middleware</a></span>
+                    <span class="itemtitle light">(next, app)</span></h3>
+                <div>
+                    <p>Middleware for HTTP method based local request routing.</p>
+
+
+                </div>
+                                <div>
+                    <h4>Parameters</h4>
+                    <table>
+                                                <tr>
+                            <td>Function</td>
+                            <td class="paramname">next</td>
+                            <td>the wrapped middleware chain</td>
+                        </tr>
+                                                <tr>
+                            <td>Object</td>
+                            <td class="paramname">app</td>
+                            <td>the Stick Application object</td>
+                        </tr>
+                        </table>
+                </div>
+                                <div>
+                    <h4>Returns</h4>
+                    <table>
+                        <tr>
+                            <td>Function</td>
+                            <td> a JSGI middleware function</td>
+                        </tr>
+                    </table>
+                </div>
+                </div>
             </div>
-                <hr/>
-                <div class="details">
-                                        <!-- tpl-docitem -->
-                    <div>
-                        <div class="docitem" docitem="middleware">
-                            <h3>
-                                <span class="itemtitle"><a id="middleware" href="#middleware" class="itemtitle itemname">middleware</a></span>
-                                <span class="itemtitle light">(next, app)</span></h3>
-                            <div>
-                                <p>Middleware for HTTP method based local request routing.</p>
-
-
-                            </div>
-                                                        <div>
-                                <h4>Parameters</h4>
-                                <table>
-                                                                        <tr>
-                                        <td>Function</td>
-                                        <td class="paramname">next</td>
-                                        <td>the wrapped middleware chain</td>
-                                    </tr>
-                                                                        <tr>
-                                        <td>Object</td>
-                                        <td class="paramname">app</td>
-                                        <td>the Stick Application object</td>
-                                    </tr>
-                                    </table>
-                            </div>
-                                                        <div>
-                                <h4>Returns</h4>
-                                <table>
-                                    <tr>
-                                        <td>Function</td>
-                                        <td> a JSGI middleware function</td>
-                                    </tr>
-                                </table>
-                            </div>
-                            </div>
-                        <hr/>
-                    </div>
-
-                    </div>
-            </div>
+    
         </div>
 
+        <nav class="jsdoc standalone">
+            <h1>Stick API</h1>
+            <div class="jsdocSidenav">
+   <div class="toggles">
+      <a href="../../index.html">&bull; Modules</a>
+      <a href="../../index_all.html">&bull; Overview</a>
+   </div>
 
+   <input id="filter" type="text" placeholder="Filter modules" />
 
-    <div class="menu" style="margin-top: 1em; font-size: 13px;">
-    Stick API<br/>
-        <a href="../../index.html">Module list</a>
-    <a href="../../index_all.html">Full index</a><br/>
-    <input id="jsdoc-leftnavsearch" type="search" placeholder="Filter module list" size="14">
-    <ul class="jsdoc-leftnav leftnav">
-                <li><a href="../../stick/index.html"> stick </a></li>
-                <li><a href="../../helpers/index.html"> stick/helpers </a></li>
-                <li><a href="../../middleware/index.html"> stick/middleware </a></li>
-                <li><a href="../../middleware/basicauth/index.html"> stick/middleware/basicauth </a></li>
-                <li><a href="../../middleware/continuation/index.html"> stick/middleware/continuation </a></li>
-                <li><a href="../../middleware/cookies/index.html"> stick/middleware/cookies </a></li>
-                <li><a href="../../middleware/error/index.html"> stick/middleware/error </a></li>
-                <li><a href="../../middleware/etag/index.html"> stick/middleware/etag </a></li>
-                <li><a href="../../middleware/gzip/index.html"> stick/middleware/gzip </a></li>
-                <li><a href="../../middleware/method/index.html"> stick/middleware/method </a></li>
-                <li><a href="../../middleware/mount/index.html"> stick/middleware/mount </a></li>
-                <li><a href="../../middleware/notfound/index.html"> stick/middleware/notfound </a></li>
-                <li><a href="../../middleware/params/index.html"> stick/middleware/params </a></li>
-                <li><a href="../../middleware/profiler/index.html"> stick/middleware/profiler </a></li>
-                <li><a href="../../middleware/render/index.html"> stick/middleware/render </a></li>
-                <li><a href="../../middleware/requestlog/index.html"> stick/middleware/requestlog </a></li>
-                <li><a href="../../middleware/route/index.html"> stick/middleware/route </a></li>
-                <li><a href="../../middleware/session/index.html"> stick/middleware/session </a></li>
-                <li><a href="../../middleware/static/index.html"> stick/middleware/static </a></li>
-                <li><a href="../../middleware/upload/index.html"> stick/middleware/upload </a></li>
-        </ul>
-
+   <ul id="modulelist">
+            <li><a href="../../stick/index.html">stick</a></li>
+            <li><a href="../../helpers/index.html">stick/helpers</a></li>
+            <li><a href="../../middleware/index.html">stick/middleware</a></li>
+            <li><a href="../../middleware/accept/index.html">stick/middleware/accept</a></li>
+            <li><a href="../../middleware/basicauth/index.html">stick/middleware/basicauth</a></li>
+            <li><a href="../../middleware/continuation/index.html">stick/middleware/continuation</a></li>
+            <li><a href="../../middleware/cookies/index.html">stick/middleware/cookies</a></li>
+            <li><a href="../../middleware/cors/index.html">stick/middleware/cors</a></li>
+            <li><a href="../../middleware/csrf/index.html">stick/middleware/csrf</a></li>
+            <li><a href="../../middleware/error/index.html">stick/middleware/error</a></li>
+            <li><a href="../../middleware/etag/index.html">stick/middleware/etag</a></li>
+            <li><a href="../../middleware/gzip/index.html">stick/middleware/gzip</a></li>
+            <li><a href="../../middleware/method/index.html">stick/middleware/method</a></li>
+            <li><a href="../../middleware/mount/index.html">stick/middleware/mount</a></li>
+            <li><a href="../../middleware/notfound/index.html">stick/middleware/notfound</a></li>
+            <li><a href="../../middleware/params/index.html">stick/middleware/params</a></li>
+            <li><a href="../../middleware/profiler/index.html">stick/middleware/profiler</a></li>
+            <li><a href="../../middleware/render/index.html">stick/middleware/render</a></li>
+            <li><a href="../../middleware/requestlog/index.html">stick/middleware/requestlog</a></li>
+            <li><a href="../../middleware/route/index.html">stick/middleware/route</a></li>
+            <li><a href="../../middleware/session/index.html">stick/middleware/session</a></li>
+            <li><a href="../../middleware/static/index.html">stick/middleware/static</a></li>
+            <li><a href="../../middleware/upload/index.html">stick/middleware/upload</a></li>
+      </ul>
 </div>
-</div>
-</body>
+
+        </nav>
+    </div>
+    </body>
 </html>

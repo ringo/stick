@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>stick/middleware/requestlog - Stick API</title>
+        <title>stick/middleware/accept - Stick API</title>
 
         <link rel="shortcut icon" href="http://ringojs.org/favicon.ico" type="image/x-icon" />
         <link rel="icon" href="http://ringojs.org/favicon.ico" type="image/x-icon" />
@@ -19,22 +19,11 @@
     <div class="main">
         <div class="content jsdoc">
         
-            <h1 class="modulename">Module stick/middleware/requestlog</h1>
+            <h1 class="modulename">Module stick/middleware/accept</h1>
         <div class="fileoverview">
-            <p>Middleware for collecting log messages issued during execution
-of the current request.</p>
-
-<p>This adds a <code>requestlog</code> property to the application object with an <code>items</code>
-property. During execution of a request <code>items</code> contains an array containing
-all the log messages issued for the request. Log messages are represented
-as arrays in the format <code>[time, level, name, message]</code>.</p>
-
-<p>During request execution, the <code>requestlog</code> property also defines a
-property called <code>start</code> containing the time the execution started.</p>
-
-<p>By default, messages are appended to the response if its Content-Type is
-<code>text/html</code>. This can be controlled using the <code>app.requestlog.append</code>
-boolean flag.</p>
+            <p>This module provides middleware to check if a
+HTTP request accepts the possible response and makes content
+negotiation more convenient.</p>
 
 
         </div>
@@ -58,10 +47,27 @@ boolean flag.</p>
                     <span class="itemtitle"><a id="middleware" href="#middleware" class="itemtitle itemname">middleware</a></span>
                     <span class="itemtitle light">(next, app)</span></h3>
                 <div>
-                    <p>Middleware for collecting log messages issued during execution of the current
-request.</p>
+                    <p>This middleware installs a <code>accept</code> function in the application object.
+If the client request does not accept one of the specified content types,
+the middleware returns a <code>406 - Not Acceptable</code> response.</p>
+
+<p>Applying this middleware adds an <code>accepted</code> property to the request object.
+This contains an array with the client's accepted media types sorted
+from highest to the lowest quality.</p>
 
 
+                </div>
+                                <div>
+                    <h4> Example </h4>
+                    <pre class="sh_javascript sh_sourceCode">app.configure("accept", "route");
+app.accept(["text/plain", "text/html"]);
+app.get("/", function(req) {
+   if (req.accepted[0].subType === "html") {
+      return response.html("<!doctype html>");
+   } else {
+      return response.text("foo");    
+   }
+});</pre>
                 </div>
                                 <div>
                     <h4>Parameters</h4>
