@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<project name="Stick" default="usage" basedir=".">
+    <target name="usage">
+        <echo message=""/>
+        <echo message="Stick build targets"/>
+        <echo message=""/>
+        <echo message=" test       --> run JUnit and RingoJS tests"/>
+        <echo message=" docs       --> generates the API docs"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Initializes some variables                                          -->
+    <!-- =================================================================== -->
+    <target name="init">
+        <property name="home" value="."/>
+        <property name="version" value="0.4"/>
+        <property name="src" value="${home}/lib"/>
+        <property name="docs" value="${home}/docs"/>
+        <condition property="commandSuffix" value=".cmd" else="">
+            <os family="windows" />
+        </condition>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Runs the JUnit and RingoJS test cases                               -->
+    <!-- =================================================================== -->
+    <target name="test" depends="init">
+        <exec executable="ringo${commandSuffix}">
+            <arg value="${home}/test/stick_test.js" />
+        </exec>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Creates the API documentation                                       -->
+    <!-- =================================================================== -->
+    <target name="docs" depends="init">
+        <delete dir="${docs}"/>
+        <mkdir dir="${docs}"/>
+        <exec executable="ringo-doc${commandSuffix}">
+            <arg value="--file-urls" />
+            <arg value="-s" />
+            <arg value="${src}" />
+            <arg value="-d" />
+            <arg value="${docs}" />
+            <arg value="-p" />
+            <arg value="${home}/package.json" />
+            <arg value="-n" />
+            <arg value="Stick ${version} API" />
+        </exec>
+    </target>
+</project>
