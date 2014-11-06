@@ -1,6 +1,7 @@
 # Stick
 
-Stick is an extensible HTTP server framework for [RingoJS](http://ringojs.org/) to create modular web applications composed out of "plugins" (also known as "JSGI middleware functions").
+Stick is an extensible HTTP server framework for [RingoJS](http://ringojs.org/) to create modular web applications
+composed out of "plugins" (also known as "JSGI middleware functions").
 
 ## Overview
 
@@ -15,8 +16,12 @@ Compose web applications out of plugins:
 
 Currently Stick comes with the following middleware modules:
 
+ * accept       - HTTP content negotiation helper
  * basicauth    - basic HTTP authentication
  * continuation - generator-based async requests
+ * cookies      - read HTTP cookies
+ * cors         - Cross-site HTTP requests access control
+ * csrf         - CSRF mitigation
  * error        - generating error pages
  * etag         - ETag based conditional GET
  * gzip         - GZip content encoding
