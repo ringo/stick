@@ -27,18 +27,51 @@ exports.testJSONParsing = function() {
     var app = new Application();
     app.configure(params, route);
 
-    app.post("/", function (req) {
+    app.post("/good", function (req) {
         assert.ok(typeof req.postParams === "object");
         assert.deepEqual(req.postParams, { foo: "bar" });
     });
 
-    app(mockRequest("POST", "/", {
+    app.post("/bad", function (req) {
+        assert.deepEqual(req.postParams, {});
+    });
+
+    app(mockRequest("POST", "/good", {
         headers: {
             "content-type": "application/json"
         },
         input: new io.MemoryStream(new binary.ByteString("{\"foo\": \"bar\"}", "UTF-8"))
     }));
+
+    app(mockRequest("POST", "/bad", {
+        headers: {
+            "content-type": "application/json"
+        },
+        input: new io.MemoryStream(new binary.ByteString("{foo: \"bar\"}", "UTF-8"))
+    }));
 };
+
+exports.testPostParamsParsing = function() {
+    var app = new Application();
+    app.configure(params, route);
+
+    app.post("/good", function (req) {
+        assert.ok(typeof req.postParams === "object");
+        assert.deepEqual(req.postParams, {
+            "Name": "Jonathan Doe",
+            "Age": "23",
+            "Formula": "a + b == 13%!"
+        });
+    });
+
+    app(mockRequest("POST", "/good", {
+        headers: {
+            "content-type": "application/x-www-form-urlencoded"
+        },
+        input: new io.MemoryStream(new binary.ByteString("Name=Jonathan+Doe&Age=23&Formula=a+%2B+b+%3D%3D+13%25%21", "UTF-8"))
+    }));
+};
+
 
 if (require.main == module.id) {
     system.exit(require("test").run(module.id));
