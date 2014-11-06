@@ -1,11 +1,12 @@
 {
     "name": "stick",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "description": "A modular JSGI middleware composition toolkit",
-    "homepage": "http://hns.github.com/stick/",
+    "homepage": "https://github.com/ringo/stick/",
     "keywords": [
         "commonjs",
-        "jsgi"
+        "jsgi",
+        "webdevelopment"
     ],
     "author": "Hannes Wallnöfer <hannesw@gmail.com>",
     "contributors": [
@@ -20,18 +21,18 @@
     "repositories": [
         {
             "type": "git",
-            "url": "git://github.com/hns/stick.git"
+            "url": "git://github.com/ringo/stick.git"
         }
     ],
-    "bugs": "http://github.com/hns/stick/issues",
+    "bugs": "http://github.com/ringo/stick/issues",
     "licenses": [
         {
             "type": "MIT",
-            "url": "https://github.com/hns/stick/blob/master/LICENSE"
+            "url": "https://github.com/ringo/stick/blob/master/LICENSE"
         }
     ],
     "engines": {
-        "ringojs": ">= 0.9"
+        "ringojs": ">= 0.10"
     },
     "main": "lib/stick.js"
 }
