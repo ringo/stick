@@ -33,7 +33,8 @@ exports.testJSONParsing = function() {
     });
 
     app.post("/bad", function (req) {
-        assert.deepEqual(req.postParams, {});
+        // Try to access post params
+        req.postParams;
     });
 
     app(mockRequest("POST", "/good", {
@@ -43,12 +44,15 @@ exports.testJSONParsing = function() {
         input: new io.MemoryStream(new binary.ByteString("{\"foo\": \"bar\"}", "UTF-8"))
     }));
 
-    app(mockRequest("POST", "/bad", {
+    var response = app(mockRequest("POST", "/bad", {
         headers: {
             "content-type": "application/json"
         },
         input: new io.MemoryStream(new binary.ByteString("{foo: \"bar\"}", "UTF-8"))
     }));
+
+    // Check for Bad Request
+    assert.strictEqual(response.status, 400);
 };
 
 exports.testPostParamsParsing = function() {
