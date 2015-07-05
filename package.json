@@ -1,6 +1,6 @@
 {
     "name": "stick",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "description": "A modular JSGI middleware composition toolkit",
     "homepage": "https://github.com/ringo/stick/",
     "keywords": [
@@ -16,7 +16,8 @@
         "Robert Gaggl",
         "Robert Thurnher",
         "Richard R. McKinley",
-        "Simon Oberhammer"
+        "Simon Oberhammer",
+        "Edwin Hoogerbeets"
     ],
     "repositories": [
         {

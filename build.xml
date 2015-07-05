@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <project name="Stick" default="usage" basedir=".">
+	<property file="build.properties"/>
+	
     <target name="usage">
         <echo message=""/>
         <echo message="Stick build targets"/>
@@ -13,7 +15,7 @@
     <!-- =================================================================== -->
     <target name="init">
         <property name="home" value="."/>
-        <property name="version" value="0.4"/>
+        <property name="version" value="0.5"/>
         <property name="src" value="${home}/lib"/>
         <property name="docs" value="${home}/docs"/>
         <condition property="commandSuffix" value=".cmd" else="">
@@ -25,7 +27,7 @@
     <!-- Runs the JUnit and RingoJS test cases                               -->
     <!-- =================================================================== -->
     <target name="test" depends="init">
-        <exec executable="ringo${commandSuffix}">
+        <exec executable="${RINGO}/ringo${commandSuffix}">
             <arg value="${home}/test/stick_test.js" />
         </exec>
     </target>

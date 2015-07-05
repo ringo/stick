@@ -54,6 +54,7 @@ exports.testCsrf = require("./middleware/csrf_test");
 exports.testMount = require("./middleware/mount_test");
 exports.testParams = require("./middleware/params_test");
 exports.testRoute = require("./middleware/route_test");
+exports.testLocale = require("./middleware/locale_test");
 
 if (require.main == module.id) {
     system.exit(require("test").run(module.id));
