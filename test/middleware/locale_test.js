@@ -128,7 +128,7 @@ exports.testHttpHeadersNoMatchToSupportedLocales = function() {
 
     app(mockRequest("GET", "/good", {
         headers: {
-            "accept-language": "de-DE;q=0.8,fr-FR;q=0.4"
+            "accept-language": "de-DE;q=0.8,ru-RU;q=0.4"
         },
         env: mockEnv(sessionData)
     }));
@@ -303,7 +303,7 @@ exports.testByDomainRegex = function() {
     app.i18n({
     	supportedLocales: null,
     	defaultLocale: "en-US",
-        domainregex: "^(\w\w).mycompany.com",
+        domainregex: "^(\\w\\w).mycompany.com",
         domainmatchgroup: 1
     });
 
@@ -330,7 +330,7 @@ exports.testByDomainRegexNonISO = function() {
     app.i18n({
     	supportedLocales: null,
     	defaultLocale: "en-US",
-        domainregex: "^(\w\w).mycompany.com",
+        domainregex: "^(\\w\\w).mycompany.com",
         domainmatchgroup: 1
     });
 
@@ -357,7 +357,7 @@ exports.testByDomainRegexWithSupportedLocalesList = function() {
     app.i18n({
     	supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
     	defaultLocale: "en-US",
-        domainregex: "^(\w\w).mycompany.com",
+        domainregex: "^(\\w\\w).mycompany.com",
         domainmatchgroup: 1
     });
 
@@ -384,7 +384,7 @@ exports.testByDomainRegexNoMatchInSupportedLocales = function() {
     app.i18n({
     	supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
     	defaultLocale: "en-US",
-        domainregex: "^(\w\w).mycompany.com",
+        domainregex: "^(\\w\\w).mycompany.com",
         domainmatchgroup: 1
     });
 
@@ -411,7 +411,7 @@ exports.testByPathRegex = function() {
     app.i18n({
     	supportedLocales: null,
     	defaultLocale: "en-US",
-        pathregex: "^/(\w\w)/",
+        pathregex: "^/(\\w\\w)/",
         pathmatchgroup: 1
     });
 
@@ -438,7 +438,7 @@ exports.testByPathRegexNonISO = function() {
     app.i18n({
     	supportedLocales: null,
     	defaultLocale: "en-US",
-        pathregex: "^/(\w\w)/",
+        pathregex: "^/(\\w\\w)/",
         pathmatchgroup: 1
     });
 
@@ -465,7 +465,7 @@ exports.testByPathRegexWithSupportedLocalesList = function() {
     app.i18n({
     	supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
     	defaultLocale: "en-US",
-        pathregex: "^/(\w\w)/",
+        pathregex: "^/(\\w\\w)/",
         pathmatchgroup: 1
     });
 
@@ -492,7 +492,7 @@ exports.testByPathRegexNoMatchInSupportedLocales = function() {
     app.i18n({
     	supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
     	defaultLocale: "en-US",
-        pathregex: "^/(\w\w)/",
+        pathregex: "^/(\\w\\w)/",
         pathmatchgroup: 1
     });
 

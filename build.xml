@@ -28,6 +28,13 @@
     <!-- =================================================================== -->
     <target name="test" depends="init">
         <exec executable="${RINGO}/ringo${commandSuffix}">
+        	<arg value="${home}/test/stick_test.js" />
+        </exec>
+    </target>
+
+    <target name="debug" depends="init">
+        <exec executable="${RINGO}/ringo${commandSuffix}">
+        	<arg value="-d"/>
             <arg value="${home}/test/stick_test.js" />
         </exec>
     </target>

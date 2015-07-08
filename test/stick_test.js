@@ -5,6 +5,7 @@ var {Application} = require("../lib/stick");
 var {mount,route} = require("../lib/middleware")
 var {urlFor} = require("../lib/helpers");
 
+/*
 exports.testMiddleware = function() {
     function twice(next, app) {
         return function(req) {
@@ -46,14 +47,15 @@ exports.testMiddleware = function() {
     assert.equal(dev("foo"), "BARBARBARBAR");
     assert.equal(prod("foo"), "_BARBAR_");
 };
+*/
 
 // Middlewares
-exports.testAccept = require("./middleware/accept_test");
-exports.testCors = require("./middleware/cors_test");
-exports.testCsrf = require("./middleware/csrf_test");
-exports.testMount = require("./middleware/mount_test");
-exports.testParams = require("./middleware/params_test");
-exports.testRoute = require("./middleware/route_test");
+//exports.testAccept = require("./middleware/accept_test");
+//exports.testCors = require("./middleware/cors_test");
+//exports.testCsrf = require("./middleware/csrf_test");
+//exports.testMount = require("./middleware/mount_test");
+//exports.testParams = require("./middleware/params_test");
+//exports.testRoute = require("./middleware/route_test");
 exports.testLocale = require("./middleware/locale_test");
 
 if (require.main == module.id) {
