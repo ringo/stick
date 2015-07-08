@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <project name="Stick" default="usage" basedir=".">
-	<property file="build.properties"/>
-	
+    <property file="build.properties"/>
+
     <target name="usage">
         <echo message=""/>
         <echo message="Stick build targets"/>
         <echo message=""/>
         <echo message=" test       --> run JUnit and RingoJS tests"/>
-    	<echo message=" debug      --> run JUnit and RingoJS tests in the Rhino debugger"/>
+        <echo message=" debug      --> run JUnit and RingoJS tests in the Rhino debugger"/>
         <echo message=" docs       --> generates the API docs"/>
     </target>
 

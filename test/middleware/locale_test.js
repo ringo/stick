@@ -7,17 +7,15 @@ var {text} = require("ringo/jsgi/response");
 var {Application} = require("../../lib/stick");
 var {route, session, params, locale, cookies} = require("../../lib/middleware");
 
-var inspect = require("/home/edwin/src/transcircapp/src/webapp/WEB-INF/app/core/inspect");
-
 var MockCookie = function(name, value) {
-	this.name = name;
-	this.value = value;
+    this.name = name;
+    this.value = value;
 };
 MockCookie.prototype.getName = function() {
-	return this.name;
+    return this.name;
 };
 MockCookie.prototype.getValue = function() {
-	return this.value;
+    return this.value;
 };
 
 var mockRequest = function(method, path, opts) {
@@ -40,10 +38,10 @@ var mockRequest = function(method, path, opts) {
 
 var mockEnv = function(data, isSecure) {
     return {
-    	"servletRequest": {
+        "servletRequest": {
             "getSession": function() {
                 return {
-                	getAttribute: function(name) {
+                    getAttribute: function(name) {
                         if (data.hasOwnProperty(name)) {
                             return data[name];
                         }
@@ -53,25 +51,25 @@ var mockEnv = function(data, isSecure) {
                         data[name] = value;
                     },
                     isNew: function() {
-                    	return true;
+                        return true;
                     },
                     getCreationTime: function() {
-                    	if (!data.creationTime) {
-                    		data.creationTime = new Date().getTime();
-                    	}
-                    	return data.creationTime;
+                        if (!data.creationTime) {
+                            data.creationTime = new Date().getTime();
+                        }
+                        return data.creationTime;
                     },
                     getMaxInactiveInterval: function() {
-                    	return data.interval || -1;
+                        return data.interval || -1;
                     },
                     setMaxInactiveInterval: function(interval) {
-                    	data.interval = interval;
+                        data.interval = interval;
                     },
                     getLastAccessedTime: function() {
-                    	return new Date().getTime();
+                        return new Date().getTime();
                     },
                     invalidate: function() {
-                    	
+
                     }
                 };
             },
@@ -79,10 +77,10 @@ var mockEnv = function(data, isSecure) {
                 return isSecure === true;
             },
             "getCharacterEncoding": function() {
-            	return "UTF-8";
+                return "UTF-8";
             },
             "getCookies": function () {
-            	return data.cookies;
+                return data.cookies;
             }
         }
     };
@@ -93,18 +91,18 @@ exports.testHttpHeadersNoSupportedLocales = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.post('/good', function(request) {
-    	// should take the first one
-    	assert.equal(request.session.data.locale, "de-DE");
-    	return text("ok");
+        // should take the first one
+        assert.equal(request.session.data.locale, "de-DE");
+        return text("ok");
     });
 
     app(mockRequest("POST", "/good", {
@@ -122,18 +120,18 @@ exports.testHttpHeadersNoMatchToSupportedLocales = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: ["en-US","fr-FR","es-ES","ja-JP"],
-    	defaultLocale: "en-US"
+        supportedLocales: ["en-US","fr-FR","es-ES","ja-JP"],
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// should use the default Locale
-    	assert.equal(request.session.data.locale, "en-US");
-    	return text("ok");
+        // should use the default Locale
+        assert.equal(request.session.data.locale, "en-US");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
@@ -149,18 +147,18 @@ exports.testHttpHeadersMatchWithinSupportedLocales = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: ["en-US","fr-FR","es-ES","ja-JP"],
-    	defaultLocale: "en-US"
+        supportedLocales: ["en-US","fr-FR","es-ES","ja-JP"],
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// first one in the list that is in the supported locales list
-    	assert.equal(request.session.data.locale, "es-ES");
-    	return text("ok");
+        // first one in the list that is in the supported locales list
+        assert.equal(request.session.data.locale, "es-ES");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
@@ -176,20 +174,20 @@ exports.testHttpHeadersMatchWithinSupportedLocalesByLanguageOnly = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: ["en-US","fr-FR","es-ES","ja-JP"],
-    	defaultLocale: "en-US"
+        supportedLocales: ["en-US","fr-FR","es-ES","ja-JP"],
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// match by language only ignoring the region part
-    	// because some browsers like Opera only use the language code
-    	// instead of the full locale
-    	assert.equal(request.session.data.locale, "es-ES");
-    	return text("ok");
+        // match by language only ignoring the region part
+        // because some browsers like Opera only use the language code
+        // instead of the full locale
+        assert.equal(request.session.data.locale, "es-ES");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
@@ -205,22 +203,22 @@ exports.testByDomain = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// only have the language code available
-    	assert.equal(request.session.data.locale, "de");
-    	return text("ok");
+        // only have the language code available
+        assert.equal(request.session.data.locale, "de");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	host: "de.mycompany.com",
+        host: "de.mycompany.com",
         env: mockEnv(sessionData)
     }));
 };
@@ -230,23 +228,23 @@ exports.testByDomainFullLocale = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// has both the language and region code, but we should make
-    	// sure the locale comes out in correct BCP-47 form
-    	assert.equal(request.session.data.locale, "de-DE");
-    	return text("ok");
+        // has both the language and region code, but we should make
+        // sure the locale comes out in correct BCP-47 form
+        assert.equal(request.session.data.locale, "de-DE");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	host: "de_de.mycompany.com",
+        host: "de_de.mycompany.com",
         env: mockEnv(sessionData)
     }));
 };
@@ -257,23 +255,23 @@ exports.testByDomainIgnoreNonISOCodes = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// xy is not a valid ISO 639-2 language code, so it should be
-    	// ignored. Use the default instead.
-    	assert.equal(request.session.data.locale, "en-US");
-    	return text("ok");
+        // xy is not a valid ISO 639-2 language code, so it should be
+        // ignored. Use the default instead.
+        assert.equal(request.session.data.locale, "en-US");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	host: "xy.mycompany.com",
+        host: "xy.mycompany.com",
         env: mockEnv(sessionData)
     }));
 };
@@ -283,23 +281,23 @@ exports.testByDomainOnlyTakeTwoLetterCodes = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// dex is not a valid 2-letter ISO 639-2 language code, so it 
-    	// should be ignored. Use the default instead.
-    	assert.equal(request.session.data.locale, "en-US");
-    	return text("ok");
+        // dex is not a valid 2-letter ISO 639-2 language code, so it
+        // should be ignored. Use the default instead.
+        assert.equal(request.session.data.locale, "en-US");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	host: "dex.mycompany.com",
+        host: "dex.mycompany.com",
         env: mockEnv(sessionData)
     }));
 };
@@ -309,10 +307,10 @@ exports.testByDomainRegex = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US",
+        supportedLocales: null,
+        defaultLocale: "en-US",
         domainregex: "^(\\w\\w).mycompany.com",
         domainmatchgroup: 1
     });
@@ -320,13 +318,13 @@ exports.testByDomainRegex = function() {
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// valid ISO code, so it should be extracted
-    	assert.equal(request.session.data.locale, "fr");
-    	return text("ok");
+        // valid ISO code, so it should be extracted
+        assert.equal(request.session.data.locale, "fr");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	host: "fr.mycompany.com",
+        host: "fr.mycompany.com",
         env: mockEnv(sessionData)
     }));
 };
@@ -336,10 +334,10 @@ exports.testByDomainRegexNonISO = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US",
+        supportedLocales: null,
+        defaultLocale: "en-US",
         domainregex: "^(\\w\\w).mycompany.com",
         domainmatchgroup: 1
     });
@@ -347,13 +345,13 @@ exports.testByDomainRegexNonISO = function() {
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// not a valid ISO code, so fall back to the default
-    	assert.equal(request.session.data.locale, "en-US");
-    	return text("ok");
+        // not a valid ISO code, so fall back to the default
+        assert.equal(request.session.data.locale, "en-US");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	host: "xy.mycompany.com",
+        host: "xy.mycompany.com",
         env: mockEnv(sessionData)
     }));
 };
@@ -363,10 +361,10 @@ exports.testByDomainRegexWithSupportedLocalesList = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
-    	defaultLocale: "en-US",
+        supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
+        defaultLocale: "en-US",
         domainregex: "^(\\w\\w).mycompany.com",
         domainmatchgroup: 1
     });
@@ -374,13 +372,13 @@ exports.testByDomainRegexWithSupportedLocalesList = function() {
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// should map to the full locale in the supported locales list.
-    	assert.equal(request.session.data.locale, "es-ES");
-    	return text("ok");
+        // should map to the full locale in the supported locales list.
+        assert.equal(request.session.data.locale, "es-ES");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	host: "es.mycompany.com",
+        host: "es.mycompany.com",
         env: mockEnv(sessionData)
     }));
 };
@@ -390,10 +388,10 @@ exports.testByDomainRegexNoMatchInSupportedLocales = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
-    	defaultLocale: "en-US",
+        supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
+        defaultLocale: "en-US",
         domainregex: "^(\\w\\w).mycompany.com",
         domainmatchgroup: 1
     });
@@ -401,13 +399,13 @@ exports.testByDomainRegexNoMatchInSupportedLocales = function() {
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// not on the supported locales list, so fall back to the default
-    	assert.equal(request.session.data.locale, "en-US");
-    	return text("ok");
+        // not on the supported locales list, so fall back to the default
+        assert.equal(request.session.data.locale, "en-US");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	host: "ru.mycompany.com",
+        host: "ru.mycompany.com",
         env: mockEnv(sessionData)
     }));
 };
@@ -417,10 +415,10 @@ exports.testByPathRegex = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US",
+        supportedLocales: null,
+        defaultLocale: "en-US",
         pathregex: "^/(\\w\\w)/",
         pathmatchgroup: 1
     });
@@ -428,13 +426,13 @@ exports.testByPathRegex = function() {
     var sessionData = {};
 
     app.get('/:slug/good', function(request) {
-    	// valid ISO code, so it should be extracted
-    	assert.equal(request.session.data.locale, "fr");
-    	return text("ok");
+        // valid ISO code, so it should be extracted
+        assert.equal(request.session.data.locale, "fr");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/fr/good", {
-    	host: "www.mycompany.com",
+        host: "www.mycompany.com",
         env: mockEnv(sessionData)
     }));
 };
@@ -444,10 +442,10 @@ exports.testByPathRegexNonISO = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US",
+        supportedLocales: null,
+        defaultLocale: "en-US",
         pathregex: "^/(\\w\\w)/",
         pathmatchgroup: 1
     });
@@ -455,13 +453,13 @@ exports.testByPathRegexNonISO = function() {
     var sessionData = {};
 
     app.get('/:slug/good', function(request) {
-    	// not a valid ISO code, so fall back to the default
-    	assert.equal(request.session.data.locale, "en-US");
-    	return text("ok");
+        // not a valid ISO code, so fall back to the default
+        assert.equal(request.session.data.locale, "en-US");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/xy/good", {
-    	host: "www.mycompany.com",
+        host: "www.mycompany.com",
         env: mockEnv(sessionData)
     }));
 };
@@ -471,10 +469,10 @@ exports.testByPathRegexWithSupportedLocalesList = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
-    	defaultLocale: "en-US",
+        supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
+        defaultLocale: "en-US",
         pathregex: "^/(\\w\\w)/",
         pathmatchgroup: 1
     });
@@ -482,13 +480,13 @@ exports.testByPathRegexWithSupportedLocalesList = function() {
     var sessionData = {};
 
     app.get('/:slug/good', function(request) {
-    	// should map to the full locale in the supported locales list.
-    	assert.equal(request.session.data.locale, "es-ES");
-    	return text("ok");
+        // should map to the full locale in the supported locales list.
+        assert.equal(request.session.data.locale, "es-ES");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/es/good", {
-    	host: "www.mycompany.com",
+        host: "www.mycompany.com",
         env: mockEnv(sessionData)
     }));
 };
@@ -498,10 +496,10 @@ exports.testByPathRegexNoMatchInSupportedLocales = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
-    	defaultLocale: "en-US",
+        supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
+        defaultLocale: "en-US",
         pathregex: "^/(\\w\\w)/",
         pathmatchgroup: 1
     });
@@ -509,13 +507,13 @@ exports.testByPathRegexNoMatchInSupportedLocales = function() {
     var sessionData = {};
 
     app.get('/:slug/good', function(request) {
-    	// not on the supported locales list, so fall back to the default
-    	assert.equal(request.session.data.locale, "en-US");
-    	return text("ok");
+        // not on the supported locales list, so fall back to the default
+        assert.equal(request.session.data.locale, "en-US");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/ru/good", {
-    	host: "www.mycompany.com",
+        host: "www.mycompany.com",
         env: mockEnv(sessionData)
     }));
 };
@@ -525,18 +523,18 @@ exports.testByURLPath = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/:slug/good', function(request) {
-    	// only have the language code available
-    	assert.equal(request.session.data.locale, "de");
-    	return text("ok");
+        // only have the language code available
+        assert.equal(request.session.data.locale, "de");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/de/good", {
@@ -549,19 +547,19 @@ exports.testByURLPathFullLocale = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/:slug/good', function(request) {
-    	// has both the language and region code, but we should make
-    	// sure the locale comes out in correct BCP-47 form
-    	assert.equal(request.session.data.locale, "de-DE");
-    	return text("ok");
+        // has both the language and region code, but we should make
+        // sure the locale comes out in correct BCP-47 form
+        assert.equal(request.session.data.locale, "de-DE");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/de_de/good", {
@@ -575,23 +573,23 @@ exports.testByURLPathIgnoreNonISOCodes = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/:slug/good', function(request, slug) {
-    	// xy is not a valid ISO 639-2 language code, so it should be
-    	// ignored. Use the default instead.
-    	assert.equal(request.session.data.locale, "en-US");
-    	return text("ok");
+        // xy is not a valid ISO 639-2 language code, so it should be
+        // ignored. Use the default instead.
+        assert.equal(request.session.data.locale, "en-US");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/xy/good", {
-    	env: mockEnv(sessionData)
+        env: mockEnv(sessionData)
     }));
 };
 
@@ -600,23 +598,23 @@ exports.testByURLPathOnlyTakeTwoLetterCodes = function() {
     app.configure('route');
     app.configure('locale');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/:slug/good', function(request) {
-    	// dex is not a valid 2-letter ISO 639-2 language code, so it 
-    	// should be ignored. Use the default instead.
-    	assert.equal(request.session.data.locale, "en-US");
-    	return text("ok");
+        // dex is not a valid 2-letter ISO 639-2 language code, so it
+        // should be ignored. Use the default instead.
+        assert.equal(request.session.data.locale, "en-US");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/dex/good", {
-    	env: mockEnv(sessionData)
+        env: mockEnv(sessionData)
     }));
 };
 
@@ -626,22 +624,22 @@ exports.testParamsGetFullLocale = function() {
     app.configure('locale');
     app.configure('params');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// should take the first one
-    	assert.equal(request.session.data.locale, "de-DE");
-    	return text("ok");
+        // should take the first one
+        assert.equal(request.session.data.locale, "de-DE");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	queryString: "lang=de-DE",
+        queryString: "lang=de-DE",
         env: mockEnv(sessionData)
     }));
 };
@@ -652,22 +650,22 @@ exports.testParamsGetPartialLocale = function() {
     app.configure('locale');
     app.configure('params');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// should take the first one
-    	assert.equal(request.session.data.locale, "de");
-    	return text("ok");
+        // should take the first one
+        assert.equal(request.session.data.locale, "de");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	queryString: "lang=de",
+        queryString: "lang=de",
         env: mockEnv(sessionData)
     }));
 };
@@ -678,22 +676,22 @@ exports.testParamsGet2 = function() {
     app.configure('locale');
     app.configure('params');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// should take the first one
-    	assert.equal(request.session.data.locale, "de");
-    	return text("ok");
+        // should take the first one
+        assert.equal(request.session.data.locale, "de");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	queryString: "language=de",
+        queryString: "language=de",
         env: mockEnv(sessionData)
     }));
 };
@@ -704,22 +702,22 @@ exports.testParamsGet3 = function() {
     app.configure('locale');
     app.configure('params');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// should take the first one
-    	assert.equal(request.session.data.locale, "de");
-    	return text("ok");
+        // should take the first one
+        assert.equal(request.session.data.locale, "de");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	queryString: "locale=de",
+        queryString: "locale=de",
         env: mockEnv(sessionData)
     }));
 };
@@ -730,22 +728,22 @@ exports.testParamsGetNonISOCode = function() {
     app.configure('locale');
     app.configure('params');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// should take the first one
-    	assert.equal(request.session.data.locale, "en-US");
-    	return text("ok");
+        // should take the first one
+        assert.equal(request.session.data.locale, "en-US");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	queryString: "lang=xy",
+        queryString: "lang=xy",
         env: mockEnv(sessionData)
     }));
 };
@@ -756,18 +754,18 @@ exports.testParamsPost = function() {
     app.configure('locale');
     app.configure('params');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.post('/good', function(request) {
-    	// should take the first one
-    	assert.equal(request.session.data.locale, "de");
-    	return text("ok");
+        // should take the first one
+        assert.equal(request.session.data.locale, "de");
+        return text("ok");
     });
 
     app(mockRequest("POST", "/good", {
@@ -785,18 +783,18 @@ exports.testParamsPostFullLocale = function() {
     app.configure('locale');
     app.configure('params');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.post('/good', function(request) {
-    	// should take the first one
-    	assert.equal(request.session.data.locale, "de-DE");
-    	return text("ok");
+        // should take the first one
+        assert.equal(request.session.data.locale, "de-DE");
+        return text("ok");
     });
 
     app(mockRequest("POST", "/good", {
@@ -814,18 +812,18 @@ exports.testParamsPost2 = function() {
     app.configure('locale');
     app.configure('params');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.post('/good', function(request) {
-    	// should take the first one
-    	assert.equal(request.session.data.locale, "de");
-    	return text("ok");
+        // should take the first one
+        assert.equal(request.session.data.locale, "de");
+        return text("ok");
     });
 
     app(mockRequest("POST", "/good", {
@@ -843,18 +841,18 @@ exports.testParamsPost3 = function() {
     app.configure('locale');
     app.configure('params');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.post('/good', function(request) {
-    	// should take the first one
-    	assert.equal(request.session.data.locale, "de");
-    	return text("ok");
+        // should take the first one
+        assert.equal(request.session.data.locale, "de");
+        return text("ok");
     });
 
     app(mockRequest("POST", "/good", {
@@ -872,26 +870,26 @@ exports.testCookie = function() {
     app.configure('locale');
     app.configure('cookies');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {
-    	// simulate request cookies by putting them in the session data where
-    	// the mock env can pick them up
-    	cookies: [new MockCookie("locale", "de-DE")]
+        // simulate request cookies by putting them in the session data where
+        // the mock env can pick them up
+        cookies: [new MockCookie("locale", "de-DE")]
     };
 
     app.get('/good', function(request) {
-    	// should take the locale cookie's value
-    	assert.equal(request.session.data.locale, "de-DE");
-    	return text("ok");
+        // should take the locale cookie's value
+        assert.equal(request.session.data.locale, "de-DE");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	env: mockEnv(sessionData)
+        env: mockEnv(sessionData)
     }));
 };
 
@@ -901,24 +899,24 @@ exports.testSession = function() {
     app.configure('locale');
     app.configure('cookies');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {
-    	locale: "fr-FR",
+        locale: "fr-FR",
     };
 
     app.get('/good', function(request) {
-    	// should take the value already in the session
-    	assert.equal(request.session.data.locale, "fr-FR");
-    	return text("ok");
+        // should take the value already in the session
+        assert.equal(request.session.data.locale, "fr-FR");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	env: mockEnv(sessionData)
+        env: mockEnv(sessionData)
     }));
 };
 
@@ -928,27 +926,27 @@ exports.testSessionTakesPrecedenceOverCookies = function() {
     app.configure('locale');
     app.configure('cookies');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {
-    	locale: "fr-FR",
-    	// simulate request cookies by putting them in the session data where
-    	// the mock env can pick them up
-    	cookies: [new MockCookie("locale", "de-DE")]
+        locale: "fr-FR",
+        // simulate request cookies by putting them in the session data where
+        // the mock env can pick them up
+        cookies: [new MockCookie("locale", "de-DE")]
     };
 
     app.get('/good', function(request) {
-    	// should take the value already in the session
-    	assert.equal(request.session.data.locale, "fr-FR");
-    	return text("ok");
+        // should take the value already in the session
+        assert.equal(request.session.data.locale, "fr-FR");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	env: mockEnv(sessionData)
+        env: mockEnv(sessionData)
     }));
 };
 
@@ -959,27 +957,27 @@ exports.testCookieTakesPrecedenceOverQueryStrings = function() {
     app.configure('params');
     app.configure('cookies');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {
-    	// simulate request cookies by putting them in the session data where
-    	// the mock env can pick them up
-    	cookies: [new MockCookie("locale", "de-DE")]
+        // simulate request cookies by putting them in the session data where
+        // the mock env can pick them up
+        cookies: [new MockCookie("locale", "de-DE")]
     };
 
     app.get('/good', function(request) {
-    	// should take the locale cookie over the query string parameter
-    	assert.equal(request.session.data.locale, "de-DE");
-    	return text("ok");
+        // should take the locale cookie over the query string parameter
+        assert.equal(request.session.data.locale, "de-DE");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	env: mockEnv(sessionData),
-    	queryString: "locale=fr-FR"
+        env: mockEnv(sessionData),
+        queryString: "locale=fr-FR"
     }));
 };
 
@@ -989,18 +987,18 @@ exports.testQueryStringsTakesPrecedenceOverHTTPAcceptHeaders = function() {
     app.configure('locale');
     app.configure('params');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// should take the query string parameter over the http headers
-    	assert.equal(request.session.data.locale, "fr-FR");
-    	return text("ok");
+        // should take the query string parameter over the http headers
+        assert.equal(request.session.data.locale, "fr-FR");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
@@ -1008,8 +1006,8 @@ exports.testQueryStringsTakesPrecedenceOverHTTPAcceptHeaders = function() {
             "accept-language": "de-DE;q=0.8,ja-JP;q=0.4",
             "content-type": "application/json"
         },
-    	env: mockEnv(sessionData),
-    	queryString: "locale=fr-FR"
+        env: mockEnv(sessionData),
+        queryString: "locale=fr-FR"
     }));
 };
 
@@ -1019,27 +1017,27 @@ exports.testHTTPAcceptHeadersTakePrecedenceOverURLPatterns = function() {
     app.configure('locale');
     app.configure('params');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// should take the http headers over the url patterns
-    	assert.equal(request.session.data.locale, "de-DE");
-    	return text("ok");
+        // should take the http headers over the url patterns
+        assert.equal(request.session.data.locale, "de-DE");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	host: "ko.mycompany.com",
+        host: "ko.mycompany.com",
         headers: {
             "accept-language": "de-DE;q=0.8,ja-JP;q=0.4",
             "content-type": "application/json"
         },
-    	env: mockEnv(sessionData)
+        env: mockEnv(sessionData)
     }));
 };
 
@@ -1049,22 +1047,22 @@ exports.testURLPatternsTakePrecedenceOverDefault = function() {
     app.configure('locale');
     app.configure('params');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// should take the http headers over the url patterns
-    	assert.equal(request.session.data.locale, "ko");
-    	return text("ok");
+        // should take the http headers over the url patterns
+        assert.equal(request.session.data.locale, "ko");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
-    	host: "ko.mycompany.com",
+        host: "ko.mycompany.com",
         env: mockEnv(sessionData)
     }));
 };
@@ -1075,18 +1073,18 @@ exports.testDefaultTakePrecedenceOverNothing = function() {
     app.configure('locale');
     app.configure('params');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null,
-    	defaultLocale: "en-US"
+        supportedLocales: null,
+        defaultLocale: "en-US"
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// should take the http headers over the url patterns
-    	assert.equal(request.session.data.locale, "en-US");
-    	return text("ok");
+        // should take the http headers over the url patterns
+        assert.equal(request.session.data.locale, "en-US");
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
@@ -1100,18 +1098,18 @@ exports.testNoLocaleAtAll = function() {
     app.configure('locale');
     app.configure('params');
     app.configure('session');
-    
+
     app.i18n({
-    	supportedLocales: null
+        supportedLocales: null
     });
 
     var sessionData = {};
 
     app.get('/good', function(request) {
-    	// should take the http headers over the url patterns
-    	console.log("locale is " + request.session.data.locale + "\n\n\n");
-    	assert.ok(!request.session.data.locale);
-    	return text("ok");
+        // should take the http headers over the url patterns
+        console.log("locale is " + request.session.data.locale + "\n\n\n");
+        assert.ok(!request.session.data.locale);
+        return text("ok");
     });
 
     app(mockRequest("GET", "/good", {
