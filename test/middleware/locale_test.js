@@ -9,6 +9,17 @@ var {route, session, params, locale, cookies} = require("../../lib/middleware");
 
 var inspect = require("/home/edwin/src/transcircapp/src/webapp/WEB-INF/app/core/inspect");
 
+var MockCookie = function(name, value) {
+	this.name = name;
+	this.value = value;
+};
+MockCookie.prototype.getName = function() {
+	return this.name;
+};
+MockCookie.prototype.getValue = function() {
+	return this.value;
+};
+
 var mockRequest = function(method, path, opts) {
     opts || (opts = {});
     return {
@@ -19,7 +30,6 @@ var mockRequest = function(method, path, opts) {
         "pathInfo": path || "/",
         "env": opts.env || {},
         "headers": opts.headers || {},
-        "cookies": opts.cookies || {},
         "postParams": opts.postParams || {},
         "queryParams": opts.queryParams || {},
         "remoteAddress": opts.remoteAddress || "",
@@ -72,7 +82,7 @@ var mockEnv = function(data, isSecure) {
             	return "UTF-8";
             },
             "getCookies": function () {
-            	return undefined;
+            	return data.cookies;
             }
         }
     };
@@ -730,7 +740,7 @@ exports.testParamsGetNonISOCode = function() {
 
     app.get('/good', function(request) {
     	// should take the first one
-    	assert.equal(request.session.data.locale, "de");
+    	assert.equal(request.session.data.locale, "en-US");
     	return text("ok");
     });
 
@@ -868,7 +878,11 @@ exports.testCookie = function() {
     	defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    var sessionData = {
+    	// simulate request cookies by putting them in the session data where
+    	// the mock env can pick them up
+    	cookies: [new MockCookie("locale", "de-DE")]
+    };
 
     app.get('/good', function(request) {
     	// should take the locale cookie's value
@@ -877,12 +891,68 @@ exports.testCookie = function() {
     });
 
     app(mockRequest("GET", "/good", {
-    	env: mockEnv(sessionData),
-    	cookies: {"locale": "de-DE"}
+    	env: mockEnv(sessionData)
     }));
 };
 
-exports.testCookieTakesPrecedence = function() {
+exports.testSession = function() {
+    var app = new Application();
+    app.configure('route');
+    app.configure('locale');
+    app.configure('cookies');
+    app.configure('session');
+    
+    app.i18n({
+    	supportedLocales: null,
+    	defaultLocale: "en-US"
+    });
+
+    var sessionData = {
+    	locale: "fr-FR",
+    };
+
+    app.get('/good', function(request) {
+    	// should take the value already in the session
+    	assert.equal(request.session.data.locale, "fr-FR");
+    	return text("ok");
+    });
+
+    app(mockRequest("GET", "/good", {
+    	env: mockEnv(sessionData)
+    }));
+};
+
+exports.testSessionTakesPrecedenceOverCookies = function() {
+    var app = new Application();
+    app.configure('route');
+    app.configure('locale');
+    app.configure('cookies');
+    app.configure('session');
+    
+    app.i18n({
+    	supportedLocales: null,
+    	defaultLocale: "en-US"
+    });
+
+    var sessionData = {
+    	locale: "fr-FR",
+    	// simulate request cookies by putting them in the session data where
+    	// the mock env can pick them up
+    	cookies: [new MockCookie("locale", "de-DE")]
+    };
+
+    app.get('/good', function(request) {
+    	// should take the value already in the session
+    	assert.equal(request.session.data.locale, "fr-FR");
+    	return text("ok");
+    });
+
+    app(mockRequest("GET", "/good", {
+    	env: mockEnv(sessionData)
+    }));
+};
+
+exports.testCookieTakesPrecedenceOverQueryStrings = function() {
     var app = new Application();
     app.configure('route');
     app.configure('locale');
@@ -895,7 +965,11 @@ exports.testCookieTakesPrecedence = function() {
     	defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    var sessionData = {
+    	// simulate request cookies by putting them in the session data where
+    	// the mock env can pick them up
+    	cookies: [new MockCookie("locale", "de-DE")]
+    };
 
     app.get('/good', function(request) {
     	// should take the locale cookie over the query string parameter
@@ -905,8 +979,143 @@ exports.testCookieTakesPrecedence = function() {
 
     app(mockRequest("GET", "/good", {
     	env: mockEnv(sessionData),
-    	queryString: "locale=fr-FR",
-    	cookies: {"locale": "de-DE"}
+    	queryString: "locale=fr-FR"
+    }));
+};
+
+exports.testQueryStringsTakesPrecedenceOverHTTPAcceptHeaders = function() {
+    var app = new Application();
+    app.configure('route');
+    app.configure('locale');
+    app.configure('params');
+    app.configure('session');
+    
+    app.i18n({
+    	supportedLocales: null,
+    	defaultLocale: "en-US"
+    });
+
+    var sessionData = {};
+
+    app.get('/good', function(request) {
+    	// should take the query string parameter over the http headers
+    	assert.equal(request.session.data.locale, "fr-FR");
+    	return text("ok");
+    });
+
+    app(mockRequest("GET", "/good", {
+        headers: {
+            "accept-language": "de-DE;q=0.8,ja-JP;q=0.4",
+            "content-type": "application/json"
+        },
+    	env: mockEnv(sessionData),
+    	queryString: "locale=fr-FR"
+    }));
+};
+
+exports.testHTTPAcceptHeadersTakePrecedenceOverURLPatterns = function() {
+    var app = new Application();
+    app.configure('route');
+    app.configure('locale');
+    app.configure('params');
+    app.configure('session');
+    
+    app.i18n({
+    	supportedLocales: null,
+    	defaultLocale: "en-US"
+    });
+
+    var sessionData = {};
+
+    app.get('/good', function(request) {
+    	// should take the http headers over the url patterns
+    	assert.equal(request.session.data.locale, "de-DE");
+    	return text("ok");
+    });
+
+    app(mockRequest("GET", "/good", {
+    	host: "ko.mycompany.com",
+        headers: {
+            "accept-language": "de-DE;q=0.8,ja-JP;q=0.4",
+            "content-type": "application/json"
+        },
+    	env: mockEnv(sessionData)
+    }));
+};
+
+exports.testURLPatternsTakePrecedenceOverDefault = function() {
+    var app = new Application();
+    app.configure('route');
+    app.configure('locale');
+    app.configure('params');
+    app.configure('session');
+    
+    app.i18n({
+    	supportedLocales: null,
+    	defaultLocale: "en-US"
+    });
+
+    var sessionData = {};
+
+    app.get('/good', function(request) {
+    	// should take the http headers over the url patterns
+    	assert.equal(request.session.data.locale, "ko");
+    	return text("ok");
+    });
+
+    app(mockRequest("GET", "/good", {
+    	host: "ko.mycompany.com",
+        env: mockEnv(sessionData)
+    }));
+};
+
+exports.testDefaultTakePrecedenceOverNothing = function() {
+    var app = new Application();
+    app.configure('route');
+    app.configure('locale');
+    app.configure('params');
+    app.configure('session');
+    
+    app.i18n({
+    	supportedLocales: null,
+    	defaultLocale: "en-US"
+    });
+
+    var sessionData = {};
+
+    app.get('/good', function(request) {
+    	// should take the http headers over the url patterns
+    	assert.equal(request.session.data.locale, "en-US");
+    	return text("ok");
+    });
+
+    app(mockRequest("GET", "/good", {
+        env: mockEnv(sessionData)
+    }));
+};
+
+exports.testNoLocaleAtAll = function() {
+    var app = new Application();
+    app.configure('route');
+    app.configure('locale');
+    app.configure('params');
+    app.configure('session');
+    
+    app.i18n({
+    	supportedLocales: null
+    });
+
+    var sessionData = {};
+
+    app.get('/good', function(request) {
+    	// should take the http headers over the url patterns
+    	console.log("locale is " + request.session.data.locale + "\n\n\n");
+    	assert.ok(!request.session.data.locale);
+    	return text("ok");
+    });
+
+    app(mockRequest("GET", "/good", {
+        env: mockEnv(sessionData)
     }));
 };
 
