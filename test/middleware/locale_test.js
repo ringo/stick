@@ -1107,8 +1107,7 @@ exports.testNoLocaleAtAll = function() {
 
     app.get('/good', function(request) {
         // should take the http headers over the url patterns
-        console.log("locale is " + request.session.data.locale + "\n\n\n");
-        assert.ok(!request.session.data.locale);
+        assert.isNull(request.session.data.locale);
         return text("ok");
     });
 
