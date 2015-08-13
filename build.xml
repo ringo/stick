@@ -36,7 +36,7 @@
     <target name="docs" depends="init">
         <delete dir="${docs}"/>
         <mkdir dir="${docs}"/>
-        <exec executable="ringo-doc${commandSuffix}">
+        <exec executable="packages/ringo-jsdoc/bin/ringo-doc${commandSuffix}">
             <arg value="--file-urls" />
             <arg value="-s" />
             <arg value="${src}" />
