@@ -25,6 +25,7 @@ Currently Stick comes with the following middleware modules:
  * error        - generating error pages
  * etag         - ETag based conditional GET
  * gzip         - GZip content encoding
+ * locale       - Discover the locale from various possible sources
  * method       - HTTP method overriding
  * mount        - mounting other applications
  * notfound     - generating 404 pages
