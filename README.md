@@ -18,7 +18,6 @@ Currently Stick comes with the following middleware modules:
 
  * accept       - HTTP content negotiation helper
  * basicauth    - basic HTTP authentication
- * continuation - generator-based async requests
  * cookies      - read HTTP cookies
  * cors         - Cross-site HTTP requests access control
  * csrf         - CSRF mitigation
