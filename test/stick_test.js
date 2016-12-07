@@ -49,6 +49,7 @@ exports.testMiddleware = function() {
 
 // Middlewares
 exports.testAccept = require("./middleware/accept_test");
+exports.testBasicAuth = require("./middleware/basicauth_test");
 exports.testCors = require("./middleware/cors_test");
 exports.testCsrf = require("./middleware/csrf_test");
 exports.testMount = require("./middleware/mount_test");
