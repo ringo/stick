@@ -34,7 +34,6 @@ app.static(module.resolve("../docs"), "index.html"); // serve files in docs as s
 
 // mount example apps
 app.mount("/mount", module.resolve("mount-route/app"));
-app.mount("/continuation", module.resolve("continuation/app"));
 
 // production environment, run with RINGO_ENV=production ringo demo.js
 var prod = app.env("production");
