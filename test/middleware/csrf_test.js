@@ -65,7 +65,7 @@ exports.testSession = function() {
     assert.strictEqual(response.body[0], sessionData.csrfToken);
     assert.strictEqual(sessionData.csrfToken.length, 32);
     // make sure no token cookie is set
-    assert.isUndefined(response.headers["Set-Cookie"]);
+    assert.isUndefined(response.headers["set-cookie"]);
 
     // manually rotate token
     var prevToken = response.body[0];
@@ -156,18 +156,18 @@ exports.testCookie = function() {
         "env": mockEnv()
     });
     var token = response.body[0];
-    var cookieHeader = response.headers["Set-Cookie"];
+    var cookieHeader = response.headers["set-cookie"];
     assert.isNotUndefined(cookieHeader);
     assert.strictEqual(cookieHeader.indexOf("csrftoken=" + token), 0);
     assert.isTrue(/httpOnly/i.test(cookieHeader));
-    assert.strictEqual(response.headers["Vary"], "Cookie");
+    assert.strictEqual(response.headers["vary"], "Cookie");
 
     // cookie is not set if it's sent with the request
     response = app(mockRequest("GET", "/", {
         "env": mockEnv(),
         "cookies": {"csrftoken": token}
     }));
-    assert.isUndefined(response.headers["Set-Cookie"]);
+    assert.isUndefined(response.headers["set-cookie"]);
     assert.strictEqual(response.body[0], token);
 
     // but it is if the request handler calls rotateCsrfToken
@@ -177,7 +177,7 @@ exports.testCookie = function() {
     }));
     assert.isFalse(response.body[0] === token);
     token = response.body[0];
-    cookieHeader = response.headers["Set-Cookie"];
+    cookieHeader = response.headers["set-cookie"];
     assert.isNotUndefined(cookieHeader);
     assert.strictEqual(cookieHeader.indexOf("csrftoken=" + token), 0);
 
@@ -230,7 +230,7 @@ exports.testCookie = function() {
     assert.strictEqual(response.status, 200);
     assert.isTrue(response.body[0] !== token);
     token = response.body[0];
-    cookieHeader = response.headers["Set-Cookie"];
+    cookieHeader = response.headers["set-cookie"];
     assert.strictEqual(cookieHeader.indexOf("csrftoken=" + token), 0);
 
     // cookie options
@@ -244,7 +244,7 @@ exports.testCookie = function() {
         "env": mockEnv()
     }));
     token = response.body[0];
-    cookieHeader = response.headers["Set-Cookie"];
+    cookieHeader = response.headers["set-cookie"];
     assert.strictEqual(cookieHeader.indexOf("token=" + token), 0);
     assert.isFalse(/httpOnly/i.test(cookieHeader));
     assert.isTrue(/secure/i.test(cookieHeader));

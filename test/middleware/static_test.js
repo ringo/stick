@@ -57,9 +57,9 @@ exports.testStaticFile = function() {
       env: {},
       pathInfo: '/customStatic/'
    });
-   assert.equal(response.headers["Content-Type"], "text/html");
+   assert.equal(response.headers["content-type"], "text/html");
    assert.equal(bodyAsString(response.body, "utf-8"), "<!DOCTYPE html>");
-   assert.equal(response.headers["Cache-Control"], "max-age=0");
+   assert.equal(response.headers["cache-control"], "max-age=0");
 };
 
 exports.testMaxAge = function() {
@@ -76,9 +76,9 @@ exports.testMaxAge = function() {
       env: {},
       pathInfo: '/customStatic/'
    });
-   assert.equal(response.headers["Content-Type"], "text/html");
+   assert.equal(response.headers["content-type"], "text/html");
    assert.equal(bodyAsString(response.body, "utf-8"), "<!DOCTYPE html>");
-   assert.equal(response.headers["Cache-Control"], "max-age=1000");
+   assert.equal(response.headers["cache-control"], "max-age=1000");
 
    app = new Application();
 
@@ -91,9 +91,9 @@ exports.testMaxAge = function() {
       env: {},
       pathInfo: '/customStatic/'
    });
-   assert.equal(response.headers["Content-Type"], "text/html");
+   assert.equal(response.headers["content-type"], "text/html");
    assert.equal(bodyAsString(response.body, "utf-8"), "<!DOCTYPE html>");
-   assert.equal(response.headers["Cache-Control"], "max-age=0");
+   assert.equal(response.headers["cache-control"], "max-age=0");
 };
 
 exports.testLastModified = function() {
@@ -109,9 +109,9 @@ exports.testLastModified = function() {
       env: {},
       pathInfo: '/customStatic/'
    });
-   assert.equal(response.headers["Content-Type"], "text/html");
+   assert.equal(response.headers["content-type"], "text/html");
    assert.equal(bodyAsString(response.body, "utf-8"), "<!DOCTYPE html>");
-   assert.isUndefined(response.headers["Last-Modified"]);
+   assert.isUndefined(response.headers["last-modified"]);
 
    app = new Application();
    app.configure("static");
@@ -123,7 +123,7 @@ exports.testLastModified = function() {
       env: {},
       pathInfo: '/customStatic/'
    });
-   assert.equal(response.headers["Content-Type"], "text/html");
+   assert.equal(response.headers["content-type"], "text/html");
    assert.equal(bodyAsString(response.body, "utf-8"), "<!DOCTYPE html>");
    assert.isNotUndefined(response.headers["Last-Modified"]);
 
@@ -142,7 +142,7 @@ exports.testSetHeaders = function() {
          return {
             "x-foo": "bar",
             "x-seestadt-cafe": "united in cycling",
-            "Cache-Control": "max-age=123456"
+            "cache-control": "max-age=123456"
          }
       }
    });
@@ -157,9 +157,9 @@ exports.testSetHeaders = function() {
    });
 
    assert.equal(response.status, 200);
-   assert.equal(response.headers["Content-Type"], "text/html");
-   assert.equal(response.headers["Content-Encoding"], "gzip");
-   assert.equal(response.headers["Cache-Control"], "max-age=123456");
+   assert.equal(response.headers["content-type"], "text/html");
+   assert.equal(response.headers["content-encoding"], "gzip");
+   assert.equal(response.headers["cache-control"], "max-age=123456");
    assert.equal(response.headers["x-foo"], "bar");
    assert.equal(response.headers["x-seestadt-cafe"], "united in cycling");
 };
@@ -182,7 +182,7 @@ exports.testDotfiles = function() {
    });
 
    assert.equal(response.status, 200);
-   assert.equal(response.headers["Content-Type"], "text/plain");
+   assert.equal(response.headers["content-type"], "text/plain");
 
    // DENY
    app = new Application();
@@ -241,9 +241,9 @@ exports.testPrecompressedStaticFile = function() {
    });
 
    assert.equal(response.status, 200);
-   assert.equal(response.headers["Content-Type"], "text/html");
-   assert.equal(response.headers["Content-Encoding"], "gzip");
-   assert.equal(response.headers["Cache-Control"], "max-age=0");
+   assert.equal(response.headers["content-type"], "text/html");
+   assert.equal(response.headers["content-encoding"], "gzip");
+   assert.equal(response.headers["cache-control"], "max-age=0");
 
    response = app({
       method: 'GET',
@@ -255,9 +255,9 @@ exports.testPrecompressedStaticFile = function() {
    });
 
    assert.equal(response.status, 200);
-   assert.equal(response.headers["Content-Type"], "text/html");
-   assert.equal(response.headers["Content-Encoding"], "gzip");
-   assert.equal(response.headers["Cache-Control"], "max-age=0");
+   assert.equal(response.headers["content-type"], "text/html");
+   assert.equal(response.headers["content-encoding"], "gzip");
+   assert.equal(response.headers["cache-control"], "max-age=0");
 
    const ba = new ByteArray([0x1F, 0x8B, 0x08, 0x08, 0x81, 0xF1, 0xD6, 0x56, 0x00, 0x03, 0x69, 0x6E, 0x64, 0x65, 0x78,
       0x2E, 0x68, 0x74, 0x6D, 0x6C, 0x00, 0xB3, 0x51, 0x74, 0xF1, 0x77, 0x0E, 0x89, 0x0C, 0x70,
@@ -270,9 +270,9 @@ exports.testPrecompressedStaticFile = function() {
       env: {},
       pathInfo: '/customStatic/foo.html'
    });
-   assert.equal(response.headers["Content-Type"], "text/html");
+   assert.equal(response.headers["content-type"], "text/html");
    assert.equal(bodyAsString(response.body, "utf-8"), "<!DOCTYPE html><foo></foo>");
-   assert.equal(response.headers["Cache-Control"], "max-age=0");
+   assert.equal(response.headers["cache-control"], "max-age=0");
 };
 
 exports.testDeactivatedPrecompression = function() {
@@ -289,9 +289,9 @@ exports.testDeactivatedPrecompression = function() {
       env: {},
       pathInfo: '/customStatic/'
    });
-   assert.equal(response.headers["Content-Type"], "text/html");
+   assert.equal(response.headers["content-type"], "text/html");
    assert.equal(bodyAsString(response.body, "utf-8"), "<!DOCTYPE html>");
-   assert.equal(response.headers["Cache-Control"], "max-age=0");
+   assert.equal(response.headers["cache-control"], "max-age=0");
 
    response = app({
       method: 'GET',
@@ -299,9 +299,9 @@ exports.testDeactivatedPrecompression = function() {
       env: {},
       pathInfo: '/customStatic/foo.html'
    });
-   assert.equal(response.headers["Content-Type"], "text/html");
+   assert.equal(response.headers["content-type"], "text/html");
    assert.equal(bodyAsString(response.body, "utf-8"), "<!DOCTYPE html><foo></foo>");
-   assert.equal(response.headers["Cache-Control"], "max-age=0");
+   assert.equal(response.headers["cache-control"], "max-age=0");
 };
 
 if (require.main === module) {

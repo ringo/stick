@@ -60,7 +60,7 @@ function dummyPage(text) {
     return function(req) {
         log.info(text);
         return { status: 200,
-                 headers: {"Content-Type": "text/html"},
+                 headers: {"content-type": "text/html"},
                  body: new Buffer("<html><body>", text, "</body></html>") };
     }
 }

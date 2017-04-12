@@ -22,7 +22,7 @@ exports.testSimpleCors = function() {
         env: {},
         pathInfo: '/'
     });
-    assert.isUndefined(response.headers['Access-Control-Allow-Origin'])
+    assert.isUndefined(response.headers['access-control-allow-origin'])
     assert.equal(response.body[0], responseBody);
 
     // invalid origin
@@ -32,7 +32,7 @@ exports.testSimpleCors = function() {
         env: {},
         pathInfo: '/'
     });
-    assert.isUndefined(response.headers['Access-Control-Allow-Origin'])
+    assert.isUndefined(response.headers['access-control-allow-origin'])
     assert.equal(response.body[0], responseBody);
 
     // valid origin
@@ -42,7 +42,7 @@ exports.testSimpleCors = function() {
         env: {},
         pathInfo: '/'
     });
-    assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
+    assert.equal(response.headers['access-control-allow-origin'], 'http://example.com');
     assert.equal(response.body, responseBody);
 
     // case sensitive (!)
@@ -52,7 +52,7 @@ exports.testSimpleCors = function() {
         env: {},
         pathInfo: '/'
     });
-    assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
+    assert.isUndefined(response.headers['access-control-allow-origin']);
     // the actual response *is* sent. The client decides whether to
     // hand the data to the request depending on the Allow-Origin header.
     assert.equal(response.body, responseBody);
@@ -68,8 +68,8 @@ exports.testSimpleCors = function() {
         env: {},
         pathInfo: '/'
     });
-    assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
-    assert.equal(response.headers['Access-Control-Expose-Headers'], 'X-FooBar');
+    assert.equal(response.headers['access-control-allow-origin'], 'http://example.com');
+    assert.equal(response.headers['access-control-expose-headers'], 'X-FooBar');
     assert.equal(response.body, responseBody);
 };
 
@@ -96,7 +96,7 @@ exports.testPreflightCors = function() {
         env: {},
         pathInfo: '/'
     });
-    assert.isUndefined(response.headers['Access-Control-Allow-Origin'])
+    assert.isUndefined(response.headers['access-control-allow-origin'])
     assert.equal(response.body[0], preflightResponseBody);
 
     // invalid origin
@@ -106,7 +106,7 @@ exports.testPreflightCors = function() {
         env: {},
         pathInfo: '/'
     });
-    assert.isUndefined(response.headers['Access-Control-Allow-Origin']);
+    assert.isUndefined(response.headers['access-control-allow-origin']);
     // note again how the resource was indeed executed. a compliant
     // client would not have sent this request but stopped the CORS procedure
     // after the failed preflight request.
@@ -119,7 +119,7 @@ exports.testPreflightCors = function() {
         env: {},
         pathInfo: '/'
     });
-    assert.notEqual(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
+    assert.notEqual(response.headers['access-control-allow-origin'], 'http://example.com');
     assert.equal(response.body[0], preflightResponseBody);
 
     // valid preflight
@@ -129,8 +129,8 @@ exports.testPreflightCors = function() {
         env: {},
         pathInfo: '/'
     });
-    assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
-    assert.equal(response.headers['Access-Control-Allow-Methods'], 'POST');
+    assert.equal(response.headers['access-control-allow-origin'], 'http://example.com');
+    assert.equal(response.headers['access-control-allow-methods'], 'POST');
     assert.equal(response.body[0], preflightResponseBody);
 
     // invalid custom header
@@ -144,8 +144,8 @@ exports.testPreflightCors = function() {
         env: {},
         pathInfo: '/'
     });
-    assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
-    assert.equal(response.headers['Access-Control-Allow-Headers'], 'X-FooBar');
+    assert.equal(response.headers['access-control-allow-origin'], 'http://example.com');
+    assert.equal(response.headers['access-control-allow-headers'], 'X-FooBar');
     assert.equal(response.body[0], preflightResponseBody);
 
     // valid custom header
@@ -159,9 +159,9 @@ exports.testPreflightCors = function() {
         env: {},
         pathInfo: '/'
     });
-    assert.equal(response.headers['Access-Control-Allow-Origin'], 'http://example.com');
-    assert.equal(response.headers['Access-Control-Allow-Headers'], 'X-FooBar');
-    assert.equal(response.headers['Access-Control-Max-Age'], '1728000');
+    assert.equal(response.headers['access-control-allow-origin'], 'http://example.com');
+    assert.equal(response.headers['access-control-allow-headers'], 'X-FooBar');
+    assert.equal(response.headers['access-control-max-age'], '1728000');
     assert.equal(response.body[0], preflightResponseBody);
 };
 
