@@ -45,13 +45,13 @@ exports.testMountRedirect = function() {
     // These URLs should return a 303 response using the default URL treatment
     response = app({headers: {}, method: "GET", env: {}, scriptName: "", pathInfo: ""});
     assert.strictEqual(response.status, 303);
-    assert.strictEqual(response.headers.Location, "/");
+    assert.strictEqual(response.headers.location, "/");
     response = app({headers: {}, method: "GET", env: {}, scriptName: "", pathInfo: "/foo"});
     assert.strictEqual(response.status, 303);
-    assert.strictEqual(response.headers.Location, "/foo/");
+    assert.strictEqual(response.headers.location, "/foo/");
     response = app({headers: {}, method: "GET", env: {}, scriptName: "", pathInfo: "/foo/bar"});
     assert.strictEqual(response.status, 303);
-    assert.strictEqual(response.headers.Location, "/foo/bar/");
+    assert.strictEqual(response.headers.location, "/foo/bar/");
 };
 
 /**
