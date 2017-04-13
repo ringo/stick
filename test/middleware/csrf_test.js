@@ -341,6 +341,48 @@ exports.testGetFailureResponse = function() {
     })));
 };
 
+exports.testCustomSafeMethod = function() {
+    var app = new Application();
+    app.configure("session", "csrf", "route");
+    app.get("/:name", function(req, name) {
+        return text(req.getCsrfToken());
+    });
+    app.del("/", function(req) {
+        return text(req.getCsrfToken());
+    });
+    app.post("/", function(req) {
+        return text(req.getCsrfToken());
+    });
+    var token = "testTokenStr"
+    
+    app.csrf({
+        "safeMethods": ["DELETE"],
+        "isSafeRequest": function(req) {
+            return req.pathInfo.indexOf("/safe") === 0;
+        }
+    });
+
+    let response = app(mockRequest("GET", "/", {
+        "env": mockEnv({"csrfToken": "foo"})
+    }));
+    assert.strictEqual(response.status, 403);   
+
+    response = app(mockRequest("DELETE", "/", {
+        "env": mockEnv({"csrfToken": "foo"})
+    }));
+    assert.strictEqual(response.status, 200);  
+
+    response = app(mockRequest("GET", "/", {
+        "env": mockEnv({"csrfToken": token})
+    }));
+    assert.strictEqual(response.status, 403); 
+
+    response = app(mockRequest("GET", "/safe", {
+        "env": mockEnv({"csrfToken": token})
+    }));
+    assert.strictEqual(response.status, 200); 
+};
+
 if (require.main == module.id) {
     system.exit(require("test").run(module.id));
 }
