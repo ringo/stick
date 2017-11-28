@@ -374,6 +374,27 @@ exports.testPostParamsParsing = function() {
     }));
 };
 
+exports.testPostParamsParsingAfterConsumedInputStream = function() {
+
+
+};
+
+exports.testIssue59_NoContentTypeHeader = function() {
+    const app = new Application();
+    app.configure(params, route);
+
+    app.post("/noContentTypeTest", function (req) {
+        assert.deepEqual(req.postParams, Object.create(null), "Should create an empty postParams object!");
+        return response.ok();
+    });
+
+    app(mockRequest("POST", "/noContentTypeTest", {
+        headers: {
+            "content-length": "5"
+        },
+        input: new io.MemoryStream(new binary.ByteString("abcdf", "ASCII"))
+    }));
+};
 
 if (require.main == module.id) {
     system.exit(require("test").run(module.id));
