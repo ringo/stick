@@ -374,11 +374,6 @@ exports.testPostParamsParsing = function() {
     }));
 };
 
-exports.testPostParamsParsingAfterConsumedInputStream = function() {
-
-
-};
-
 exports.testIssue59_NoContentTypeHeader = function() {
     const app = new Application();
     app.configure(params, route);
