@@ -156,6 +156,8 @@ exports.testPreflightCors = function() {
     assert.equal(response.headers['access-control-max-age'], '1728000');
 };
 
+// fixme add tests for new options
+
 if (require.main == module.id) {
     system.exit(require("test").run(module.id));
 }
