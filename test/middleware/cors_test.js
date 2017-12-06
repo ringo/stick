@@ -1,42 +1,42 @@
-var system = require("system");
-var assert = require("assert");
+const system = require("system");
+const assert = require("assert");
 
-var {Application} = require("../../lib/stick");
-var {route} = require("../../lib/middleware");
+const {Application} = require("../../lib/stick");
+const {route} = require("../../lib/middleware");
 
 exports.testSimpleCors = function() {
-    var {text} = require('ringo/jsgi/response');
-    var app = new Application();
+    const {text} = require('ringo/jsgi/response');
+    const app = new Application();
     app.configure('cors', 'route');
     app.cors({
         allowOrigin: ['http://example.com'],
         exposeHeaders: ['X-FooBar'],
     });
-    var responseBody = 'ok';
+    const responseBody = 'ok';
     app.get('/', function() { return text(responseBody)});
 
     // no origin
-    var response = app({
+    let response = app({
         method: 'GET',
         headers: {},
         env: {},
         pathInfo: '/'
     });
-    assert.isUndefined(response.headers['access-control-allow-origin'])
+    assert.isUndefined(response.headers['access-control-allow-origin']);
     assert.equal(response.body[0], responseBody);
 
     // invalid origin
-    var response = app({
+    response = app({
         method: 'GET',
         headers: {origin: 'http://example2.com'},
         env: {},
         pathInfo: '/'
     });
-    assert.isUndefined(response.headers['access-control-allow-origin'])
+    assert.isUndefined(response.headers['access-control-allow-origin']);
     assert.equal(response.body[0], responseBody);
 
     // valid origin
-    var response = app({
+    response = app({
         method: 'GET',
         headers: {origin: 'http://example.com'},
         env: {},
@@ -46,7 +46,7 @@ exports.testSimpleCors = function() {
     assert.equal(response.body, responseBody);
 
     // case sensitive (!)
-    var response = app({
+    response = app({
         method: 'GET',
         headers: {origin: 'http://exAmpLe.Com'},
         env: {},
@@ -62,7 +62,7 @@ exports.testSimpleCors = function() {
         allowOrigin: ['*'],
         allowCredentials: false
     });
-    var response = app({
+    response = app({
         method: 'GET',
         headers: {origin: 'http://example.com'},
         env: {},
@@ -74,8 +74,8 @@ exports.testSimpleCors = function() {
 };
 
 exports.testPreflightCors = function() {
-    var {text} = require('ringo/jsgi/response');
-    var app = new Application();
+    const {text} = require('ringo/jsgi/response');
+    const app = new Application();
     app.configure('cors', 'route');
     app.cors({
         allowOrigin: ['http://example.com'],
@@ -86,7 +86,7 @@ exports.testPreflightCors = function() {
     });
 
     // no origin
-    var response;
+    let response;
 
     assert.throws(function() {
         app({
@@ -98,7 +98,7 @@ exports.testPreflightCors = function() {
     });
 
     // invalid origin
-    var response = app({
+    response = app({
         method: 'OPTIONS',
         headers: {origin: 'http://example2.com', 'access-control-request-method': 'POST'},
         env: {},
@@ -107,7 +107,7 @@ exports.testPreflightCors = function() {
     assert.isUndefined(response.headers['access-control-allow-origin']);
 
     // invalid method
-    var response = app({
+    response = app({
         method: 'OPTIONS',
         headers: {origin: 'http://example.com', 'access-control-request-method': 'DELETE'},
         env: {},
@@ -117,7 +117,7 @@ exports.testPreflightCors = function() {
     assert.equal(response.headers['access-control-allow-methods'], 'POST');
 
     // valid preflight
-    var response = app({
+    response = app({
         method: 'OPTIONS',
         headers: {origin: 'http://example.com', 'access-control-request-method': 'POST'},
         env: {},
@@ -127,7 +127,7 @@ exports.testPreflightCors = function() {
     assert.equal(response.headers['access-control-allow-methods'], 'POST');
 
     // invalid custom header
-    var response = app({
+    response = app({
         method: 'OPTIONS',
         headers: {
             origin: 'http://example.com',
@@ -141,7 +141,7 @@ exports.testPreflightCors = function() {
     assert.equal(response.headers['access-control-allow-headers'], 'X-FooBar');
 
     // valid custom header
-    var response = app({
+    response = app({
         method: 'OPTIONS',
         headers: {
             origin: 'http://example.com',
@@ -156,8 +156,188 @@ exports.testPreflightCors = function() {
     assert.equal(response.headers['access-control-max-age'], '1728000');
 };
 
+exports.testSimpleGetHead = function() {
+    const {text} = require("ringo/jsgi/response");
+    const app = new Application();
+    app.configure("cors", "route");
+    app.cors({
+        allowOrigin: ["https://example.com"],
+        allowMethods: ["GET"]
+    });
+
+    app.get("/", function () {
+            return text("okay");
+        }
+    );
+
+    let response = app({
+        method: "GET",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["content-type"], "text/plain; charset=utf-8");
+    assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+
+    response = app({
+        method: "HEAD",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["content-type"], "text/plain; charset=utf-8");
+    assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+};
+
+exports.testSimplePost = function() {
+    const {text} = require("ringo/jsgi/response");
+    const app = new Application();
+    app.configure("cors", "route");
+    app.cors({
+        allowOrigin: ["https://example.com"],
+        allowMethods: ["POST"]
+    });
+
+    app.post("/", function () {
+            return text("okay");
+        }
+    );
+
+    let response = app({
+        method: "POST",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["content-type"], "text/plain; charset=utf-8");
+    assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+};
+
+exports.testBadOrigin = function() {
+    const {text} = require("ringo/jsgi/response");
+    const app = new Application();
+    app.configure("cors", "route");
+    app.cors({
+        allowOrigin: ["https://example.com"],
+        allowMethods: ["POST"]
+    });
+
+    app.post("/", function () {
+            return text("okay");
+        }
+    );
+
+    let response = app({
+        method: "POST",
+        headers: {
+            "origin": "https://bad.example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    // this is the important part
+    assert.isUndefined(response.headers["access-control-allow-origin"]);
+
+    assert.equal(response.headers["content-type"], "text/plain; charset=utf-8");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+};
+
+exports.testPreflightsAndPessimisticVary = function() {
+    const {text} = require("ringo/jsgi/response");
+    const app = new Application();
+    app.configure("cors", "route");
+    app.cors({
+        allowOrigin: ["https://example.com"]
+    });
+
+    app.post("/", function () {
+            return text("okay");
+        }
+    );
+
+    //
+    // STEP 1
+    //
+    // non-cors request => only set vary
+    let response = app({
+        method: "POST",
+        headers: {
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.isUndefined(response.headers["access-control-allow-origin"]); // <-- this is the important part
+    assert.equal(response.headers["content-type"], "text/plain; charset=utf-8");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+
+    //
+    // STEP 2
+    //
+    // cors request ==> simulate preflight with bad origin
+    response = app({
+        method: "OPTIONS",
+        headers: {
+            "origin": "https://bad.example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    // the combination of these four assertions tell us it's a preflight handled by the middleware
+    assert.isUndefined(response.headers["access-control-allow-origin"]);
+    assert.isUndefined(response.headers["content-type"]);
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body.length, 0);
+
+    //
+    // STEP 3
+    //
+    // cors request ==> simulate preflight with good origin
+    response = app({
+        method: "OPTIONS",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    // the combination of these four assertions tell us it's a preflight handled by the middleware
+    assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.isUndefined(response.headers["content-type"]);
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body.length, 0);
+};
+
+// tbc exposeHeaders
 // fixme add tests for new options
 
-if (require.main == module.id) {
+if (require.main === module) {
     system.exit(require("test").run(module.id));
 }
