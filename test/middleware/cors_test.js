@@ -335,6 +335,98 @@ exports.testPreflightsAndPessimisticVary = function() {
     assert.equal(response.body.length, 0);
 };
 
+exports.testPassthroughPreflights = function() {
+    const {text} = require("ringo/jsgi/response");
+    const app = new Application();
+    app.configure("cors", "route");
+    app.cors({
+        allowOrigin: ["https://example.com"],
+        passthroughPreflights: true
+    });
+
+    let workCounter = 0;
+    app.options("/", function () {
+        workCounter ++;
+        return text("options done");
+    });
+
+    let response = app({
+        method: "OPTIONS",
+        headers: {
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.isUndefined(response.headers["access-control-allow-origin"]);
+    assert.equal(response.headers["content-type"], "text/plain; charset=utf-8");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "options done");
+    assert.equal(workCounter, 1);
+
+    response = app({
+        method: "OPTIONS",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.equal(response.headers["content-type"], "text/plain; charset=utf-8");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "options done");
+    assert.equal(workCounter, 2);
+};
+
+exports.testStopPreflights = function() {
+    const {text} = require("ringo/jsgi/response");
+    const app = new Application();
+    app.configure("cors", "route");
+    app.cors({
+        allowOrigin: ["https://example.com"],
+        passthroughPreflights: false
+    });
+
+    let workCounter = 0;
+    app.options("/", function () {
+        workCounter ++;
+        return text("options done");
+    });
+
+    let response = app({
+        method: "OPTIONS",
+        headers: {
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    // since this request is NO preflight => middleware forwards the request
+    assert.isUndefined(response.headers["access-control-allow-origin"]);
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(workCounter, 1);
+
+    response = app({
+        method: "OPTIONS",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(workCounter, 1);
+};
+
+
 // tbc exposeHeaders
 // fixme add tests for new options
 
