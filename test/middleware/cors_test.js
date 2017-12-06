@@ -59,8 +59,7 @@ exports.testSimpleCors = function() {
 
     // allow all
     app.cors({
-        allowOrigin: ['*'],
-        allowCredentials: false
+        allowOrigin: ['*']
     });
     response = app({
         method: 'GET',
@@ -81,8 +80,7 @@ exports.testPreflightCors = function() {
         allowOrigin: ['http://example.com'],
         allowMethods: ['POST'],
         allowHeaders: ['X-FooBar'],
-        maxAge: 1728000,
-        allowCredentials: true
+        maxAge: 1728000
     });
 
     // no origin
@@ -182,6 +180,7 @@ exports.testSimpleGetHead = function() {
 
     assert.equal(response.headers["content-type"], "text/plain; charset=utf-8");
     assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.isUndefined(response.headers["access-control-allow-credentials"]);
     assert.equal(response.headers["vary"], "Origin");
     assert.equal(response.body, "okay");
 
@@ -197,6 +196,7 @@ exports.testSimpleGetHead = function() {
 
     assert.equal(response.headers["content-type"], "text/plain; charset=utf-8");
     assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.isUndefined(response.headers["access-control-allow-credentials"]);
     assert.equal(response.headers["vary"], "Origin");
     assert.equal(response.body, "okay");
 };
@@ -272,7 +272,7 @@ exports.testPreflightsAndPessimisticVary = function() {
     });
 
     app.post("/", function () {
-            return text("okay");
+            return text("okay").setStatus(201);
         }
     );
 
@@ -293,6 +293,7 @@ exports.testPreflightsAndPessimisticVary = function() {
     assert.equal(response.headers["content-type"], "text/plain; charset=utf-8");
     assert.equal(response.headers["vary"], "Origin");
     assert.equal(response.body, "okay");
+    assert.equal(response.status, 201);
 
     //
     // STEP 2
@@ -313,6 +314,7 @@ exports.testPreflightsAndPessimisticVary = function() {
     assert.isUndefined(response.headers["content-type"]);
     assert.equal(response.headers["vary"], "Origin");
     assert.equal(response.body.length, 0);
+    assert.equal(response.status, 204);
 
     //
     // STEP 3
@@ -333,6 +335,7 @@ exports.testPreflightsAndPessimisticVary = function() {
     assert.isUndefined(response.headers["content-type"]);
     assert.equal(response.headers["vary"], "Origin");
     assert.equal(response.body.length, 0);
+    assert.equal(response.status, 204);
 };
 
 exports.testPassthroughPreflights = function() {
@@ -347,7 +350,7 @@ exports.testPassthroughPreflights = function() {
     let workCounter = 0;
     app.options("/", function () {
         workCounter ++;
-        return text("options done");
+        return text("options done").setStatus(234);
     });
 
     let response = app({
@@ -364,6 +367,7 @@ exports.testPassthroughPreflights = function() {
     assert.equal(response.headers["vary"], "Origin");
     assert.equal(response.body, "options done");
     assert.equal(workCounter, 1);
+    assert.equal(response.status, 234);
 
     response = app({
         method: "OPTIONS",
@@ -380,6 +384,7 @@ exports.testPassthroughPreflights = function() {
     assert.equal(response.headers["vary"], "Origin");
     assert.equal(response.body, "options done");
     assert.equal(workCounter, 2);
+    assert.equal(response.status, 204);
 };
 
 exports.testStopPreflights = function() {
@@ -394,7 +399,7 @@ exports.testStopPreflights = function() {
     let workCounter = 0;
     app.options("/", function () {
         workCounter ++;
-        return text("options done");
+        return text("options done").setStatus(222);
     });
 
     let response = app({
@@ -410,6 +415,7 @@ exports.testStopPreflights = function() {
     assert.isUndefined(response.headers["access-control-allow-origin"]);
     assert.equal(response.headers["vary"], "Origin");
     assert.equal(workCounter, 1);
+    assert.equal(response.status, 222);
 
     response = app({
         method: "OPTIONS",
@@ -424,11 +430,421 @@ exports.testStopPreflights = function() {
     assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
     assert.equal(response.headers["vary"], "Origin");
     assert.equal(workCounter, 1);
+    assert.equal(response.status, 204);
 };
 
+exports.testPreflightStatus = function() {
+    const {text} = require("ringo/jsgi/response");
+    const app = new Application();
+    app.configure("cors", "route");
+    app.cors({
+        allowOrigin: ["https://example.com"],
+        optionsSuccessStatus: 200
+    });
 
-// tbc exposeHeaders
-// fixme add tests for new options
+    app.post("/", function () {
+            return text("okay");
+        }
+    );
+
+    let response = app({
+        method: "OPTIONS",
+        headers: {
+            "origin": "https://bad.example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    // the combination of these four assertions tell us it's a preflight handled by the middleware
+    assert.equal(response.status, 200);
+    assert.isUndefined(response.headers["access-control-allow-origin"]);
+    assert.isUndefined(response.headers["content-type"]);
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body.length, 0);
+};
+
+exports.testExposeHeaders = function() {
+    const {text} = require("ringo/jsgi/response");
+    const app = new Application();
+    app.configure("cors", "route");
+    app.cors({
+        allowOrigin: ["https://example.com"],
+        exposeHeaders: ["x-foo", "x-bar"]
+    });
+
+    app.post("/", function () {
+            return text("okay");
+        }
+    );
+
+    let response = app({
+        method: "OPTIONS",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    // the combination of these four assertions tell us it's a preflight handled by the middleware
+    assert.equal(response.status, 204);
+    assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.isTrue(
+        response.headers["access-control-expose-headers"] === "x-foo, x-bar" ||
+        response.headers["access-control-expose-headers"] === "x-bar, x-foo"
+    );
+    assert.isUndefined(response.headers["content-type"]);
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body.length, 0);
+};
+
+exports.testExposeHeaders = function() {
+    const {text} = require("ringo/jsgi/response");
+    const app = new Application();
+    app.configure("cors", "route");
+    app.cors({
+        allowOrigin: ["https://example.com"],
+        exposeHeaders: ["x-foo", "x-bar"]
+    });
+
+    app.post("/", function () {
+            return text("okay");
+        }
+    );
+
+    let response = app({
+        method: "OPTIONS",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    // the combination of these four assertions tell us it's a preflight handled by the middleware
+    assert.equal(response.status, 204);
+    assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.isTrue(
+        response.headers["access-control-expose-headers"] === "x-foo, x-bar" ||
+        response.headers["access-control-expose-headers"] === "x-bar, x-foo"
+    );
+    assert.isUndefined(response.headers["content-type"]);
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body.length, 0);
+};
+
+exports.testAllowCredentials = function() {
+    const {text} = require("ringo/jsgi/response");
+    const app = new Application();
+    app.configure("cors", "route");
+    app.cors({
+        allowOrigin: ["https://example.com"],
+        allowCredentials: true
+    });
+
+    app.get("/", function () {
+            return text("okay");
+        }
+    );
+
+    let response = app({
+        method: "GET",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["content-type"], "text/plain; charset=utf-8");
+    assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.equal(response.headers["access-control-allow-credentials"], "true");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+
+    response = app({
+        method: "HEAD",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["content-type"], "text/plain; charset=utf-8");
+    assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.equal(response.headers["access-control-allow-credentials"], "true");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+
+    response = app({
+        method: "OPTIONS",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.equal(response.headers["access-control-allow-credentials"], "true");
+    assert.isUndefined(response.headers["content-type"]);
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body.length, 0);
+};
+
+exports.testFlexibleOrigins = function() {
+    const {text} = require("ringo/jsgi/response");
+
+    //
+    // Step 1: single String
+    //
+    let app = new Application();
+    app.configure("cors", "route");
+    app.get("/", function () { return text("okay"); });
+    app.cors({
+        allowOrigin: "https://example.com"
+    });
+
+    let response = app({
+        method: "GET",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+
+    response = app({
+        method: "GET",
+        headers: {
+            "origin": "http://example.com:8080",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    // origin mismatch => browser would reject the response
+    assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+
+    //
+    // Step 2: array of strings
+    //
+    app = new Application();
+    app.configure("cors", "route");
+    app.get("/", function () { return text("okay"); });
+    app.cors({
+        allowOrigin: ["https://www1.example.com", "https://www2.example.com"]
+    });
+
+    response = app({
+        method: "GET",
+        headers: {
+            "origin": "https://www1.example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["access-control-allow-origin"], "https://www1.example.com");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+
+    response = app({
+        method: "GET",
+        headers: {
+            "origin": "https://www2.example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["access-control-allow-origin"], "https://www2.example.com");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+
+    response = app({
+        method: "GET",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.isUndefined(response.headers["access-control-allow-origin"]);
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+
+    //
+    // Step 3: RegExp
+    //
+    app = new Application();
+    app.configure("cors", "route");
+    app.get("/", function () { return text("okay"); });
+    app.cors({
+        allowOrigin: /https:\/\/www[12]\.example\.com/
+    });
+
+    response = app({
+        method: "GET",
+        headers: {
+            "origin": "https://www1.example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["access-control-allow-origin"], "https://www1.example.com");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+
+    response = app({
+        method: "GET",
+        headers: {
+            "origin": "https://www2.example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["access-control-allow-origin"], "https://www2.example.com");
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+
+    response = app({
+        method: "GET",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.isUndefined(response.headers["access-control-allow-origin"]);
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+
+    response = app({
+        method: "GET",
+        headers: {
+            "origin": "https://www3.example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.isUndefined(response.headers["access-control-allow-origin"]);
+    assert.equal(response.headers["vary"], "Origin");
+    assert.equal(response.body, "okay");
+
+    //
+    // Step 4: Star
+    //
+    app = new Application();
+    app.configure("cors", "route");
+    app.get("/", function () { return text("okay"); });
+    app.cors({
+        allowOrigin: "*"
+    });
+
+    response = app({
+        method: "GET",
+        headers: {
+            "origin": "https://www1.example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["access-control-allow-origin"], "*");
+    assert.isUndefined(response.headers["vary"]);
+    assert.equal(response.body, "okay");
+
+    app.cors({
+        allowOrigin: ["*"]
+    });
+
+    response = app({
+        method: "GET",
+        headers: {
+            "origin": "https://www1.example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["access-control-allow-origin"], "*");
+    assert.isUndefined(response.headers["vary"]);
+    assert.equal(response.body, "okay");
+};
+
+exports.testAppendVaryOrigin = function() {
+    const {text} = require("ringo/jsgi/response");
+    const app = new Application();
+    app.configure("cors", "route");
+    app.cors({
+        allowOrigin: ["https://example.com"],
+        allowCredentials: true
+    });
+
+    app.get("/", function () {
+            return text("okay").addHeaders({
+                "vary": "User-Agent, Accept-Encoding"
+            });
+        }
+    );
+
+    let response = app({
+        method: "GET",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+
+    assert.equal(response.headers["content-type"], "text/plain; charset=utf-8");
+    assert.equal(response.headers["access-control-allow-origin"], "https://example.com");
+    assert.equal(response.headers["access-control-allow-credentials"], "true");
+    assert.equal(response.headers["vary"], "User-Agent, Accept-Encoding, Origin");
+    assert.equal(response.body, "okay");
+
+    response = app({
+        method: "HEAD",
+        headers: {
+            "origin": "https://example.com",
+            "content-type": "text/plain"
+        },
+        env: {},
+        pathInfo: "/"
+    });
+};
 
 if (require.main === module) {
     system.exit(require("test").run(module.id));
