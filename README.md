@@ -30,7 +30,7 @@ Currently Stick comes with the following middleware modules:
  * notfound     - generating 404 pages
  * params       - form data parsing
  * profiler     - JavaScript profiling
- * render       - mustache.js templates
+ * render       - mustache.js templates (use `rp install ringo-mustache`)
  * requestlog   - collecting per-request log messages
  * route        - Sinatra-like request routing
  * session      - session support
