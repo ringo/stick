@@ -2,12 +2,11 @@ const system = require("system");
 const assert = require("assert");
 
 const {Application} = require("../../lib/stick");
-const {route} = require("../../lib/middleware");
 
 exports.testSimpleCors = function() {
     const {text} = require('ringo/jsgi/response');
     const app = new Application();
-    app.configure('cors', 'route');
+    app.configure("cors", "route");
     app.cors({
         allowOrigin: ['http://example.com'],
         exposeHeaders: ['X-FooBar'],
@@ -75,7 +74,7 @@ exports.testSimpleCors = function() {
 exports.testPreflightCors = function() {
     const {text} = require('ringo/jsgi/response');
     const app = new Application();
-    app.configure('cors', 'route');
+    app.configure("cors", "route");
     app.cors({
         allowOrigin: ['http://example.com'],
         allowMethods: ['POST'],

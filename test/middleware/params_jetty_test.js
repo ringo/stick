@@ -6,7 +6,6 @@ const response = require("ringo/jsgi/response");
 const {request} = require("ringo/httpclient");
 
 const {Application} = require("../../lib/stick");
-const {route,params} = require("../../lib/middleware");
 
 require('ringo/logging').setConfig(getResource("./fixtures/httptest_log4j.properties"));
 
@@ -39,7 +38,7 @@ exports.setUp = function() {
     };
 
     const app = new Application();
-    app.configure(consumer, params, route);
+    app.configure(consumer, "params", "route");
 
     app.post("/testConsumed", function (req) {
         // Access post params, otherwise parser will not be invoked

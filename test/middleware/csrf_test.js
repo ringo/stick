@@ -1,9 +1,9 @@
-var system = require("system");
-var assert = require("assert");
-var {Application} = require("../../lib/stick");
-var {text} = require("ringo/jsgi/response");
+const system = require("system");
+const assert = require("assert");
+const {Application} = require("../../lib/stick");
+const {text} = require("ringo/jsgi/response");
 
-var mockRequest = function(method, path, opts) {
+const mockRequest = function(method, path, opts) {
     opts || (opts = {});
     return {
         "method": method || "GET",
@@ -20,7 +20,7 @@ var mockRequest = function(method, path, opts) {
     };
 };
 
-var mockEnv = function(data, isSecure) {
+const mockEnv = function(data, isSecure) {
     return {
         "servletRequest": {
             "getSession": function() {
@@ -44,7 +44,7 @@ var mockEnv = function(data, isSecure) {
 };
 
 exports.testSession = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure("session", "csrf", "route");
     app.get("/", function(req) {
         return text(req.getCsrfToken());
@@ -56,10 +56,10 @@ exports.testSession = function() {
         return text(req.getCsrfToken());
     });
 
-    var sessionData = {};
+    let sessionData = {};
 
     // validate that CSRF token is created and stored in session
-    var response = app(mockRequest("GET", "/", {
+    let response = app(mockRequest("GET", "/", {
         "env": mockEnv(sessionData)
     }));
     assert.strictEqual(response.body[0], sessionData.csrfToken);
@@ -68,7 +68,7 @@ exports.testSession = function() {
     assert.isUndefined(response.headers["set-cookie"]);
 
     // manually rotate token
-    var prevToken = response.body[0];
+    const prevToken = response.body[0];
     response = app(mockRequest("GET", "/rotate", {
         "env": mockEnv(sessionData)
     }));
@@ -136,7 +136,7 @@ exports.testSession = function() {
 };
 
 exports.testCookie = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure("csrf", "route");
     app.csrf({
         "useCookie": true
@@ -152,11 +152,11 @@ exports.testCookie = function() {
     });
 
     // validate that cookie containing the CSRF token is set
-    var response = app(mockRequest("GET"), "/", {
+    let response = app(mockRequest("GET"), "/", {
         "env": mockEnv()
     });
-    var token = response.body[0];
-    var cookieHeader = response.headers["set-cookie"];
+    let token = response.body[0];
+    let cookieHeader = response.headers["set-cookie"];
     assert.isNotUndefined(cookieHeader);
     assert.strictEqual(cookieHeader.indexOf("csrftoken=" + token), 0);
     assert.isTrue(/httpOnly/i.test(cookieHeader));
@@ -251,7 +251,7 @@ exports.testCookie = function() {
 };
 
 exports.testIsSameOrigin = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure("session", "csrf", "route");
     app.get("/", function(req) {
         return text(req.getCsrfToken());
@@ -259,9 +259,9 @@ exports.testIsSameOrigin = function() {
     app.post("/", function(req) {
         return text(req.getCsrfToken());
     });
-    var token = "testTokenStr"
+    const token = "testTokenStr"
     // no referrer checking if not https
-    var response = app(mockRequest("POST", "/", {
+    let response = app(mockRequest("POST", "/", {
         "env": mockEnv({"csrfToken": token}),
         "postParams": {"csrftoken": token}
     }));
@@ -323,7 +323,7 @@ exports.testIsSameOrigin = function() {
 };
 
 exports.testGetFailureResponse = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure("session", "csrf", "route");
     app.post("/", function(req) {
         return text(req.getCsrfToken());
@@ -342,7 +342,7 @@ exports.testGetFailureResponse = function() {
 };
 
 exports.testCustomSafeMethod = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure("session", "csrf", "route");
     app.get("/:name", function(req, name) {
         return text(req.getCsrfToken());
@@ -353,7 +353,7 @@ exports.testCustomSafeMethod = function() {
     app.post("/", function(req) {
         return text(req.getCsrfToken());
     });
-    var token = "testTokenStr"
+    const token = "testTokenStr"
     
     app.csrf({
         "safeMethods": ["DELETE"],

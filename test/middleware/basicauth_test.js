@@ -2,13 +2,12 @@ const system = require("system");
 const assert = require("assert");
 
 const {Application} = require("../../lib/stick");
-const {basicauth, route} = require("../../lib/middleware");
 
 exports.testBasicAuth401 = function() {
-    const {text, html} = require("ringo/jsgi/response");
+    const {text} = require("ringo/jsgi/response");
     const app = new Application();
 
-    app.configure(basicauth, route);
+    app.configure("basicauth", "route");
 
     app.get("/", function() { return text("ok"); } );
     app.get("/protected/:route?", function(req, route) {
@@ -74,7 +73,7 @@ exports.testBasicAuthCorrectCredentials = function() {
     const {text, html} = require("ringo/jsgi/response");
     const app = new Application();
 
-    app.configure(basicauth, route);
+    app.configure("basicauth", "route");
 
     app.get("/", function() { return text("ok"); } );
     app.get("/protected/:route?", function(req, route) {
@@ -140,7 +139,7 @@ exports.testBasicAuthWrongCredentials = function() {
     const {text, html} = require("ringo/jsgi/response");
     const app = new Application();
 
-    app.configure(basicauth, route);
+    app.configure("basicauth", "route");
 
     app.get("/", function() { return text("ok"); } );
     app.get("/protected/:route?", function(req, route) {
@@ -206,7 +205,7 @@ exports.testBasicAuthWrongBase64 = function() {
     const {text, html} = require("ringo/jsgi/response");
     const app = new Application();
 
-    app.configure(basicauth, route);
+    app.configure("basicauth", "route");
 
     app.get("/", function() { return text("ok"); } );
     app.get("/protected/:route?", function(req, route) {

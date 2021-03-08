@@ -1,13 +1,12 @@
-var system = require("system");
-var assert = require("assert");
-var io = require("io");
-var binary = require("binary");
-var response = require("ringo/jsgi/response");
+const system = require("system");
+const assert = require("assert");
+const io = require("io");
+const binary = require("binary");
+const response = require("ringo/jsgi/response");
 
-var {Application} = require("../../lib/stick");
-var {route,params} = require("../../lib/middleware");
+const {Application} = require("../../lib/stick");
 
-var mockRequest = exports.mockRequest = function(method, path, opts) {
+const mockRequest = exports.mockRequest = function(method, path, opts) {
     return {
         "method": method || "GET",
         "host": opts.host || "localhost",
@@ -26,7 +25,7 @@ var mockRequest = exports.mockRequest = function(method, path, opts) {
 
 exports.testJSONParsing = function() {
     const app = new Application();
-    app.configure(params, route);
+    app.configure("params", "route");
 
     app.post("/good", function (req) {
         // Access post params, otherwise parser will not be invoked
@@ -91,7 +90,7 @@ exports.testJSONParsing = function() {
 
 exports.testStrictJSONParsing = function() {
     const app = new Application();
-    app.configure(params, route);
+    app.configure("params", "route");
 
     app.post("/tester", function (req) {
         // Access post params, otherwise parser will not be invoked
@@ -259,7 +258,7 @@ exports.testStrictJSONParsing = function() {
 
 exports.testParameterParsingLimit = function() {
     const app = new Application();
-    app.configure(params, route);
+    app.configure("params", "route");
 
     app.params({
         limit: 13
@@ -350,7 +349,7 @@ exports.testParameterParsingLimit = function() {
 
 exports.testPostParamsParsing = function() {
     const app = new Application();
-    app.configure(params, route);
+    app.configure("params", "route");
 
     app.post("/good", function (req) {
         // Access post params, otherwise parser will not be invoked
@@ -376,7 +375,7 @@ exports.testPostParamsParsing = function() {
 
 exports.testIssue59_NoContentTypeHeader = function() {
     const app = new Application();
-    app.configure(params, route);
+    app.configure("params", "route");
 
     app.post("/noContentTypeTest", function (req) {
         assert.deepEqual(req.postParams, Object.create(null), "Should create an empty postParams object!");

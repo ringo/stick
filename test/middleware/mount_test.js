@@ -1,8 +1,7 @@
-var system = require("system");
-var assert = require("assert");
+const system = require("system");
+const assert = require("assert");
 
-var {Application} = require("../../lib/stick");
-var {mount} = require("../../lib/middleware");
+const {Application} = require("../../lib/stick");
 
 exports.testMount = function() {
     function testMount(app) {
@@ -17,8 +16,8 @@ exports.testMount = function() {
             app({headers: {host: "bing.org"}, env: {}, pathInfo: "/"});
         }, Error);
     }
-    var app = new Application();
-    app.configure(mount);
+    let app = new Application();
+    app.configure("mount");
     testMount(app);
     // configuration via module name
     app = new Application();
@@ -33,17 +32,15 @@ exports.testMount = function() {
  * Not very nice for performance or style when using REST urls.
  */
 exports.testMountRedirect = function() {
-    var response;
-
-    var app = new Application();
-    app.configure(mount);
+    const app = new Application();
+    app.configure("mount");
 
     app.mount("/", function() { return "root" });
     app.mount("/foo", function() { return "foo" });
     app.mount("/foo/bar", function() { return "foo/bar" });
 
     // These URLs should return a 303 response using the default URL treatment
-    response = app({headers: {}, method: "GET", env: {}, scriptName: "", pathInfo: ""});
+    let response = app({headers: {}, method: "GET", env: {}, scriptName: "", pathInfo: ""});
     assert.strictEqual(response.status, 303);
     assert.strictEqual(response.headers.location, "/");
     response = app({headers: {}, method: "GET", env: {}, scriptName: "", pathInfo: "/foo"});
@@ -59,10 +56,8 @@ exports.testMountRedirect = function() {
  * without a redirect and without a trailing slash on the end of the URL.
  */
 exports.testMountNoRedirect = function() {
-    var response;
-
-    var app = new Application();
-    app.configure(mount);
+    const app = new Application();
+    app.configure("mount");
 
     app.mount("/", function() { return "root" }, true);
     app.mount("/foo", function() { return "foo" }, true);
@@ -75,8 +70,8 @@ exports.testMountNoRedirect = function() {
 };
 
 exports.testMountSort = function() {
-    var app = new Application();
-    app.configure(mount);
+    const app = new Application();
+    app.configure("mount");
 
     app.mount("/", function() { return "root" });
     app.mount("/foo", function() { return "foo" });
@@ -87,7 +82,7 @@ exports.testMountSort = function() {
     assert.equal(app({headers: {host: "foo.com"}, env: {}, pathInfo: "/foo/bar"}), "foo/bar");
 
     try {
-        var response = app({headers: {host: "foo.com"}, env: {}, pathInfo: "/bars"});
+        const response = app({headers: {host: "foo.com"}, env: {}, pathInfo: "/bars"});
         assert.fail('Expecting unhandled request');
     } catch(e) { }
 };

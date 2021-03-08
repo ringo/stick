@@ -1,9 +1,7 @@
-var system = require("system");
-var assert = require("assert");
+const system = require("system");
+const assert = require("assert");
 
-var {Application} = require("../lib/stick");
-var {mount,route} = require("../lib/middleware")
-var {urlFor} = require("../lib/helpers");
+const {Application} = require("../lib/stick");
 
 exports.testMiddleware = function() {
     function twice(next, app) {
@@ -32,15 +30,15 @@ exports.testMiddleware = function() {
             return "_" + next(req)
         }
     }
-    var app = new Application(foobar());
+    let app = new Application(foobar());
     app.configure(twice, uppercase);
     assert.equal(app("foo"), "BARBAR");
     app = new Application();
     app.configure(twice, uppercase, foobar);
     assert.equal(app("foo"), "BARBAR");
-    var dev = app.env("development");
+    const dev = app.env("development");
     dev.configure(twice);
-    var prod = app.env("production");
+    const prod = app.env("production");
     prod.configure(_prepend, append_);
     assert.equal(app("foo"), "BARBAR");
     assert.equal(dev("foo"), "BARBARBARBAR");

@@ -1,16 +1,15 @@
 const fs = require("fs");
-const system = require("system");
 const assert = require("assert");
 
-var {Application} = require("../../lib/stick");
-var {static} = require("../../lib/middleware");
+const {Application} = require("../../lib/stick");
+const binary = require("binary");
 
 const bodyAsString = function(body, charset) {
    if (body && typeof body.forEach == "function") {
-      var output = new java.io.ByteArrayOutputStream();
-      var writer = function(part) {
+      const output = new java.io.ByteArrayOutputStream();
+       const writer = function(part) {
          if (!(part instanceof Binary)) {
-            part = part.toByteString(charset);
+            part = binary.toByteString(part, charset);
          }
          output.write(part);
       };
@@ -27,10 +26,10 @@ const bodyAsString = function(body, charset) {
 
 const bodyAsByteArray = function(body) {
    if (body && typeof body.forEach == "function") {
-      var output = new java.io.ByteArrayOutputStream();
-      var writer = function(part) {
+      const output = new java.io.ByteArrayOutputStream();
+       const writer = function(part) {
          if (!(part instanceof Binary)) {
-            part = part.toByteString(charset);
+            part = binary.toByteString(part, charset);
          }
          output.write(part);
       };
@@ -46,7 +45,7 @@ const bodyAsByteArray = function(body) {
 };
 
 exports.testStaticFile = function() {
-   var app = new Application();
+   const app = new Application();
 
    app.configure("static");
    app.static(module.resolve("./fixtures"), "index.html", "/customStatic");
@@ -97,7 +96,7 @@ exports.testMaxAge = function() {
 };
 
 exports.testLastModified = function() {
-   var app = new Application();
+   let app = new Application();
    app.configure("static");
    app.static(module.resolve("./fixtures"), "index.html", "/customStatic", {
       lastModified: false
@@ -125,12 +124,12 @@ exports.testLastModified = function() {
    });
    assert.equal(response.headers["content-type"], "text/html");
    assert.equal(bodyAsString(response.body, "utf-8"), "<!DOCTYPE html>");
-   assert.isNotUndefined(response.headers["Last-Modified"]);
+   assert.isNotUndefined(response.headers["last-modified"]);
 
    let lastModified = fs.lastModified(fs.join(module.resolve("./fixtures"), "index.html"));
    let sdf = new java.text.SimpleDateFormat("E, d MMM yyyy HH:mm:ss z", java.util.Locale.US);
    sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-   assert.equal(response.headers["Last-Modified"], sdf.format(lastModified));
+   assert.equal(response.headers["last-modified"], sdf.format(lastModified));
 };
 
 exports.testSetHeaders = function() {
@@ -276,7 +275,7 @@ exports.testPrecompressedStaticFile = function() {
 };
 
 exports.testDeactivatedPrecompression = function() {
-   var app = new Application();
+   const app = new Application();
 
    app.configure("static");
    app.static(module.resolve("./fixtures"), "index.html", "/customStatic", {
