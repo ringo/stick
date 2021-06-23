@@ -57,6 +57,7 @@ exports.testParams = require("./middleware/params_test");
 exports.testRoute = require("./middleware/route_test");
 exports.testLocale = require("./middleware/locale_test");
 exports.testEtag = require("./middleware/etag_test");
+exports.testGzip = require("./middleware/gzip_test");
 
 if (require.main == module.id) {
     system.exit(require("test").run(module.id));
