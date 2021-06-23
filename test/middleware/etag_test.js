@@ -33,7 +33,7 @@ exports.testBasicMD5 = function() {
     let headers = Headers(response.headers);
     assert.equal(headers.get("content-type"), "text/html");
     assert.equal(headers.get("cache-control"), "max-age=0");
-    assert.equal(headers.get("etag"), "\"1234567890\"");
+    assert.equal(headers.get("etag"), "1234567890");
 };
 
 if (require.main === module) {

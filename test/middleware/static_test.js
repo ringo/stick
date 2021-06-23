@@ -1,16 +1,17 @@
 const fs = require("fs");
 const system = require("system");
 const assert = require("assert");
+let {ByteString, toByteString} = require("binary");
 
-var {Application} = require("../../lib/stick");
-var {static} = require("../../lib/middleware");
+let {Application} = require("../../lib/stick");
+let {static} = require("../../lib/middleware");
 
 const bodyAsString = function(body, charset) {
    if (body && typeof body.forEach == "function") {
       var output = new java.io.ByteArrayOutputStream();
       var writer = function(part) {
          if (!(part instanceof Binary)) {
-            part = part.toByteString(charset);
+            part = toByteString(part, charset);
          }
          output.write(part);
       };
@@ -30,7 +31,7 @@ const bodyAsByteArray = function(body) {
       var output = new java.io.ByteArrayOutputStream();
       var writer = function(part) {
          if (!(part instanceof Binary)) {
-            part = part.toByteString(charset);
+            part = toByteString(part, charset);
          }
          output.write(part);
       };
