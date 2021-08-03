@@ -1,8 +1,10 @@
 const fs = require("fs");
+const binary = require("binary");
+const system = require("system");
 const assert = require("assert");
 
 const {Application} = require("../../lib/stick");
-const binary = require("binary");
+const {static} = require("../../lib/middleware");
 
 const bodyAsString = function(body, charset) {
    if (body && typeof body.forEach == "function") {
