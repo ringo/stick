@@ -1,6 +1,6 @@
 {
     "name": "stick",
-    "version": "0.8",
+    "version": "0.9",
     "description": "A modular JSGI middleware composition toolkit",
     "homepage": "https://github.com/ringo/stick/",
     "keywords": [
@@ -33,7 +33,7 @@
         }
     ],
     "engines": {
-        "ringojs": ">= 0.10"
+        "ringojs": ">= 2.0.0"
     },
     "main": "lib/stick.js"
 }
