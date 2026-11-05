@@ -1,0 +1,28 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ringojs/ringojs:latest
+      # The image defaults to the unprivileged "ringojs" user, which can't
+      # write to the workspace mounted by the runner.
+      options: --user root
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show versions
+        run: |
+          java -version
+          ringo -e 'print(require("ringo/engine").version.join("."))'
+
+      - name: Run tests
+        run: ringo test/stick_test.js
