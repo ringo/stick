@@ -1,13 +1,12 @@
-var system = require("system");
-var assert = require("assert");
-var io = require("io");
-var binary = require("binary");
-var {text} = require("ringo/jsgi/response");
+const system = require("system");
+const assert = require("assert");
+const io = require("io");
+const binary = require("binary");
+const {text} = require("ringo/jsgi/response");
 
-var {Application} = require("../../lib/stick");
-var {route, session, params, locale, cookies} = require("../../lib/middleware");
+const {Application} = require("../../lib/stick");
 
-var MockCookie = function(name, value) {
+const MockCookie = function(name, value) {
     this.name = name;
     this.value = value;
 };
@@ -18,7 +17,7 @@ MockCookie.prototype.getValue = function() {
     return this.value;
 };
 
-var mockRequest = function(method, path, opts) {
+const mockRequest = function(method, path, opts) {
     opts || (opts = {});
     return {
         "method": method || "GET",
@@ -36,7 +35,7 @@ var mockRequest = function(method, path, opts) {
     };
 };
 
-var mockEnv = function(data, isSecure) {
+const mockEnv = function(data, isSecure) {
     return {
         "servletRequest": {
             "getSession": function() {
@@ -87,17 +86,15 @@ var mockEnv = function(data, isSecure) {
 };
 
 exports.testHttpHeadersNoSupportedLocales = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: null,
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.post('/good', function(request) {
         // should take the first one
@@ -116,17 +113,15 @@ exports.testHttpHeadersNoSupportedLocales = function() {
 };
 
 exports.testHttpHeadersNoMatchToSupportedLocales = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: ["en-US","fr-FR","es-ES","ja-JP"],
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // should use the default Locale
@@ -143,17 +138,15 @@ exports.testHttpHeadersNoMatchToSupportedLocales = function() {
 };
 
 exports.testHttpHeadersMatchWithinSupportedLocales = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: ["en-US","fr-FR","es-ES","ja-JP"],
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // first one in the list that is in the supported locales list
@@ -170,17 +163,15 @@ exports.testHttpHeadersMatchWithinSupportedLocales = function() {
 };
 
 exports.testHttpHeadersMatchWithinSupportedLocalesByLanguageOnly = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: ["en-US","fr-FR","es-ES","ja-JP"],
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // match by language only ignoring the region part
@@ -199,17 +190,15 @@ exports.testHttpHeadersMatchWithinSupportedLocalesByLanguageOnly = function() {
 };
 
 exports.testByDomain = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: null,
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // only have the language code available
@@ -224,17 +213,15 @@ exports.testByDomain = function() {
 };
 
 exports.testByDomainFullLocale = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: null,
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // has both the language and region code, but we should make
@@ -251,17 +238,15 @@ exports.testByDomainFullLocale = function() {
 
 
 exports.testByDomainIgnoreNonISOCodes = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: null,
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // xy is not a valid ISO 639-2 language code, so it should be
@@ -277,17 +262,15 @@ exports.testByDomainIgnoreNonISOCodes = function() {
 };
 
 exports.testByDomainOnlyTakeTwoLetterCodes = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: null,
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // dex is not a valid 2-letter ISO 639-2 language code, so it
@@ -303,10 +286,8 @@ exports.testByDomainOnlyTakeTwoLetterCodes = function() {
 };
 
 exports.testByDomainRegex = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: null,
@@ -315,7 +296,7 @@ exports.testByDomainRegex = function() {
         domainmatchgroup: 1
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // valid ISO code, so it should be extracted
@@ -330,10 +311,8 @@ exports.testByDomainRegex = function() {
 };
 
 exports.testByDomainRegexNonISO = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: null,
@@ -342,7 +321,7 @@ exports.testByDomainRegexNonISO = function() {
         domainmatchgroup: 1
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // not a valid ISO code, so fall back to the default
@@ -357,10 +336,8 @@ exports.testByDomainRegexNonISO = function() {
 };
 
 exports.testByDomainRegexWithSupportedLocalesList = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
@@ -369,7 +346,7 @@ exports.testByDomainRegexWithSupportedLocalesList = function() {
         domainmatchgroup: 1
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // should map to the full locale in the supported locales list.
@@ -384,10 +361,8 @@ exports.testByDomainRegexWithSupportedLocalesList = function() {
 };
 
 exports.testByDomainRegexNoMatchInSupportedLocales = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
@@ -396,7 +371,7 @@ exports.testByDomainRegexNoMatchInSupportedLocales = function() {
         domainmatchgroup: 1
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // not on the supported locales list, so fall back to the default
@@ -411,10 +386,8 @@ exports.testByDomainRegexNoMatchInSupportedLocales = function() {
 };
 
 exports.testByPathRegex = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: null,
@@ -423,7 +396,7 @@ exports.testByPathRegex = function() {
         pathmatchgroup: 1
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/:slug/good', function(request) {
         // valid ISO code, so it should be extracted
@@ -438,10 +411,8 @@ exports.testByPathRegex = function() {
 };
 
 exports.testByPathRegexNonISO = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: null,
@@ -450,7 +421,7 @@ exports.testByPathRegexNonISO = function() {
         pathmatchgroup: 1
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/:slug/good', function(request) {
         // not a valid ISO code, so fall back to the default
@@ -465,10 +436,8 @@ exports.testByPathRegexNonISO = function() {
 };
 
 exports.testByPathRegexWithSupportedLocalesList = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
@@ -477,7 +446,7 @@ exports.testByPathRegexWithSupportedLocalesList = function() {
         pathmatchgroup: 1
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/:slug/good', function(request) {
         // should map to the full locale in the supported locales list.
@@ -492,10 +461,8 @@ exports.testByPathRegexWithSupportedLocalesList = function() {
 };
 
 exports.testByPathRegexNoMatchInSupportedLocales = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: ["en-US", "fr-FR", "de-DE", "nl-NL", "es-ES", "ja-JP"],
@@ -504,7 +471,7 @@ exports.testByPathRegexNoMatchInSupportedLocales = function() {
         pathmatchgroup: 1
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/:slug/good', function(request) {
         // not on the supported locales list, so fall back to the default
@@ -519,17 +486,15 @@ exports.testByPathRegexNoMatchInSupportedLocales = function() {
 };
 
 exports.testByURLPath = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: null,
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/:slug/good', function(request) {
         // only have the language code available
@@ -543,17 +508,15 @@ exports.testByURLPath = function() {
 };
 
 exports.testByURLPathFullLocale = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: null,
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/:slug/good', function(request) {
         // has both the language and region code, but we should make
@@ -569,17 +532,15 @@ exports.testByURLPathFullLocale = function() {
 
 
 exports.testByURLPathIgnoreNonISOCodes = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: null,
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/:slug/good', function(request, slug) {
         // xy is not a valid ISO 639-2 language code, so it should be
@@ -594,17 +555,15 @@ exports.testByURLPathIgnoreNonISOCodes = function() {
 };
 
 exports.testByURLPathOnlyTakeTwoLetterCodes = function() {
-    var app = new Application();
-    app.configure('route');
-    app.configure('locale');
-    app.configure('session');
+    const app = new Application();
+    app.configure("session", "locale", "route");
 
     app.i18n({
         supportedLocales: null,
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/:slug/good', function(request) {
         // dex is not a valid 2-letter ISO 639-2 language code, so it
@@ -619,7 +578,7 @@ exports.testByURLPathOnlyTakeTwoLetterCodes = function() {
 };
 
 exports.testParamsGetFullLocale = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -630,7 +589,7 @@ exports.testParamsGetFullLocale = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // should take the first one
@@ -645,7 +604,7 @@ exports.testParamsGetFullLocale = function() {
 };
 
 exports.testParamsGetPartialLocale = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -656,7 +615,7 @@ exports.testParamsGetPartialLocale = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // should take the first one
@@ -671,7 +630,7 @@ exports.testParamsGetPartialLocale = function() {
 };
 
 exports.testParamsGet2 = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -682,7 +641,7 @@ exports.testParamsGet2 = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // should take the first one
@@ -697,7 +656,7 @@ exports.testParamsGet2 = function() {
 };
 
 exports.testParamsGet3 = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -708,7 +667,7 @@ exports.testParamsGet3 = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // should take the first one
@@ -723,7 +682,7 @@ exports.testParamsGet3 = function() {
 };
 
 exports.testParamsGetNonISOCode = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -734,7 +693,7 @@ exports.testParamsGetNonISOCode = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // should take the first one
@@ -749,7 +708,7 @@ exports.testParamsGetNonISOCode = function() {
 };
 
 exports.testParamsPost = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -760,7 +719,7 @@ exports.testParamsPost = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.post('/good', function(request) {
         // should take the first one
@@ -778,7 +737,7 @@ exports.testParamsPost = function() {
 };
 
 exports.testParamsPostFullLocale = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -789,7 +748,7 @@ exports.testParamsPostFullLocale = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.post('/good', function(request) {
         // should take the first one
@@ -807,7 +766,7 @@ exports.testParamsPostFullLocale = function() {
 };
 
 exports.testParamsPost2 = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -818,7 +777,7 @@ exports.testParamsPost2 = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.post('/good', function(request) {
         // should take the first one
@@ -836,7 +795,7 @@ exports.testParamsPost2 = function() {
 };
 
 exports.testParamsPost3 = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -847,7 +806,7 @@ exports.testParamsPost3 = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.post('/good', function(request) {
         // should take the first one
@@ -865,7 +824,7 @@ exports.testParamsPost3 = function() {
 };
 
 exports.testCookie = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('cookies');
@@ -876,7 +835,7 @@ exports.testCookie = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {
+    const sessionData = {
         // simulate request cookies by putting them in the session data where
         // the mock env can pick them up
         cookies: [new MockCookie("locale", "de-DE")]
@@ -894,7 +853,7 @@ exports.testCookie = function() {
 };
 
 exports.testSession = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('cookies');
@@ -905,7 +864,7 @@ exports.testSession = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {
+    const sessionData = {
         locale: "fr-FR",
     };
 
@@ -921,7 +880,7 @@ exports.testSession = function() {
 };
 
 exports.testSessionTakesPrecedenceOverCookies = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('cookies');
@@ -932,7 +891,7 @@ exports.testSessionTakesPrecedenceOverCookies = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {
+    const sessionData = {
         locale: "fr-FR",
         // simulate request cookies by putting them in the session data where
         // the mock env can pick them up
@@ -951,7 +910,7 @@ exports.testSessionTakesPrecedenceOverCookies = function() {
 };
 
 exports.testCookieTakesPrecedenceOverQueryStrings = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -963,7 +922,7 @@ exports.testCookieTakesPrecedenceOverQueryStrings = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {
+    const sessionData = {
         // simulate request cookies by putting them in the session data where
         // the mock env can pick them up
         cookies: [new MockCookie("locale", "de-DE")]
@@ -982,7 +941,7 @@ exports.testCookieTakesPrecedenceOverQueryStrings = function() {
 };
 
 exports.testQueryStringsTakesPrecedenceOverHTTPAcceptHeaders = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -993,7 +952,7 @@ exports.testQueryStringsTakesPrecedenceOverHTTPAcceptHeaders = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // should take the query string parameter over the http headers
@@ -1012,7 +971,7 @@ exports.testQueryStringsTakesPrecedenceOverHTTPAcceptHeaders = function() {
 };
 
 exports.testHTTPAcceptHeadersTakePrecedenceOverURLPatterns = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -1023,7 +982,7 @@ exports.testHTTPAcceptHeadersTakePrecedenceOverURLPatterns = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // should take the http headers over the url patterns
@@ -1042,7 +1001,7 @@ exports.testHTTPAcceptHeadersTakePrecedenceOverURLPatterns = function() {
 };
 
 exports.testURLPatternsTakePrecedenceOverDefault = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -1053,7 +1012,7 @@ exports.testURLPatternsTakePrecedenceOverDefault = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // should take the http headers over the url patterns
@@ -1068,7 +1027,7 @@ exports.testURLPatternsTakePrecedenceOverDefault = function() {
 };
 
 exports.testDefaultTakePrecedenceOverNothing = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -1079,7 +1038,7 @@ exports.testDefaultTakePrecedenceOverNothing = function() {
         defaultLocale: "en-US"
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // should take the http headers over the url patterns
@@ -1093,7 +1052,7 @@ exports.testDefaultTakePrecedenceOverNothing = function() {
 };
 
 exports.testNoLocaleAtAll = function() {
-    var app = new Application();
+    const app = new Application();
     app.configure('route');
     app.configure('locale');
     app.configure('params');
@@ -1103,7 +1062,7 @@ exports.testNoLocaleAtAll = function() {
         supportedLocales: null
     });
 
-    var sessionData = {};
+    const sessionData = {};
 
     app.get('/good', function(request) {
         // should take the http headers over the url patterns

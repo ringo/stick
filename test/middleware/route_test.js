@@ -1,9 +1,8 @@
-var system = require("system");
-var assert = require("assert");
+const system = require("system");
+const assert = require("assert");
 
-var {Application} = require("../../lib/stick");
-var {route, mount} = require("../../lib/middleware");
-var {urlFor} = require("../../lib/helpers");
+const {Application} = require("../../lib/stick");
+const {urlFor} = require("../../lib/helpers");
 
 /**
  * Test that makes sure the most 'literal' version of the URL is resolved instead of parameterized
@@ -14,8 +13,8 @@ exports.testRouteResolution = function() {
         assert.equal(app({method: 'GET', headers: {host: "foo.com"}, env: {}, pathInfo: path}), expected);
     }
 
-    var app = new Application();
-    app.configure(route);
+    const app = new Application();
+    app.configure("route");
 
     app.get("/:param", function(req, p) { return '[' + p + ']' });
     app.get("/foo", function() { return "foo" });
@@ -41,8 +40,8 @@ exports.testMountAndRouteResolution = function() {
         assert.equal(mountApp({method: 'GET', headers: {host: "foo.com"}, env: {}, pathInfo: path}), expected);
     }
 
-    var app = new Application();
-    app.configure(route);
+    const app = new Application();
+    app.configure("route");
 
     app.get("/:param", function(req, p) { return '[' + p + ']'});
     app.get("/foo", function() { return "foo" });
@@ -51,8 +50,8 @@ exports.testMountAndRouteResolution = function() {
     app.get("/baz/:param/qux", function(req, p) { return 'baz/[' + p + ']/qux'});
     app.get("/baz/123/qux", function() { return "baz/123/qux" });
 
-    var mountApp = new Application();
-    mountApp.configure(mount);
+    const mountApp = new Application();
+    mountApp.configure("mount");
     mountApp.mount("/test", app);
 
     testPath("/test/foo", "foo");
@@ -64,8 +63,8 @@ exports.testMountAndRouteResolution = function() {
 };
 
 exports.testUrlForRoute = function() {
-    var app = new Application();
-    app.configure(route);
+    const app = new Application();
+    app.configure("route");
     app.get("/:param", function() {});
     app.get("/foo", function() {});
     app.get("/foo/:param", function() {});
@@ -88,8 +87,8 @@ exports.testUrlForRoute = function() {
     assert.strictEqual(urlFor(app, {"action": "baz/qux", "param": 123}), "/baz/123/qux");
     assert.strictEqual(urlFor(app, {"action": "baz.html", "param": 123}), "/baz/123.html");
 
-    var mountApp = new Application();
-    mountApp.configure(mount);
+    const mountApp = new Application();
+    mountApp.configure("mount");
     mountApp.mount("/test", app);
     assert.strictEqual(urlFor(app, {"param": "foo"}), "/test/foo");
     assert.strictEqual(urlFor(app, {"action": "index", "param": "bar"}), "/test/bar");
@@ -100,8 +99,8 @@ exports.testUrlForRoute = function() {
 };
 
 exports.testUrlForNamedRoute = function() {
-    var app = new Application();
-    app.configure(route);
+    const app = new Application();
+    app.configure("route");
     app.get("/:param", function() {}, "param");
     app.get("/foo", function() {}, "fooindex");
     app.get("/foo/:id", function() {}, "foodetail");

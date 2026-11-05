@@ -1,20 +1,19 @@
-var system = require("system");
-var assert = require("assert");
+const system = require("system");
+const assert = require("assert");
 
-var {Application} = require("../../lib/stick");
-var {route} = require("../../lib/middleware");
+const {Application} = require("../../lib/stick");
 
 exports.testAccept = function() {
-    var {text, html} = require('ringo/jsgi/response');
-    var app = new Application();
+    const {text, html} = require('ringo/jsgi/response');
+    let app = new Application();
 
     app.configure('accept', 'route');
 
-    var responseBody = 'ok';
+    const responseBody = 'ok';
     app.get('/', function() { return text(responseBody)} );
 
     // helper function to build a request object
-    var buildRequest = function(acceptHeader) {
+    const buildRequest = function(acceptHeader) {
         return {
             method: 'GET',
             headers: {
@@ -27,7 +26,7 @@ exports.testAccept = function() {
 
     // Content characteristic not available - app wide
     app.accept(['text/html', 'application/xhtml+xml']);
-    var response = app(buildRequest('application/json'));
+    let response = app(buildRequest('application/json'));
     assert.equal(response.status, 406);
     assert.equal(response.body, 'Not Acceptable. Available entity content characteristics: text/html, application/xhtml+xml');
 
@@ -39,7 +38,7 @@ exports.testAccept = function() {
 
     // Matching characteristic, including quality
     app.accept(['text/html', 'application/json']);
-    var req = buildRequest('application/json');
+    req = buildRequest('application/json');
     response = app(req);
 
     assert.deepEqual(req.accepted, [{
@@ -53,7 +52,7 @@ exports.testAccept = function() {
 
     // Matching characteristic, including multiple qualities
     app.accept(['text/html', 'application/json']);
-    var req = buildRequest('text/plain; q=0.5, text/html, text/csv, text/x-dvi; q=0.8');
+    let req = buildRequest('text/plain; q=0.5, text/html, text/csv, text/x-dvi; q=0.8');
     response = app(req);
 
     assert.deepEqual(req.accepted, [{
